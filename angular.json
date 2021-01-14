@@ -127,5 +127,8 @@
       }
     }
   },
-  "defaultProject": "moto"
+  "defaultProject": "moto",
+  "cli": {
+    "analytics": false
+  }
 }
