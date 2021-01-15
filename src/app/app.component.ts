@@ -6,11 +6,17 @@ import { Component, OnInit } from '@angular/core'
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
-  links: string[] = ['link1', 'link2', 'link3']
+  fake_links: string[] = [
+    'https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html',
+    'https://www.seriouseats.com/recipes/2021/01/banh-trang-nuong-grilled-vietnamese-rice-paper.html',
+    'https://www.seriouseats.com/recipes/2021/01/fried-plantain-chips.html']
+  links: string[] = [];
 
   constructor() { }
 
-  ngOnInit(): void {
+  ngOnInit(): void { }
 
+  listLinks() {
+    this.links = this.fake_links;
   }
 }
