@@ -5,20 +5,23 @@
   </div>
 
   <div class="button-container">
-    <button>Let's get started!</button>
+    <button (click)="listLinks()">
+      Let's get started!</button>
   </div>
 
-  <div id="links-container">
-    <table id="links">
+  <div id="links-container" *ngIf="links.length">
+    <table id="links-table">
       <thead>
         <th>Recipe Links</th>
       </thead>
       <tbody>
         <tr *ngFor="let link of links">
-          <td>{{ link }}</td>
+          <td>
+            <a href="{{ link }}">{{ link }}</a>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
-  
+
 </div>
