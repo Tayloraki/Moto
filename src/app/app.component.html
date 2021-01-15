@@ -7,4 +7,18 @@
   <div class="button-container">
     <button>Let's get started!</button>
   </div>
+
+  <div id="links-container">
+    <table id="links">
+      <thead>
+        <th>Recipe Links</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let link of links">
+          <td>{{ link }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  
 </div>
