@@ -1,25 +1,21 @@
 <div id="moto-container">
   <div id="title">MOTO</div>
-  <div>
+  <!-- <div>
     Purpose: Enable individuals with personal recipe collections from various web sources to view ingredient list, recipe nutrition, recipe modification and general collection data trends in one place.
-  </div>
-
+  </div> -->
   <div id="input-container">
-    <textarea id="text-links" [(ngModel)]="linksInput">
+    <textarea id="text-links" placeholder="Please paste your recipe links here" [(ngModel)]="linksInput">
     </textarea>
   </div>
-
-  <div id="input-error-container" *ngIf="noLinks">
+  <div class="error-container" *ngIf="noLinks">
     <div>
-      We didn't find any links. Try again plz
+      Links were not valid. Please try again.
     </div>
   </div>
-
   <div class="button-container">
     <button (click)="listLinks()">
-      Let's get started!</button>
+      process</button>
   </div>
-
   <div id="links-container" *ngIf="links.length">
     <table id="links-table">
       <thead>
@@ -34,5 +30,4 @@
       </tbody>
     </table>
   </div>
-
 </div>

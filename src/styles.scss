@@ -1,3 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
 $blue: #30a2cc;
+$gray: #efefef;
 $orange: #e33d26;
+$error-red: #ca594a;
+
+.error-container {
+  display: flex;
+  justify-content: center;
+
+  div {
+    background-color: $error-red;
+    margin-top: 3rem;
+    padding: 1rem;
+    border-radius: 5px;
+    width: 70vw;
+    font-size: 1.5rem;
+  }
+}
