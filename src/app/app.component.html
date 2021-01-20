@@ -4,6 +4,17 @@
     Purpose: Enable individuals with personal recipe collections from various web sources to view ingredient list, recipe nutrition, recipe modification and general collection data trends in one place.
   </div>
 
+  <div id="input-container">
+    <textarea id="text-links" [(ngModel)]="linksInput">
+    </textarea>
+  </div>
+
+  <div id="input-error-container" *ngIf="noLinks">
+    <div>
+      We didn't find any links. Try again plz
+    </div>
+  </div>
+
   <div class="button-container">
     <button (click)="listLinks()">
       Let's get started!</button>
