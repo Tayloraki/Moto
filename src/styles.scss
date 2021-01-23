@@ -1,5 +1,5 @@
 /* You can add global styles to this file, and also import other style files */
-$blue: #30475e;
+$blue: #5982aa;
 $gray: #e8e8e8;
 $off-gray: #dddddd;
 $orange: #D24B4C;
@@ -31,6 +31,6 @@ body {
     linear-gradient(225deg, $off-orange 25%, transparent 25%) 50px 0,
     linear-gradient(315deg, $off-orange 25%, transparent 25%),
     linear-gradient(45deg, $off-orange 25%, transparent 25%);
-  background-size: 15px 15px;
+  background-size: 175px 150px;
   background-color: $orange;
 }
