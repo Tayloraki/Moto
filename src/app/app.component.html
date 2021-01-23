@@ -1,37 +1,42 @@
 <header class="textured-background">
-  MOTO
+  <span>
+    <span class="title">MOTO</span>
+    <!-- <span class="subtitle">take apart your favorite recipes!</span> -->
+  </span>
 </header>
 <div id="moto-container">
   <!-- <div>
     Purpose: Enable individuals with personal recipe collections from various web sources to view ingredient list, recipe nutrition, recipe modification and general collection data trends in one place.
   </div> -->
-  <div id="input-container">
-    <textarea id="text-links" placeholder="Please paste your recipe links here" [(ngModel)]="linksTextInput">
-    </textarea>
-    <div id="file-container">
-      <label for="file-upload">{{'Please upload recipes either as Exported Bookmarks (HTML) or within a CSV'}}</label>
-      <input type="file" id="file-upload" name="file-upload" (change)="handleFileInput($event)">
+  <div id="top-container">
+    <div id="input-container">
+      <textarea id="text-links" placeholder="Please paste your recipe links here" [(ngModel)]="linksTextInput">
+      </textarea>
+      <div id="file-container">
+        <label for="file-upload">{{'Please upload recipes either as Exported Bookmarks (HTML) or within a CSV'}}</label>
+        <input type="file" id="file-upload" name="file-upload" (change)="handleFileInput($event)">
+      </div>
     </div>
-  </div>
-  <div class="error-container" *ngIf="noLinks">
-    <div>
-      Links were not valid. Please try again.
+    <div class="error-container" *ngIf="noLinks">
+      <div>
+        Links were not valid. Please try again.
+      </div>
     </div>
-  </div>
-  <div class="error-container" *ngIf="duplicateLinks">
-    <div>
-      Some links were duplicates and were not imported.
+    <div class="error-container" *ngIf="duplicateLinks">
+      <div>
+        Some links were duplicates and were not imported.
+      </div>
     </div>
-  </div>
-  <div class="button-container">
-    <button (click)="listLinks()">
-      convert
-    </button>
+    <div class="button-container">
+      <button (click)="listLinks()" [disabled]="!linksTextInput && !uploadedFiles">
+        convert
+      </button>
+    </div>
   </div>
   <div id="links-container" *ngIf="links.length">
     <table id="links-table">
       <thead>
-        <th>Recipe Links</th>
+        <th>recipe links</th>
       </thead>
       <tbody>
         <tr *ngFor="let link of links">

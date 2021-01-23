@@ -1,9 +1,14 @@
 /* You can add global styles to this file, and also import other style files */
-$blue: #30a2cc;
-$gray: #efefef;
-$orange: #e33d26;
-$off-orange: #e5503b;
-$error-red: #ca594a;
+$blue: #30475e;
+$gray: #e8e8e8;
+$off-gray: #dddddd;
+$orange: #D24B4C;
+$off-orange: #ea5455;
+$error-red: #ea5455;
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
 
 .error-container {
   display: flex;
@@ -11,6 +16,7 @@ $error-red: #ca594a;
 
   div {
     background-color: $error-red;
+    border: 2.5px white solid;
     margin-top: 3rem;
     padding: 1rem;
     border-radius: 5px;

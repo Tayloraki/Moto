@@ -27,10 +27,13 @@ export class AppComponent implements OnInit {
   constructor() {
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    // this.links = this.fake_links
+  }
 
   listLinks() {
-    this.noLinks, this.duplicateLinks = false
+    this.noLinks = false
+    this.duplicateLinks = false
 
     if (this.linksTextInput) {
       let inputLinks = this.splitLinks(this.linksTextInput)
