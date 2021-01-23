@@ -23,10 +23,25 @@
   justify-content: center;
 
   #text-links {
-      width: 75vw;
-      height: 40vh;
-      border-radius: 5px;
-      background-color: $gray;
+    width: 60vw;
+    height: 40vh;
+    border-radius: 5px;
+    background-color: $gray;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 1vw;
+  }
+
+  label {
+    font-size: 1.5rem;
+  }
+
+  #file-upload {
+    padding: 1vw;
   }
 }
 
