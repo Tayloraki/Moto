@@ -2,6 +2,7 @@
 $blue: #30a2cc;
 $gray: #efefef;
 $orange: #e33d26;
+$off-orange: #e5503b;
 $error-red: #ca594a;
 
 .error-container {
@@ -16,4 +17,14 @@ $error-red: #ca594a;
     width: 70vw;
     font-size: 1.5rem;
   }
+}
+
+.textured-background {
+  background:
+    linear-gradient(135deg, $off-orange 25%, transparent 25%) 50px 0,
+    linear-gradient(225deg, $off-orange 25%, transparent 25%) 50px 0,
+    linear-gradient(315deg, $off-orange 25%, transparent 25%),
+    linear-gradient(45deg, $off-orange 25%, transparent 25%);
+  background-size: 15px 15px;
+  background-color: $orange;
 }

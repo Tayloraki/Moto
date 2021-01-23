@@ -1,21 +1,27 @@
 @import "../styles.scss";
 
-#moto-container {
-    background-color: $blue;
-    color: white;
-    font-size: 2.5rem;
-    padding: 5vh 5vw;
-    min-height: 88vh;
-    border-radius: 15px;
+header {
+  background-color: $orange;
+  color: $gray;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom: 1px solid $gray;
+  font-size: 5.5rem;
+  text-align: center;
+  font-weight: 1000;
+  letter-spacing: 2.5vw;
+  text-shadow: 2.5px 2.5px $blue;
 }
 
-#title {
-    font-size: 5rem;
-    text-align: center;
-    font-weight: 900;
-    letter-spacing: 10px;
-    text-decoration: underline;
-    margin-bottom: 2.5vh;
+#moto-container {
+  background-color: $blue;
+  color: white;
+  font-size: 2.5rem;
+  padding: 5vh 5vw;
+  min-height: 75vh;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  letter-spacing: 1px;
 }
 
 #input-container {
@@ -23,10 +29,17 @@
   justify-content: center;
 
   #text-links {
-    width: 60vw;
+    width: 100vw;
     height: 40vh;
+    padding: 1vh 1vw;
     border-radius: 5px;
     background-color: $gray;
+  }
+
+  #file-container {
+    border-left: dashed 2.5px $gray;
+    margin-left: 2.5vw;
+    padding-left: 2.5vw;
   }
 
   div {
@@ -37,7 +50,7 @@
   }
 
   label {
-    font-size: 1.5rem;
+    font-size: 1rem;
   }
 
   #file-upload {
@@ -47,30 +60,30 @@
 
 .button-container {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
 
     button {
         background-color: $orange;
         color: white;
-        font-size: 2.5rem;
-        padding: 1.5vw;
+        font-size: 1.66rem;
+        padding: .5vh 2.75vw;
         margin-top: 5vh;
         cursor: pointer;
         border: $gray 1px solid;
-        border-radius: 15px;
+        border-radius: 5px;
     }
 }
 
 #links-container {
     display: flex;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
     margin-top: 5vh;
 
     table, th, td {
         border-collapse: collapse;
-        width: 70%;
+        width: 100%;
     }
 
     #links-table {
