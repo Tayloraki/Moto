@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -12,27 +12,26 @@ export class AppComponent implements OnInit {
     'https://www.seriouseats.com/recipes/2021/01/fried-plantain-chips.html',
   ]
   links: string[] = []
-  linksInput: string = ''
+  allLinksRaw = ''
+  linksTextInput: string = ''
   noLinks: boolean = false
+  fileToUpload
+  fileString: string = ''
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void { }
 
   listLinks() {
-    console.log(this.linksInput)
-    // split() strings into different links
-    // iterate over each link and check if they are a valid URL (look at all the different ways to iterate)
-    // if they're not a valid URL, show an error message and don't pass THOSE invalid URLs into table
-    // otherwise, pass valid links into table of links as hrefs
-    // console.log(this.validURL(this.linksInput))
+    console.log(this.linksTextInput)
+    console.log(this.allLinksRaw)
+    console.log(typeof this.links)
+    this.allLinksRaw = this.allLinksRaw.concat(this.linksTextInput)
     // this.linksInput = "https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html, https://www.seriouseats.com/recipes/2021/01/banh-trang-nuong-grilled-vietnamese-rice-paper.html,  https://www.seriouseats.com/recipes/2021/01/fried-plantain-chips.html"
-    let splitLinks = this.checkIfUrl(this.linksInput)
+    let splitLinks = this.checkIfUrl(this.allLinksRaw)
     console.log(splitLinks)
-    // read about for..in vs for...of vs forEach() vs map
-    // read about pass by value vs pass by reference in js
-    // TODO: parsing breaks with no spaces, ''s - make sure it works for lists separated by commas and linebreaks and then conditionally show error message
-
+    
     if (splitLinks) {
       splitLinks.forEach(function(item: string, index: number, links: string[]) { links[index] = item.replace(/\s/g, '') });
       console.log(splitLinks)
@@ -41,7 +40,6 @@ export class AppComponent implements OnInit {
       console.log("no links")
       this.noLinks = true
     }
-
   }
 
   checkIfUrl(str: string) {
@@ -55,7 +53,39 @@ export class AppComponent implements OnInit {
   }
 
   addToLinks(links: string[]) {
-    // TODO: check for duplicates and append to end of links array
-    this.links = links
+    this.links = this.arrayNoRepeats(this.links.concat(links))
+  }
+
+  arrayNoRepeats(array: string[]) {
+    let uniqueArray = array.concat()
+    for(let i=0; i<uniqueArray.length; ++i) {
+        for(var j=i+1; j<uniqueArray.length; ++j) {
+            if(uniqueArray[i] === uniqueArray[j])
+            uniqueArray.splice(j--, 1)
+        }
+    }
+    return uniqueArray
+  }
+
+  handleFileInput(files: FileList) {
+    if (files.item(0)) {
+      this.fileToUpload = files.item(0)
+      console.log(this.fileToUpload)
+      let reader: FileReader = new FileReader()
+      reader.onload = (e) => {
+        console.log(reader.result);
+        this.fileString = reader.result;
+        console.log(this.fileString)
+        this.allLinksRaw = this.allLinksRaw.concat(this.fileString)
+      };
+      reader.readAsText(this.fileToUpload)
+
+    // TODO:
+      // Use File Reader (or something else or nothing) to parse the File for links
+      // Write an algorithm to extract links from parsed File
+      // Populate the table with the bookmarked links
+      // Display an error if user tries to import duplicate links
+      // Enable importing from a CSV, excel, etc.
+    }
   }
 }
