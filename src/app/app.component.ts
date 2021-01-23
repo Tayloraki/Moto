@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core'
+import { parse } from 'papaparse'
+import { flatten } from 'underscore'
 
 @Component({
   selector: 'app-root',
@@ -11,12 +13,16 @@ export class AppComponent implements OnInit {
     'https://www.seriouseats.com/recipes/2021/01/banh-trang-nuong-grilled-vietnamese-rice-paper.html',
     'https://www.seriouseats.com/recipes/2021/01/fried-plantain-chips.html',
   ]
+
   links: string[] = []
-  allLinksRaw = ''
   linksTextInput: string = ''
+  uploadedFiles: any
+
+  // error booleans
   noLinks: boolean = false
-  fileToUpload
-  fileString: string = ''
+  duplicateLinks: boolean = false
+
+  spreadsheetMimes: string[] = ['application/vnd.ms-excel','text/plain','text/csv','text/tsv']
 
   constructor() {
   }
@@ -24,21 +30,28 @@ export class AppComponent implements OnInit {
   ngOnInit(): void { }
 
   listLinks() {
-    console.log(this.linksTextInput)
-    console.log(this.allLinksRaw)
-    console.log(typeof this.links)
-    this.allLinksRaw = this.allLinksRaw.concat(this.linksTextInput)
-    // this.linksInput = "https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html, https://www.seriouseats.com/recipes/2021/01/banh-trang-nuong-grilled-vietnamese-rice-paper.html,  https://www.seriouseats.com/recipes/2021/01/fried-plantain-chips.html"
-    let splitLinks = this.checkIfUrl(this.allLinksRaw)
-    console.log(splitLinks)
-    
-    if (splitLinks) {
-      splitLinks.forEach(function(item: string, index: number, links: string[]) { links[index] = item.replace(/\s/g, '') });
-      console.log(splitLinks)
-      this.addToLinks(splitLinks)
-    } else {
-      console.log("no links")
+    this.noLinks, this.duplicateLinks = false
+
+    if (this.linksTextInput) {
+      let inputLinks = this.splitLinks(this.linksTextInput)
+      this.addToLinks(inputLinks)
+    }
+    if (this.uploadedFiles) {
+      this.addToLinks(this.uploadedFiles)
+    }
+
+    if (this.links.length < 1) {
       this.noLinks = true
+    }
+  }
+
+  splitLinks(rawLinks: string) {
+    let splitLinks = this.checkIfUrl(rawLinks)
+    if (splitLinks) {
+      // splitLinks.forEach(function(item: string, index: number, links: string[]) { links[index] = item.replace(/\s/g, '') });
+      return splitLinks
+    } else {
+      return ['']
     }
   }
 
@@ -53,39 +66,51 @@ export class AppComponent implements OnInit {
   }
 
   addToLinks(links: string[]) {
-    this.links = this.arrayNoRepeats(this.links.concat(links))
+    this.links = this.arrayNoRepeats(this.links.concat(links)).filter(l => { return l })
   }
 
   arrayNoRepeats(array: string[]) {
     let uniqueArray = array.concat()
-    for(let i=0; i<uniqueArray.length; ++i) {
-        for(var j=i+1; j<uniqueArray.length; ++j) {
-            if(uniqueArray[i] === uniqueArray[j])
-            uniqueArray.splice(j--, 1)
+    for (let i = 0; i < uniqueArray.length; ++i) {
+        for (let j= i+ 1; j < uniqueArray.length; ++j) {
+            if (uniqueArray[i] === uniqueArray[j]) {
+              uniqueArray.splice(j--, 1)
+              this.duplicateLinks = true
+            }
         }
     }
     return uniqueArray
   }
 
-  handleFileInput(files: FileList) {
+  handleFileInput(e: any) {
+    let files = e.target.files
     if (files.item(0)) {
-      this.fileToUpload = files.item(0)
-      console.log(this.fileToUpload)
-      let reader: FileReader = new FileReader()
-      reader.onload = (e) => {
-        console.log(reader.result);
-        this.fileString = reader.result;
-        console.log(this.fileString)
-        this.allLinksRaw = this.allLinksRaw.concat(this.fileString)
-      };
-      reader.readAsText(this.fileToUpload)
+      let fileToUpload = files.item(0)
+      if (this.spreadsheetMimes.includes(fileToUpload.type)) {
+        parse(fileToUpload, {
+          complete: res => {
+            console.log(res)
+            this.uploadedFiles = flatten(res.data) || ['']
+          },
+          error: err => {
+            console.log(err)
+          }
+        })
+      } else {
+        let reader: FileReader = new FileReader()
+        reader.onload = (e) => {
+          let fileString: any = reader.result
+          this.uploadedFiles = this.splitLinks(fileString) || ['']
 
+        }
+        reader.readAsText(fileToUpload)
+      }
     // TODO:
-      // Use File Reader (or something else or nothing) to parse the File for links
-      // Write an algorithm to extract links from parsed File
-      // Populate the table with the bookmarked links
-      // Display an error if user tries to import duplicate links
-      // Enable importing from a CSV, excel, etc.
+      // Use File Reader (or something else or nothing) to parse the File for links CHECK
+      // Write an algorithm to extract links from parsed File CHECK
+      // Populate the table with the bookmarked links CHECK
+      // Display an error if user tries to import duplicate links CHECK
+      // Enable importing from a CSV, excel, etc. CHECK
     }
   }
 }

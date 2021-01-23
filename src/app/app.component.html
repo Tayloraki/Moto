@@ -7,13 +7,18 @@
     <textarea id="text-links" placeholder="Please paste your recipe links here" [(ngModel)]="linksTextInput">
     </textarea>
     <div>
-      <label for="file-upload">Please upload your bookmarked recipes</label>
-      <input type="file" id="file-upload" name="file-upload" (change)="handleFileInput($event.target.files)">
+      <label for="file-upload">Please upload recipes either as Exported Bookmarks (HTML) or within a CSV</label>
+      <input type="file" id="file-upload" name="file-upload" (change)="handleFileInput($event)">
     </div>
   </div>
   <div class="error-container" *ngIf="noLinks">
     <div>
       Links were not valid. Please try again.
+    </div>
+  </div>
+  <div class="error-container" *ngIf="duplicateLinks">
+    <div>
+      Some links were duplicates and were not imported.
     </div>
   </div>
   <div class="button-container">
