@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, OnInit, OnDestroy } from '@angular/core'
+import { DataService } from './core/services/data-service.service'
+import { Subscription } from 'rxjs'
 import { parse } from 'papaparse'
 import { flatten } from 'underscore'
 
@@ -7,7 +9,7 @@ import { flatten } from 'underscore'
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   fake_links: string[] = [
     'https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html',
     'https://www.seriouseats.com/recipes/2021/01/banh-trang-nuong-grilled-vietnamese-rice-paper.html',
@@ -24,11 +26,28 @@ export class AppComponent implements OnInit {
 
   spreadsheetMimes: string[] = ['application/vnd.ms-excel','text/plain','text/csv','text/tsv']
 
-  constructor() {
+  recipeScraperSubscription: Subscription
+
+  constructor(private dataService: DataService) {
   }
 
   ngOnInit(): void {
     // this.links = this.fake_links
+    this.recipeScraperSubscription = this.dataService.getScrapedRecipe('https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html').subscribe(
+      res => {
+        console.log(res)
+        this.recipeScraperSubscription.unsubscribe()
+      }, err => {
+        console.log(err)
+        this.recipeScraperSubscription.unsubscribe()
+      }
+    )
+  }
+
+  ngOnDestroy(): void {
+    if (this.recipeScraperSubscription) {
+      this.recipeScraperSubscription.unsubscribe()
+    }
   }
 
   listLinks() {

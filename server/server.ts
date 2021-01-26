@@ -10,7 +10,7 @@ app.get('/', (req: any, res: any) => {
     res.send({ hello: 'world' })
 })
 
-app.get('/recipe/*', (req: any, res: any) => {
+app.get('/api/recipe/*', (req: any, res: any) => {
   let recipeUrl = req.params[0]
   recipeScraper(recipeUrl).then(recipe => {
     res.send({ value: recipe })
