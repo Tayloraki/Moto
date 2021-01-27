@@ -36,16 +36,20 @@
   <div id="links-container" *ngIf="links.length"> <!-- *ngIf="links.length" -->
 
     <table id="links-table">
-      <tr>
-        <thead>
-          <th>recipe links</th>
-          <th>ingredients</th>
-        </thead>
-      </tr>
+      <thead>
+        <tr>
+          <th class="name">recipe links</th>
+          <th class="ingredients">ingredients</th>
+        </tr>
+      </thead>
       <tbody>
         <tr *ngFor="let recipe of recipes">
-          <td><a href="recipe.link">{{ recipe.link }}</a></td>
-          <td>{{recipe.data.ingredients}}</td>
+          <td class="name"><a href="recipe.link">{{ recipe.data.name || recipe.link }}</a></td>
+          <td class="ingredients">
+            <dl *ngFor="let ingredient of recipe.data.ingredients">
+              <dt>{{ingredient}}</dt>
+            </dl>
+          </td>
         </tr>
       </tbody>
     </table>

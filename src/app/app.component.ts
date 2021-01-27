@@ -35,7 +35,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   // ngOnInit(): void {
-  //   // this.links = this.fake_links
+    // this.links = this.fake_links
   //   this.recipeScraperSubscription = this.dataService.getScrapedRecipe('https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html').subscribe(
   //     res => {
   //       console.log(res)
@@ -162,7 +162,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
         reader.readAsText(fileToUpload)
       }
-    
+
     }
   }
 }

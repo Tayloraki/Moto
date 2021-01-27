@@ -119,24 +119,50 @@ header {
     #links-table {
         padding: 2vw;
         border: 2.5px solid white;
+        width: 100%;
+        min-width: 100%;
+        max-width: 100%;
+
+        .name {
+          width: 25%;
+          min-width: 25%;
+          max-width: 25%;
+        }
+        .ingredient {
+          width: 75%;
+          min-width: 75%;
+          max-width: 75%;
+        }
+
+        thead {
+          width: 100%;
+          min-width: 100%;
+          max-width: 100%;
+        }
 
         th {
           background-color: $orange;
-          background: linear-gradient(135deg, $off-orange 25%, $orange 25%);
           padding: .5rem;
-          border-top-left-radius: 10px;
-          border-top-right-radius: 10px;
           font-size: 2rem;
+
+          &:first-child {
+            background: linear-gradient(135deg, $off-orange 25%, $orange 25%);
+            border-top-left-radius: 10px;
+          }
+          &:last-child {
+            border-top-right-radius: 10px;
+          }
         }
 
         td {
           background-color: white;
-          font-size: 1.5rem;
+          font-size: 1rem;
           padding: 1vh 1vw;
           color: $blue;
 
           a {
             color: $blue;
+            font-weight: 600;
           }
         }
 
