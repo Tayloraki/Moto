@@ -28,13 +28,29 @@
       </div>
     </div>
     <div class="button-container">
-      <button (click)="listLinks()" [disabled]="!linksTextInput && !uploadedFiles">
+      <button (click)="activateButton()" [disabled]="!linksTextInput && !uploadedFiles">
         convert
       </button>
     </div>
   </div>
-  <div id="links-container" *ngIf="links.length">
+  <div id="links-container" *ngIf="links.length"> <!-- *ngIf="links.length" -->
+
     <table id="links-table">
+      <tr>
+        <thead>
+          <th>recipe links</th>
+          <th>ingredients</th>
+        </thead>
+      </tr>
+      <tbody>
+        <tr *ngFor="let recipe of recipes">
+          <td><a href="recipe.link">{{ recipe.link }}</a></td>
+          <td>{{recipe.data.ingredients}}</td>
+        </tr>
+      </tbody>
+    </table>
+
+<!--
       <thead>
         <th>recipe links</th>
       </thead>
@@ -45,6 +61,19 @@
           </td>
         </tr>
       </tbody>
+      <thead>
+        <th>recipes</th>
+      </thead>
+      <tbody>
+        <tr *ngFor="let recipe of recipes">
+          <td>
+            {{ recipe }}
+          </td>
+        </tr>
+      </tbody>
     </table>
+-->
+
   </div>
+
 </div>

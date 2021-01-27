@@ -15,9 +15,9 @@ export class AppComponent implements OnInit, OnDestroy {
     'https://www.seriouseats.com/recipes/2021/01/banh-trang-nuong-grilled-vietnamese-rice-paper.html',
     'https://www.seriouseats.com/recipes/2021/01/fried-plantain-chips.html',
   ]
-
   links: string[] = []
   linksTextInput: string = ''
+  recipes: any[] = [] // [ { link: string, data: object }]
   uploadedFiles: any
 
   // error booleans
@@ -26,28 +26,36 @@ export class AppComponent implements OnInit, OnDestroy {
 
   spreadsheetMimes: string[] = ['application/vnd.ms-excel','text/plain','text/csv','text/tsv']
 
-  recipeScraperSubscription: Subscription
+  recipeScraperSubscription: Subscription = new Subscription()
 
   constructor(private dataService: DataService) {
   }
 
-  ngOnInit(): void {
-    // this.links = this.fake_links
-    this.recipeScraperSubscription = this.dataService.getScrapedRecipe('https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html').subscribe(
-      res => {
-        console.log(res)
-        this.recipeScraperSubscription.unsubscribe()
-      }, err => {
-        console.log(err)
-        this.recipeScraperSubscription.unsubscribe()
-      }
-    )
+  ngOnInit() {
   }
+
+  // ngOnInit(): void {
+  //   // this.links = this.fake_links
+  //   this.recipeScraperSubscription = this.dataService.getScrapedRecipe('https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html').subscribe(
+  //     res => {
+  //       console.log(res)
+  //       this.recipeScraperSubscription.unsubscribe()
+  //     }, err => {
+  //       console.log(err)
+  //       this.recipeScraperSubscription.unsubscribe()
+  //     }
+  //   )
+  // }
 
   ngOnDestroy(): void {
     if (this.recipeScraperSubscription) {
       this.recipeScraperSubscription.unsubscribe()
     }
+  }
+
+  activateButton() {
+    this.listLinks()
+    this.listRecipes()
   }
 
   listLinks() {
@@ -65,6 +73,33 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.links.length < 1) {
       this.noLinks = true
     }
+  }
+
+  listRecipes() {
+    for (let link of this.links) {
+      if (link) {
+        let recipe = {
+          'link': link,
+          'data': {}
+        }
+        this.recipes.push(recipe)
+        this.getRecipe(recipe)
+      }
+    }
+
+  }
+
+  getRecipe(recipe: any): void {
+    this.recipeScraperSubscription = this.dataService.getScrapedRecipe(recipe.link).subscribe(
+      res => {
+        console.log(res)
+        if ((res as any).value) recipe.data = (res as any).value
+        this.recipeScraperSubscription.unsubscribe()
+      }, err => {
+        console.log(err)
+        this.recipeScraperSubscription.unsubscribe()
+      }
+    )
   }
 
   splitLinks(rawLinks: string) {
@@ -127,12 +162,7 @@ export class AppComponent implements OnInit, OnDestroy {
         }
         reader.readAsText(fileToUpload)
       }
-    // TODO:
-      // Use File Reader (or something else or nothing) to parse the File for links CHECK
-      // Write an algorithm to extract links from parsed File CHECK
-      // Populate the table with the bookmarked links CHECK
-      // Display an error if user tries to import duplicate links CHECK
-      // Enable importing from a CSV, excel, etc. CHECK
+    
     }
   }
 }
