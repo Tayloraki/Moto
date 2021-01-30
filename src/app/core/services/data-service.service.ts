@@ -10,4 +10,8 @@ export class DataService {
   getScrapedRecipe(recipeUrl: string) {
     return this.http.get('/api/recipe/' + recipeUrl)
   }
+
+  getGoogleDoc(docID: string) {
+    return this.http.get('google-api/doc/' + docID)
+  }
 }

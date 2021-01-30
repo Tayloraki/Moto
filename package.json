@@ -21,6 +21,7 @@
     "@angular/router": "~11.0.6",
     "@types/papaparse": "^5.2.5",
     "@types/underscore": "^1.10.24",
+    "googleapis": "^67.0.0",
     "papaparse": "^5.3.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",

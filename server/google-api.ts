@@ -1,28 +1,6 @@
-const express = require('express')
-const app = express()
-const recipeScraper = require("recipe-scraper")
-
-// Google Doc API imports
 const fs = require('fs')
 const readline = require('readline')
-const google = require('googleapis')
-
-app.listen(8000, () => {
-  console.log('Server started!')
-})
-
-app.get('/', (req: any, res: any) => {
-    res.send({ hello: 'world' })
-})
-
-app.get('/api/recipe/*', (req: any, res: any) => {
-  let recipeUrl = req.params[0]
-  recipeScraper(recipeUrl).then(recipe => {
-    res.send({ value: recipe })
-  }).catch(error => {
-    res.send({ error: error })
-  })
-})
+const {google} = require('googleapis')
 
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/documents.readonly']
@@ -31,17 +9,12 @@ const SCOPES = ['https://www.googleapis.com/auth/documents.readonly']
 // time.
 const TOKEN_PATH = 'token.json'
 
-function callGoogleDocsAPI(callback) {
-  // Load client secrets from a local file.
-  fs.readFile('credentials.json', (err, content) => {
-    if (err) return console.log('Error loading client secret file:', err)
-    // Authorize a client with credentials, then call the Google Docs API.
-    // authorize(JSON.parse(content), getDoc)
-    authorize(JSON.parse(content), callback)
-    // console.log(callback)
-  })
-  // return 'yo'
-}
+// Load client secrets from a local file.
+fs.readFile('credentials.json', (err, content) => {
+  if (err) return console.log('Error loading client secret file:', err)
+  // Authorize a client with credentials, then call the Google Docs API.
+  authorize(JSON.parse(content), printDocTitle)
+})
 
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
@@ -105,44 +78,8 @@ function printDocTitle(auth) {
   }, (err, res) => {
     if (err) return console.log('The API returned an error: ' + err)
     console.log(`The title of the document is: ${res.data.title}`)
-    let printedTitle = res.data.title
-    return printedTitle
+    console.log(res.data.body.content[2].table.tableRows[0].tableCells[1].content[0].paragraph.elements[0].textRun.content)
+    // console.log(res.data.body.content[2].table.tableRows[20].tableCells[1].content[0].paragraph.elements[0].textRun.content)
+    // console.log(res.data.body.content[2].table.tableRows[20].tableCells[1].content[0].paragraph.elements[0].textRun.textStyle.link.url)
   })
 }
-
-
-// api.get(/endpoint/doc) { if (doc) let data = getDoc(doc) res.send(data)}
-// getDoc(data) ()
-
-app.get('/google-api/doc/:docID', async (req: any, res: any) => {
-  try {
-    let requestDocID = req.params['docID']
-    // requestDocID = '11lAVjS-iGrVljGBgojHmZBuL7z3rqeqbBtg8rNp3LKo'
-    // console.log('callAPI: ' + callGoogleDocsAPI(printDocTitle))
-    let docData = callGoogleDocsAPI(printDocTitle)
-    console.log('docData')
-    console.log(docData)
-    res.send({ googleDoc: requestDocID ,  docName: docData })
-    console.log('app.get res: ' + res)
-  } catch(error) {
-    console.log(error)
-  }
-    
-})
-
-// function getDoc(auth, requestDocID: string) {
-function getDoc(auth) {
-  const docs = google.docs({version: 'v1', auth})
-  docs.documents.get({
-    // documentId: requestDocID,
-    documentId: '11lAVjS-iGrVljGBgojHmZBuL7z3rqeqbBtg8rNp3LKo'
-  }, (err, res) => {
-    if (err) return console.log('The API returned an error: ' + err)
-    // return (res.data.body.content[2].table)
-  })
-}
-
-    // TODO: figure out how to make res wait for the async request
-    // TODO: figure out how to pass in requestDocID above in the callGoogleDocsAPI() call
-
-    // console.log(res.data.body.content[2].table.tableRows[0].tableCells[1].content[0].paragraph.elements[0].textRun.content)

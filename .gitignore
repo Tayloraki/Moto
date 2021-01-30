@@ -4,12 +4,16 @@
 /dist
 /tmp
 /out-tsc
+/server/token.json
 # Only exists if Bazel was run
 /bazel-out
 
 # dependencies
 /node_modules
 /server/node_modules
+
+# secrets
+/server/credentials.json
 
 # profiling files
 chrome-profiler-events*.json

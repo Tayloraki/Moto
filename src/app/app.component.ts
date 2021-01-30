@@ -28,6 +28,8 @@ export class AppComponent implements OnInit, OnDestroy {
 
   recipeScraperSubscription: Subscription = new Subscription()
 
+  // googleDocSubscription: Subscription = new Subscription()
+
   constructor(private dataService: DataService) {
   }
 
@@ -86,7 +88,6 @@ export class AppComponent implements OnInit, OnDestroy {
         this.getRecipe(recipe)
       }
     }
-
   }
 
   getRecipe(recipe: any): void {
@@ -100,6 +101,46 @@ export class AppComponent implements OnInit, OnDestroy {
         this.recipeScraperSubscription.unsubscribe()
       }
     )
+  }
+
+  // getGoogleDoc() {
+  //   this.googleDocSubscription = this.dataService.getGoogleDoc(googleDocLink).subscribe(
+  //     res => {
+  //       console.log(res)
+  //       if ((res as any).value) googleDocTable = (res as any)
+  //       this.googleDocSubscription.unsubscribe()
+  //     }, err => {
+  //       console.log(err)
+  //       this.googleDocSubscription.unsubscribe()
+  //     }
+  //   )
+  // }
+
+  handleFileInput(e: any) {
+    let files = e.target.files
+    if (files.item(0)) {
+      let fileToUpload = files.item(0)
+      if (this.spreadsheetMimes.includes(fileToUpload.type)) {
+        parse(fileToUpload, {
+          complete: res => {
+            console.log(res)
+            this.uploadedFiles = flatten(res.data) || ['']
+          },
+          error: err => {
+            console.log(err)
+          }
+        })
+      } else {
+        let reader: FileReader = new FileReader()
+        reader.onload = (e) => {
+          let fileString: any = reader.result
+          this.uploadedFiles = this.splitLinks(fileString) || ['']
+
+        }
+        reader.readAsText(fileToUpload)
+      }
+
+    }
   }
 
   splitLinks(rawLinks: string) {
@@ -137,32 +178,5 @@ export class AppComponent implements OnInit, OnDestroy {
         }
     }
     return uniqueArray
-  }
-
-  handleFileInput(e: any) {
-    let files = e.target.files
-    if (files.item(0)) {
-      let fileToUpload = files.item(0)
-      if (this.spreadsheetMimes.includes(fileToUpload.type)) {
-        parse(fileToUpload, {
-          complete: res => {
-            console.log(res)
-            this.uploadedFiles = flatten(res.data) || ['']
-          },
-          error: err => {
-            console.log(err)
-          }
-        })
-      } else {
-        let reader: FileReader = new FileReader()
-        reader.onload = (e) => {
-          let fileString: any = reader.result
-          this.uploadedFiles = this.splitLinks(fileString) || ['']
-
-        }
-        reader.readAsText(fileToUpload)
-      }
-
-    }
   }
 }
