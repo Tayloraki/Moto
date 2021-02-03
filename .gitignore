@@ -12,7 +12,9 @@
 /server/node_modules
 
 # secrets
+/server/token.json
 /server/credentials.json
+/src/config/config.ts
 
 # profiling files
 chrome-profiler-events*.json
@@ -48,3 +50,9 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+server/package 2.json
+server/package-lock 2.json
+.gitignore
+.gitignore
+server/tsconfig 2.json
+server/server 2.ts

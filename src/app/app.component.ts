@@ -15,6 +15,8 @@ export class AppComponent implements OnInit, OnDestroy {
     'https://www.seriouseats.com/recipes/2021/01/banh-trang-nuong-grilled-vietnamese-rice-paper.html',
     'https://www.seriouseats.com/recipes/2021/01/fried-plantain-chips.html',
   ]
+  fakeFoodId: string = '513fc9e73fe3ffd40300109f'
+  fakeIngredientsNlp: string = 'for breakfast i ate 2 eggs, bacon, and french toast'
   links: string[] = []
   linksTextInput: string = ''
   recipes: any[] = [] // [ { link: string, data: object }]
@@ -27,25 +29,35 @@ export class AppComponent implements OnInit, OnDestroy {
   spreadsheetMimes: string[] = ['application/vnd.ms-excel','text/plain','text/csv','text/tsv']
 
   recipeScraperSubscription: Subscription = new Subscription()
+  nutritionixFoodByIdSubscription: Subscription = new Subscription()
+  nutritionixNlpSubscription: Subscription = new Subscription()
+
 
   constructor(private dataService: DataService) {
   }
 
   ngOnInit() {
-  }
+  
 
   // ngOnInit(): void {
-    // this.links = this.fake_links
-  //   this.recipeScraperSubscription = this.dataService.getScrapedRecipe('https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html').subscribe(
-  //     res => {
-  //       console.log(res)
-  //       this.recipeScraperSubscription.unsubscribe()
-  //     }, err => {
-  //       console.log(err)
-  //       this.recipeScraperSubscription.unsubscribe()
-  //     }
-  //   )
-  // }
+    this.links = this.fake_links
+    let foodId = this.fakeFoodId
+    this.nutritionixFoodByIdSubscription = this.dataService.getFoodById(foodId).subscribe(
+      res => {
+        console.log(res)
+      }, err => {
+        console.log(err)
+      }
+    )
+    let ingredientsNlp = this.fakeIngredientsNlp
+    this.nutritionixNlpSubscription = this.dataService.getFoodByNlp(ingredientsNlp).subscribe(
+      res => {
+        console.log(res)
+      }, err => {
+        console.log(err)
+      }
+    )
+  }
 
   ngOnDestroy(): void {
     if (this.recipeScraperSubscription) {
@@ -164,5 +176,9 @@ export class AppComponent implements OnInit, OnDestroy {
       }
 
     }
+  }
+
+  getFoodById() {
+
   }
 }
