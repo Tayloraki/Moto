@@ -33,7 +33,7 @@
       </button>
     </div>
   </div>
-  <div id="links-container" *ngIf="links.length"> <!-- *ngIf="links.length" -->
+  <div id="links-container" *ngIf="recipes.length"> 
 
     <table id="links-table">
       <thead>
@@ -46,38 +46,15 @@
         <tr *ngFor="let recipe of recipes">
           <td class="name"><a href="recipe.link">{{ recipe.data.name || recipe.link }}</a></td>
           <td class="ingredients">
-            <dl *ngFor="let ingredient of recipe.data.ingredients">
-              <dt>{{ingredient}}</dt>
-            </dl>
+            <div *ngIf="recipe.status === 'error'">Unable to parse this recipe at this time. Please try again later.</div>
+            <span *ngIf="recipe.status === 'complete'">
+              <dl *ngFor="let ingredient of recipe.data.ingredients">
+                <dt>{{ingredient}}</dt>
+              </dl>
+            </span>
           </td>
         </tr>
       </tbody>
     </table>
-
-<!--
-      <thead>
-        <th>recipe links</th>
-      </thead>
-      <tbody>
-        <tr *ngFor="let link of links">
-          <td>
-            <a href="{{ link }}">{{ link }}</a>
-          </td>
-        </tr>
-      </tbody>
-      <thead>
-        <th>recipes</th>
-      </thead>
-      <tbody>
-        <tr *ngFor="let recipe of recipes">
-          <td>
-            {{ recipe }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
--->
-
   </div>
-
 </div>
