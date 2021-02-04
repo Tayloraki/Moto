@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core'
 import { DataService } from './core/services/data-service.service'
 import { Subscription } from 'rxjs'
 import { parse } from 'papaparse'
-import { flatten } from 'underscore'
+import { flatten, uniq } from 'underscore'
 
 @Component({
   selector: 'app-root',
@@ -80,23 +80,36 @@ export class AppComponent implements OnInit, OnDestroy {
       if (link) {
         let recipe = {
           'link': link,
-          'data': {}
+          'data': {},
+          'status': 'loading'
         }
         this.recipes.push(recipe)
         this.getRecipe(recipe)
       }
     }
-
+    this.links = []
+    let uniqueRecipeList = uniq(this.recipes, function(item, key, link) { 
+      return item.link
+    })
+    this.duplicateLinks = (uniqueRecipeList.length < this.recipes.length)
+    this.recipes = uniqueRecipeList
+    console.log(this.recipes)
   }
 
   getRecipe(recipe: any): void {
     this.recipeScraperSubscription = this.dataService.getScrapedRecipe(recipe.link).subscribe(
       res => {
         console.log(res)
-        if ((res as any).value) recipe.data = (res as any).value
+        if ((res as any).value) {
+          recipe.data = (res as any).value
+          recipe.status = 'complete'
+        } else {
+          recipe.status = 'error'
+        }
         this.recipeScraperSubscription.unsubscribe()
       }, err => {
         console.log(err)
+        recipe.status = 'error'
         this.recipeScraperSubscription.unsubscribe()
       }
     )
@@ -123,21 +136,8 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   addToLinks(links: string[]) {
-    this.links = this.arrayNoRepeats(this.links.concat(links)).filter(l => { return l })
-  }
-
-  arrayNoRepeats(array: string[]) {
-    let uniqueArray = array.concat()
-    for (let i = 0; i < uniqueArray.length; ++i) {
-        for (let j= i+ 1; j < uniqueArray.length; ++j) {
-            if (uniqueArray[i] === uniqueArray[j]) {
-              uniqueArray.splice(j--, 1)
-              this.duplicateLinks = true
-            }
-        }
-    }
-    return uniqueArray
-  }
+    this.links = this.links.concat(links).filter(l => { return l })
+   }
 
   handleFileInput(e: any) {
     let files = e.target.files
