@@ -1,3 +1,5 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet">
 <header class="textured-background">
   <span>
     <span class="title">MOTO</span>
@@ -28,30 +30,64 @@
       </div>
     </div>
     <div class="button-container">
-      <button (click)="activateButton()" [disabled]="!linksTextInput && !uploadedFiles">
+      <button *ngIf="anyIncomplete()" (click)="retryMany()" style="margin-right: 1vw;">
+        retry incomplete
+      </button>
+      <button (click)="convertButton()" [disabled]="!linksTextInput && !uploadedFiles">
         convert
       </button>
     </div>
   </div>
   <div id="links-container" *ngIf="recipes.length"> 
-
     <table id="links-table">
       <thead>
         <tr>
+          <th class="status">status</th>
           <th class="name">recipe links</th>
           <th class="ingredients">ingredients</th>
         </tr>
       </thead>
       <tbody>
         <tr *ngFor="let recipe of recipes">
-          <td class="name"><a href="recipe.link">{{ recipe.data.name || recipe.link }}</a></td>
+          <td class="status">
+            <div *ngIf="recipe.status === 'error'">
+              <span class="material-icons">
+                highlight_off
+              </span>
+            </div>
+            <div *ngIf="recipe.status === 'loading'">
+              <span class="material-icons">
+                pending
+              </span>
+            </div>
+            <div *ngIf="recipe.status === 'complete'">
+              <span class="material-icons">
+                check_circle
+              </span>
+            </div>
+          </td>
+          <td class="name">
+            <div>
+              <a href="recipe.link">{{ recipe.data.name || recipe.link }}</a>
+            </div>
+          </td>
           <td class="ingredients">
-            <div *ngIf="recipe.status === 'error'">Unable to parse this recipe at this time. Please try again later.</div>
-            <span *ngIf="recipe.status === 'complete'">
+            <div *ngIf="recipe.status === 'error'" class="try-again">
+              Unable to parse this recipe at this time. Please check link and try again later. Try again?
+              <span class="material-icons" (click)="retry(recipe)">
+                refresh
+              </span>
+            </div>
+            <div *ngIf="recipe.status === 'loading'" class="try-again">
+              loading... or try again<span class="material-icons" (click)="retry(recipe)">
+                refresh
+              </span>
+            </div>
+            <div *ngIf="recipe.status === 'complete'">
               <dl *ngFor="let ingredient of recipe.data.ingredients">
                 <dt>{{ingredient}}</dt>
               </dl>
-            </span>
+            </div>
           </td>
         </tr>
       </tbody>

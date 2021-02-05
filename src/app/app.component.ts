@@ -2,7 +2,8 @@ import { Component, OnInit, OnDestroy } from '@angular/core'
 import { DataService } from './core/services/data-service.service'
 import { Subscription } from 'rxjs'
 import { parse } from 'papaparse'
-import { flatten, uniq } from 'underscore'
+import { flatten, some, uniq } from 'underscore'
+import * as _ from 'underscore'
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ export class AppComponent implements OnInit, OnDestroy {
     'https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html',
     'https://www.seriouseats.com/recipes/2021/01/banh-trang-nuong-grilled-vietnamese-rice-paper.html',
     'https://www.seriouseats.com/recipes/2021/01/fried-plantain-chips.html',
+    'https://www.seriouseats.com/recipes/2017/02/detroit-style-pizza-recipe.html',
   ]
   links: string[] = []
   linksTextInput: string = ''
@@ -34,31 +36,31 @@ export class AppComponent implements OnInit, OnDestroy {
   ngOnInit() {
   }
 
-  // ngOnInit(): void {
-    // this.links = this.fake_links
-  //   this.recipeScraperSubscription = this.dataService.getScrapedRecipe('https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html').subscribe(
-  //     res => {
-  //       console.log(res)
-  //       this.recipeScraperSubscription.unsubscribe()
-  //     }, err => {
-  //       console.log(err)
-  //       this.recipeScraperSubscription.unsubscribe()
-  //     }
-  //   )
-  // }
-
   ngOnDestroy(): void {
     if (this.recipeScraperSubscription) {
       this.recipeScraperSubscription.unsubscribe()
     }
   }
 
-  activateButton() {
+  convertButton() {
     this.listLinks()
     this.listRecipes()
   }
 
-  listLinks() {
+  retry(recipe: any): void { // retry scraping a recipe
+    recipe.status = 'loading'
+    this.getRecipe(recipe)
+  }
+
+  retryMany(): void { // search recipes for any incomplete/errors and retry scraping their recipes
+    for (let recipe of this.recipes) {
+      if (recipe.status !== 'complete') {
+        this.retry(recipe)
+      }
+    }
+  }
+
+  listLinks() { // populates this.links with links from text and file inputs
     this.noLinks = false
     this.duplicateLinks = false
 
@@ -75,31 +77,28 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  listRecipes() {
+  listRecipes(): void { // iterate over links, checking if they're already in recipes, and if not then getting the recipe for it
     for (let link of this.links) {
       if (link) {
-        let recipe = {
-          'link': link,
-          'data': {},
-          'status': 'loading'
+        if (this.recipes.some(r => r.link === link)) {
+          this.duplicateLinks = true
         }
-        this.recipes.push(recipe)
-        this.getRecipe(recipe)
+        else {
+          let recipe = {
+            'link': link,
+            'data': {},
+            'status': 'loading'
+          }
+          this.recipes.push(recipe)
+          this.getRecipe(recipe)
+        }
       }
     }
-    this.links = []
-    let uniqueRecipeList = uniq(this.recipes, function(item, key, link) { 
-      return item.link
-    })
-    this.duplicateLinks = (uniqueRecipeList.length < this.recipes.length)
-    this.recipes = uniqueRecipeList
-    console.log(this.recipes)
   }
 
-  getRecipe(recipe: any): void {
+  getRecipe(recipe: any): void { // scrape recipe for a link
     this.recipeScraperSubscription = this.dataService.getScrapedRecipe(recipe.link).subscribe(
       res => {
-        console.log(res)
         if ((res as any).value) {
           recipe.data = (res as any).value
           recipe.status = 'complete'
@@ -139,6 +138,10 @@ export class AppComponent implements OnInit, OnDestroy {
     this.links = this.links.concat(links).filter(l => { return l })
    }
 
+  anyIncomplete(): boolean {
+    return this.recipes.length > 0 && this.recipes.some(r => r.status !== 'complete')
+  }
+
   handleFileInput(e: any) {
     let files = e.target.files
     if (files.item(0)) {
@@ -146,7 +149,6 @@ export class AppComponent implements OnInit, OnDestroy {
       if (this.spreadsheetMimes.includes(fileToUpload.type)) {
         parse(fileToUpload, {
           complete: res => {
-            console.log(res)
             this.uploadedFiles = flatten(res.data) || ['']
           },
           error: err => {
@@ -158,11 +160,9 @@ export class AppComponent implements OnInit, OnDestroy {
         reader.onload = (e) => {
           let fileString: any = reader.result
           this.uploadedFiles = this.splitLinks(fileString) || ['']
-
         }
         reader.readAsText(fileToUpload)
       }
-
     }
   }
 }
