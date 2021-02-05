@@ -86,23 +86,23 @@ header {
     display: flex;
     justify-content: flex-end;
     align-items: center;
+}
 
-    button {
-        background-color: $orange;
-        color: white;
-        font-size: 1.5rem;
-        padding: .5vh 2.75vw;
-        margin-top: 5vh;
-        cursor: pointer;
-        border: $gray 2.5px solid;
-        border-radius: 5px;
-        background: linear-gradient(135deg, $off-orange 25%, $orange 25%);
+button {
+  background-color: $orange;
+  color: white;
+  font-size: 1.5rem;
+  padding: .5vh 2.75vw;
+  margin-top: 5vh;
+  cursor: pointer;
+  border: $gray 2.5px solid;
+  border-radius: 5px;
+  background: linear-gradient(135deg, $off-orange 25%, $orange 25%);
 
-        &:disabled {
-          opacity: .75;
-          cursor: not-allowed;
-        }
-    }
+  &:disabled {
+    opacity: .75;
+    cursor: not-allowed;
+  }
 }
 
 #links-container {
@@ -123,15 +123,37 @@ header {
         min-width: 100%;
         max-width: 100%;
 
-        .name {
-          width: 25%;
-          min-width: 25%;
-          max-width: 25%;
+        .status {
+          width: 10%;
+          min-width: 10%;
+          max-width: 10%;
+          vertical-align: baseline;
+
+          div {
+            padding-top: .5rem;
+          }
         }
+
+        .name {
+          width: 20%;
+          min-width: 20%;
+          max-width: 20%;
+          vertical-align: baseline;
+        }
+
+        .try-again {
+          display: flex;
+          align-items: center;
+
+          .material-icons {
+            cursor: pointer;
+          }
+        }
+
         .ingredient {
-          width: 75%;
-          min-width: 75%;
-          max-width: 75%;
+          width: 70%;
+          min-width: 70%;
+          max-width: 70%;
         }
 
         thead {
