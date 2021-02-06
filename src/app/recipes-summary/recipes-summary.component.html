@@ -1,0 +1,94 @@
+<header class="textured-background">
+  <span>
+    <span class="title">MOTO</span>
+    <!-- <span class="subtitle">take apart your favorite recipes!</span> -->
+  </span>
+</header>
+<div id="moto-container">
+  <!-- <div>
+    Purpose: Enable individuals with personal recipe collections from various web sources to view ingredient list, recipe nutrition, recipe modification and general collection data trends in one place.
+  </div> -->
+  <div id="top-container">
+    <div id="input-container">
+      <textarea id="text-links" placeholder="Please paste your recipe links here" [(ngModel)]="linksTextInput">
+      </textarea>
+      <div id="file-container">
+        <label for="file-upload">{{'Please upload recipes either as Exported Bookmarks (HTML) or within a CSV'}}</label>
+        <input type="file" id="file-upload" name="file-upload" (change)="handleFileInput($event)">
+      </div>
+    </div>
+    <div class="error-container" *ngIf="noLinks">
+      <div>
+        Links were not valid. Please try again.
+      </div>
+    </div>
+    <div class="error-container" *ngIf="duplicateLinks">
+      <div>
+        Some links were duplicates and were not imported.
+      </div>
+    </div>
+    <div class="button-container">
+      <button *ngIf="anyIncomplete()" (click)="retryMany()" style="margin-right: 1vw;">
+        retry incomplete
+      </button>
+      <button (click)="convertButton()" [disabled]="!linksTextInput && !uploadedFiles">
+        convert
+      </button>
+    </div>
+  </div>
+  <div id="links-container" *ngIf="recipes.length">
+    <table id="links-table">
+      <thead>
+        <tr>
+          <th class="status">status</th>
+          <th class="name">recipe links</th>
+          <th class="ingredients">ingredients</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let recipe of recipes" (click)="openRecipeDetails(recipe)">
+          <td class="status">
+            <div *ngIf="recipe.status === 'error'">
+              <span class="material-icons">
+                highlight_off
+              </span>
+            </div>
+            <div *ngIf="recipe.status === 'loading'">
+              <span class="material-icons">
+                pending
+              </span>
+            </div>
+            <div *ngIf="recipe.status === 'complete'">
+              <span class="material-icons">
+                check_circle
+              </span>
+            </div>
+          </td>
+          <td class="name">
+            <div>
+              <a href="recipe.link">{{ recipe.data.name || recipe.link }}</a>
+            </div>
+          </td>
+          <td class="ingredients">
+            <div *ngIf="recipe.status === 'error'" class="try-again">
+              Unable to parse this recipe at this time. Please check link and try again later. Try again?
+              <span class="material-icons" (click)="retry(recipe)">
+                refresh
+              </span>
+            </div>
+            <div *ngIf="recipe.status === 'loading'" class="try-again">
+              loading... or try again<span class="material-icons" (click)="retry(recipe)">
+                refresh
+              </span>
+            </div>
+            <div *ngIf="recipe.status === 'complete'">
+              <dl *ngFor="let ingredient of recipe.data.ingredients">
+                <dt>{{ingredient}}</dt>
+              </dl>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
