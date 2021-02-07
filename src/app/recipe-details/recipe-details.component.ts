@@ -5,19 +5,21 @@ import { DataService } from '../core/services/data-service.service'
 @Component({
   selector: 'app-recipe-details',
   templateUrl: './recipe-details.component.html',
-  styleUrls: ['./recipe-details.component.scss']
+  styleUrls: ['./recipe-details.component.scss'],
 })
 export class RecipeDetailsComponent implements OnInit {
   title: string = 'nothing'
   recipeData: any = {}
 
-  constructor(private route: ActivatedRoute, private dataService: DataService) { }
+  constructor(
+    private route: ActivatedRoute,
+    private dataService: DataService
+  ) {}
 
   ngOnInit(): void {
     this.title = this.route.snapshot.params.title
 
     this.recipeData = this.dataService.getRecipe(this.title)
-    console.log(this.recipeData)
+    this.title = this.title.split('-').join(' ')
   }
-
 }

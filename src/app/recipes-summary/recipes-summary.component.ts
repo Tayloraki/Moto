@@ -8,7 +8,7 @@ import { flatten, some, uniq } from 'underscore'
 @Component({
   selector: 'app-recipes-summary',
   templateUrl: './recipes-summary.component.html',
-  styleUrls: ['./recipes-summary.component.scss']
+  styleUrls: ['./recipes-summary.component.scss'],
 })
 export class RecipesSummaryComponent implements OnInit, OnDestroy {
   fake_links: string[] = [
@@ -26,15 +26,18 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   noLinks: boolean = false
   duplicateLinks: boolean = false
 
-  spreadsheetMimes: string[] = ['application/vnd.ms-excel','text/plain','text/csv','text/tsv']
+  spreadsheetMimes: string[] = [
+    'application/vnd.ms-excel',
+    'text/plain',
+    'text/csv',
+    'text/tsv',
+  ]
 
   recipeScraperSubscription: Subscription = new Subscription()
 
-  constructor(private dataService: DataService, private router: Router) {
-  }
+  constructor(private dataService: DataService, private router: Router) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngOnDestroy(): void {
     if (this.recipeScraperSubscription) {
@@ -47,12 +50,14 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     this.listRecipes()
   }
 
-  retry(recipe: any): void { // retry scraping a recipe
+  retry(recipe: any): void {
+    // retry scraping a recipe
     recipe.status = 'loading'
     this.getRecipe(recipe)
   }
 
-  retryMany(): void { // search recipes for any incomplete/errors and retry scraping their recipes
+  retryMany(): void {
+    // search recipes for any incomplete/errors and retry scraping their recipes
     for (let recipe of this.recipes) {
       if (recipe.status !== 'complete') {
         this.retry(recipe)
@@ -60,7 +65,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
-  listLinks() { // populates this.links with links from text and file inputs
+  listLinks() {
+    // populates this.links with links from text and file inputs
     this.noLinks = false
     this.duplicateLinks = false
 
@@ -77,17 +83,17 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
-  listRecipes(): void { // iterate over links, checking if they're already in recipes, and if not then getting the recipe for it
+  listRecipes(): void {
+    // iterate over links, checking if they're already in recipes, and if not then getting the recipe for it
     for (let link of this.links) {
       if (link) {
-        if (this.recipes.some(r => r.link === link)) {
+        if (this.recipes.some((r) => r.link === link)) {
           this.duplicateLinks = true
-        }
-        else {
+        } else {
           let recipe = {
-            'link': link,
-            'data': {},
-            'status': 'loading'
+            link: link,
+            data: {},
+            status: 'loading',
           }
           this.recipes.push(recipe)
           this.getRecipe(recipe)
@@ -96,22 +102,26 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
-  getRecipe(recipe: any): void { // scrape recipe for a link
-    this.recipeScraperSubscription = this.dataService.getScrapedRecipe(recipe.link).subscribe(
-      res => {
-        if ((res as any).value) {
-          recipe.data = (res as any).value
-          recipe.status = 'complete'
-        } else {
+  getRecipe(recipe: any): void {
+    // scrape recipe for a link
+    this.recipeScraperSubscription = this.dataService
+      .getScrapedRecipe(recipe.link)
+      .subscribe(
+        (res) => {
+          if ((res as any).value) {
+            recipe.data = (res as any).value
+            recipe.status = 'complete'
+          } else {
+            recipe.status = 'error'
+          }
+          this.recipeScraperSubscription.unsubscribe()
+        },
+        (err) => {
+          console.log(err)
           recipe.status = 'error'
+          this.recipeScraperSubscription.unsubscribe()
         }
-        this.recipeScraperSubscription.unsubscribe()
-      }, err => {
-        console.log(err)
-        recipe.status = 'error'
-        this.recipeScraperSubscription.unsubscribe()
-      }
-    )
+      )
   }
 
   splitLinks(rawLinks: string) {
@@ -126,20 +136,25 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   checkIfUrl(str: string) {
     let geturl = new RegExp(
-      "((ftp|http|https|gopher|mailto|news|nntp|telnet|wais|file|prospero|aim|webcal):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))"
+      '((ftp|http|https|gopher|mailto|news|nntp|telnet|wais|file|prospero|aim|webcal):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))',
       // one below gets bothered by things before the https
       // "(^|[ \t\r\n])((ftp|http|https|gopher|mailto|news|nntp|telnet|wais|file|prospero|aim|webcal):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))"
-      ,"g"
-      );
+      'g'
+    )
     return str.match(geturl)
   }
 
   addToLinks(links: string[]) {
-    this.links = this.links.concat(links).filter(l => { return l })
-   }
+    this.links = this.links.concat(links).filter((l) => {
+      return l
+    })
+  }
 
   anyIncomplete(): boolean {
-    return this.recipes.length > 0 && this.recipes.some(r => r.status !== 'complete')
+    return (
+      this.recipes.length > 0 &&
+      this.recipes.some((r) => r.status !== 'complete')
+    )
   }
 
   handleFileInput(e: any) {
@@ -148,12 +163,12 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       let fileToUpload = files.item(0)
       if (this.spreadsheetMimes.includes(fileToUpload.type)) {
         parse(fileToUpload, {
-          complete: res => {
+          complete: (res) => {
             this.uploadedFiles = flatten(res.data) || ['']
           },
-          error: err => {
+          error: (err) => {
             console.log(err)
-          }
+          },
         })
       } else {
         let reader: FileReader = new FileReader()

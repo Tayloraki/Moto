@@ -1,0 +1,29 @@
+@import "../styles.scss";
+
+header {
+  background-color: $orange;
+  color: white;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  border-bottom: 1px solid $gray;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  cursor: pointer;
+
+  .title {
+    font-size: 5.5rem;
+    text-align: center;
+    font-weight: bolder;
+    letter-spacing: 2.5vw;
+    text-shadow: 5px 2.5px $blue;
+  }
+
+  .subtitle {
+    font-weight: bolder;
+    font-size: 0.9rem;
+    font-family: cursive;
+    color: $blue;
+    letter-spacing: 1px;
+  }
+}
