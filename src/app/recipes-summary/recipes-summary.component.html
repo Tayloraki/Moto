@@ -68,7 +68,9 @@
           </td>
           <td class="name">
             <div>
-              <a href="recipe.link">{{ recipe.data.name || recipe.link }}</a>
+              <a href="{{ recipe.link }}" target="_blank">{{
+                recipe.data.name || recipe.link
+              }}</a>
             </div>
           </td>
           <!-- <td class="ingredients">
