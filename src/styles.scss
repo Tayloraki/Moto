@@ -60,6 +60,10 @@ body {
   text-decoration: underline;
 }
 
+.pointer {
+  cursor: pointer;
+}
+
 /* Button Styling */
 .button-container {
   display: flex;
@@ -68,6 +72,8 @@ body {
 }
 
 button {
+  display: flex;
+  align-items: center;
   background-color: $orange;
   color: white;
   font-size: 1.5rem;
@@ -81,6 +87,11 @@ button {
   &:disabled {
     opacity: 0.75;
     cursor: not-allowed;
+  }
+
+  .button-icon {
+    margin-right: 0.125vw;
+    margin-top: 0.125vh;
   }
 }
 

@@ -44,10 +44,6 @@
   margin-top: 5vh;
 
   #links-table {
-    tr {
-      cursor: pointer;
-    }
-
     .status {
       width: 1%;
       min-width: 1%;
@@ -61,14 +57,21 @@
 
     td.name {
       border-left: dashed 2.5px $gray;
+
+      div {
+        display: flex;
+        align-items: center;
+      }
     }
 
     .try-again {
       display: flex;
       align-items: center;
 
-      .material-icons {
-        cursor: pointer;
+      button {
+        font-size: 1rem;
+        padding: 0.25vh 0.75vw;
+        margin-top: 0;
       }
     }
   }

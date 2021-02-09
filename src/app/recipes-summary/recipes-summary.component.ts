@@ -16,6 +16,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     'https://www.seriouseats.com/recipes/2021/01/banh-trang-nuong-grilled-vietnamese-rice-paper.html',
     'https://www.seriouseats.com/recipes/2021/01/fried-plantain-chips.html',
     'https://www.seriouseats.com/recipes/2017/02/detroit-style-pizza-recipe.html',
+    'https://www.seriouseats.com/recipes/2017/06/ghana-west-african-peanut-stew-chicken-groundnut-soup.html'
   ]
   links: string[] = []
   linksTextInput: string = ''

@@ -34,7 +34,8 @@
         (click)="retryMany()"
         style="margin-right: 1vw"
       >
-        retry incomplete
+        <span class="material-icons button-icon">refresh</span>
+        <span>retry incomplete</span>
       </button>
       <button
         (click)="convertButton()"
@@ -54,7 +55,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let recipe of recipes" (click)="openRecipeDetails(recipe)">
+        <tr
+          *ngFor="let recipe of recipes"
+          (click)="openRecipeDetails(recipe)"
+          [class.pointer]="recipe.data.name"
+        >
           <td class="status">
             <div *ngIf="recipe.status === 'error'">
               <span class="material-icons"> highlight_off </span>
@@ -68,6 +73,11 @@
           </td>
           <td class="name">
             <div>
+              <div *ngIf="recipe.status !== 'complete'" class="try-again">
+                <button (click)="retry(recipe)">
+                  <span class="material-icons">refresh</span>
+                </button>
+              </div>
               <a href="{{ recipe.link }}" target="_blank">{{
                 recipe.data.name || recipe.link
               }}</a>
