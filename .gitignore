@@ -15,6 +15,7 @@
 /server/token.json
 /server/credentials.json
 /src/config/config.ts
+server/token.json
 
 # profiling files
 chrome-profiler-events*.json
@@ -50,9 +51,11 @@ testem.log
 # System Files
 .DS_Store
 Thumbs.db
+
+# weird duplicates
 server/package 2.json
 server/package-lock 2.json
-.gitignore
-.gitignore
-server/tsconfig 2.json
 server/server 2.ts
+server/tsconfig 2.json
+package-lock.json
+package.json

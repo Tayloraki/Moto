@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http'
 import { environment } from '../../../environments/environment'
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class DataService {
   nutritionixUrl = 'https://trackapi.nutritionix.com/'
@@ -34,5 +34,14 @@ export class DataService {
     return this.http.post<any>(this.nutritionixUrl + '/v2/natural/nutrients', {
       "query": ingredientsNlp
      }, this.headers)
+    }
+    
+  storeRecipeDB(recipe: any): void {
+    sessionStorage.setItem(recipe.data.name, JSON.stringify(recipe))
+  }
+
+  getRecipeDB(title: string): void {
+    let recipe = sessionStorage.getItem(title)
+    return JSON.parse(recipe  || '{}')
   }
 }

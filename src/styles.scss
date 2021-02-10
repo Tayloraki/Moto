@@ -2,7 +2,7 @@
 $blue: #5982aa;
 $gray: #e8e8e8;
 $off-gray: #dddddd;
-$orange: #D24B4C;
+$orange: #d24b4c;
 $off-orange: #ea5455;
 $error-red: #ea5455;
 
@@ -25,12 +25,127 @@ body {
   }
 }
 
+.page-container {
+  background-color: $gray;
+  color: white;
+  font-size: 2.5rem;
+  padding: 5vh 2.5vw;
+  min-height: 75vh;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  letter-spacing: 1px;
+}
+
+.lg-blue-container {
+  padding: 2.5rem;
+  border-radius: 10px;
+  background-color: $blue;
+  border: 5px solid white;
+}
+
 .textured-background {
-  background:
-    linear-gradient(135deg, $off-orange 25%, transparent 25%) 50px 0,
+  background: linear-gradient(135deg, $off-orange 25%, transparent 25%) 50px 0,
     linear-gradient(225deg, $off-orange 25%, transparent 25%) 50px 0,
     linear-gradient(315deg, $off-orange 25%, transparent 25%),
     linear-gradient(45deg, $off-orange 25%, transparent 25%);
   background-size: 175px 150px;
   background-color: $orange;
+}
+
+.page-title {
+  color: $blue;
+  font-weight: 900;
+  letter-spacing: 2.5px;
+  text-shadow: 2.5px 1.5px white;
+  text-decoration: underline;
+}
+
+.pointer {
+  cursor: pointer;
+}
+
+/* Button Styling */
+.button-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  background-color: $orange;
+  color: white;
+  font-size: 1.5rem;
+  padding: 0.5vh 2.75vw;
+  margin-top: 5vh;
+  cursor: pointer;
+  border: $gray 2.5px solid;
+  border-radius: 5px;
+  background: linear-gradient(135deg, $off-orange 25%, $orange 25%);
+
+  &:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+  }
+
+  .button-icon {
+    margin-right: 0.125vw;
+    margin-top: 0.125vh;
+  }
+}
+
+/* Table Styling */
+table,
+th,
+td {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table {
+  padding: 2vw;
+  border: 2.5px solid white;
+  width: 100%;
+  min-width: 100%;
+  max-width: 100%;
+
+  thead {
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+  }
+
+  th {
+    background-color: $orange;
+    padding: 0.5rem;
+    font-size: 2rem;
+
+    &:first-child {
+      background: linear-gradient(135deg, $off-orange 25%, $orange 25%);
+      border-top-left-radius: 10px;
+    }
+    &:last-child {
+      border-top-right-radius: 10px;
+    }
+  }
+
+  td {
+    background-color: white;
+    font-size: 1rem;
+    padding: 1vh 1vw;
+    color: $blue;
+
+    a {
+      color: $blue;
+      font-weight: 600;
+    }
+  }
+
+  tr {
+    border-bottom: 1px solid $gray;
+    &:last-child {
+      border-bottom: none;
+    }
+  }
 }
