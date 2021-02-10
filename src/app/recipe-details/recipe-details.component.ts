@@ -18,8 +18,7 @@ export class RecipeDetailsComponent implements OnInit {
 
   ngOnInit(): void {
     this.title = this.route.snapshot.params.title
-
-    this.recipeData = this.dataService.getRecipe(this.title)
     this.title = this.title.split('-').join(' ')
+    this.recipeData = this.dataService.getRecipeDB(this.title)
   }
 }

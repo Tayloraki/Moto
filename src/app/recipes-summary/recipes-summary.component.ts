@@ -31,14 +31,23 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     'application/vnd.ms-excel',
     'text/plain',
     'text/csv',
-    'text/tsv',
+    'text/tsv', 
   ]
 
   recipeScraperSubscription: Subscription = new Subscription()
 
   constructor(private dataService: DataService, private router: Router) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.isSessionStorage()) {
+      let sessionKeys = Object.keys(sessionStorage)
+      for (let recipeKey in sessionKeys) {
+        let recipeName = sessionKeys[recipeKey]
+        let recipe = sessionStorage.getItem(recipeName)
+        this.recipes.push(JSON.parse(recipe  || '{}'))
+      }
+    }
+  }
 
   ngOnDestroy(): void {
     if (this.recipeScraperSubscription) {
@@ -66,7 +75,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
-  listLinks() {
+  listLinks() { 
     // populates this.links with links from text and file inputs
     this.noLinks = false
     this.duplicateLinks = false
@@ -112,6 +121,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
           if ((res as any).value) {
             recipe.data = (res as any).value
             recipe.status = 'complete'
+            this.dataService.storeRecipeDB(recipe)
           } else {
             recipe.status = 'error'
           }
@@ -185,8 +195,15 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   openRecipeDetails(recipe: any): void {
     let title = recipe.data.name.replace(/ /g, '-')
     this.router.navigate(['/recipe', title])
+  }
 
-    // simulate database
-    this.dataService.storeRecipe(title, recipe)
+  isSessionStorage(): boolean {
+    return (
+      sessionStorage.length > 0
+    )
+  }
+
+  clearSession(): void {
+    sessionStorage.clear()
   }
 }
