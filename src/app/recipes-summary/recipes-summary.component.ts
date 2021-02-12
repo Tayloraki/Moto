@@ -16,7 +16,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     'https://www.seriouseats.com/recipes/2021/01/banh-trang-nuong-grilled-vietnamese-rice-paper.html',
     'https://www.seriouseats.com/recipes/2021/01/fried-plantain-chips.html',
     'https://www.seriouseats.com/recipes/2017/02/detroit-style-pizza-recipe.html',
-    'https://www.seriouseats.com/recipes/2017/06/ghana-west-african-peanut-stew-chicken-groundnut-soup.html'
+    'https://www.seriouseats.com/recipes/2017/06/ghana-west-african-peanut-stew-chicken-groundnut-soup.html',
   ]
   links: string[] = []
   linksTextInput: string = ''
@@ -31,7 +31,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     'application/vnd.ms-excel',
     'text/plain',
     'text/csv',
-    'text/tsv', 
+    'text/tsv',
   ]
 
   recipeScraperSubscription: Subscription = new Subscription()
@@ -44,7 +44,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       for (let recipeKey in sessionKeys) {
         let recipeName = sessionKeys[recipeKey]
         let recipe = sessionStorage.getItem(recipeName)
-        this.recipes.push(JSON.parse(recipe  || '{}'))
+        this.recipes.push(JSON.parse(recipe || '{}'))
       }
     }
   }
@@ -75,7 +75,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
-  listLinks() { 
+  listLinks() {
     // populates this.links with links from text and file inputs
     this.noLinks = false
     this.duplicateLinks = false
@@ -198,9 +198,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   }
 
   isSessionStorage(): boolean {
-    return (
-      sessionStorage.length > 0
-    )
+    return sessionStorage.length > 0
   }
 
   clearSession(): void {
