@@ -17,6 +17,7 @@
     border-left: dashed 2.5px white;
     margin-left: 2.5vw;
     padding-left: 2.5vw;
+    width: 35%;
   }
 
   div {
@@ -55,6 +56,11 @@
         display: flex;
         justify-content: center;
       }
+    }
+
+    th.name {
+      display: flex;
+      justify-content: center;
     }
 
     td.name {

@@ -131,15 +131,18 @@
             </div>
           </td>
           <td class="name">
-            <div>
+            <div *ngIf="loading">
+              <div class="spinner-border"></div>
+            </div>
+            <div *ngIf="!loading">
               <div *ngIf="recipe.status !== 'complete'" class="try-again">
                 <div (click)="retry(recipe)">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="#ea5455"
-                    width="27px"
-                    height="27px"
+                    width="26px"
+                    height="26px"
                   >
                     <path d="M0 0h24v24H0z" fill="none" />
                     <path

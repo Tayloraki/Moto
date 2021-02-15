@@ -26,6 +26,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   // error booleans
   noLinks: boolean = false
   duplicateLinks: boolean = false
+  loading: boolean = false
 
   spreadsheetMimes: string[] = [
     'application/vnd.ms-excel',
@@ -114,6 +115,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   getRecipe(recipe: any): void {
     // scrape recipe for a link
+    this.loading = true
     this.recipeScraperSubscription = this.dataService
       .getScrapedRecipe(recipe.link)
       .subscribe(
@@ -122,8 +124,10 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
             recipe.data = (res as any).value
             recipe.status = 'complete'
             this.dataService.storeRecipeDB(recipe)
+            this.loading = false
           } else {
             recipe.status = 'error'
+            console.log('no recipe')
           }
           this.recipeScraperSubscription.unsubscribe()
         },

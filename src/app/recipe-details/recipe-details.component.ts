@@ -11,9 +11,11 @@ import { Subscription } from 'rxjs'
 export class RecipeDetailsComponent implements OnInit {
   title: string = 'nothing'
   recipeData: any = []
+  ingredientsNlp: string = ''
   recipeNutrition: any[] = []
   ingredientNutrition: any = {}
   allIngredientNutrition: any[] = []
+  loading: boolean = false
 
   fakeFoodId: string = '513fc9e73fe3ffd40300109f'
   fakeIngredientsNlp: string =
@@ -74,34 +76,20 @@ export class RecipeDetailsComponent implements OnInit {
     this.recipeData = this.dataService.getRecipeDB(this.title)
 
     for (let ingredient of this.recipeData.data.ingredients) {
-      this.tempRecipeNutrition = this.tempRecipeNutrition.concat(
-        ' ',
-        ingredient
-      )
-      let ingredientByNLP = {
-        recipeIngredient: ingredient,
-        data: {},
-      }
-      this.allIngredientNutrition.push(ingredientByNLP)
-
-      // ingredientNutrition = { }
-      // this.ingredientNutrition[<name-of-ingredient>] = {<ingredient information>}
-      // ingredientNutrition = { <name of ingredient>: {nutrition} }
+      this.ingredientsNlp = this.ingredientsNlp.concat(' ', ingredient)
     }
-    console.log(this.allIngredientNutrition)
-    console.log(this.tempRecipeNutrition)
-    // let ingredientsNlp = this.fakeIngredientsNlp
-    let ingredientsNlp = this.tempRecipeNutrition
+    console.log(this.ingredientsNlp)
+    this.loading = true
     this.nutritionixNlpSubscription = this.dataService
-      .getFoodByNlp(ingredientsNlp)
+      .getFoodByNlp(this.ingredientsNlp)
       .subscribe(
         (res) => {
-          // console.log(Object.keys(res.foods[0]))
           this.recipeNutrition = res.foods
           this.nutritionixNlpSubscription.unsubscribe()
-          console.log(this.recipeNutrition)
           this.calculateSums(this.recipeNutrition)
-          this.fakeIngredient = this.recipeNutrition[0]
+          // this.fakeIngredient = this.recipeNutrition[0]
+          this.nutritionByIngredient(this.recipeNutrition)
+          this.loading = false
         },
         (err) => {
           console.log(err)
@@ -122,14 +110,21 @@ export class RecipeDetailsComponent implements OnInit {
     }
   }
 
-  // openIngredient(ingredient: any) {
-  openIngredient() {
-    this.ingredientNutrition = this.fakeIngredient
+  nutritionByIngredient(recipe: any) {
+    for (let recipeIngredient in this.recipeData.data.ingredients) {
+      this.allIngredientNutrition[
+        this.recipeData.data.ingredients[recipeIngredient]
+      ] = recipe[recipeIngredient]
+    }
+    console.log(this.allIngredientNutrition)
+  }
+
+  openIngredient(ingredient: any) {
+    this.ingredientNutrition = this.allIngredientNutrition[ingredient]
     console.log(this.ingredientNutrition)
     for (let property in this.ingredientSums) {
       this.ingredientSums[property].total = this.ingredientNutrition[property]
     }
-    console.log(this.ingredientSums)
   }
 
   closeIngredient() {
