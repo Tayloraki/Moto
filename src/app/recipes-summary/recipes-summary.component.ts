@@ -44,6 +44,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       let sessionKeys = Object.keys(sessionStorage)
       for (let recipeKey in sessionKeys) {
         let recipeName = sessionKeys[recipeKey]
+        // use getRecipeDB here
         let recipe = sessionStorage.getItem(recipeName)
         this.recipes.push(JSON.parse(recipe || '{}'))
       }
@@ -80,6 +81,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     // populates this.links with links from text and file inputs
     this.noLinks = false
     this.duplicateLinks = false
+    console.log(this.links)
 
     if (this.linksTextInput) {
       let inputLinks = this.splitLinks(this.linksTextInput)

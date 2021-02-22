@@ -1,0 +1,58 @@
+<div
+  id="myModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{ recipeTitle }}</h5>
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+          (click)="activeModal.close('close')"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        We found multitple results for some ingredients. Please select the most
+        appropriate.
+        <table>
+          <thead>
+            <th>recipe ingredients</th>
+            <th>possible ingredients</th>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ingredient of allIngredientResults">
+              <td>{{ ingredient.recipeIngredient }}</td>
+              <td>
+                <button
+                  *ngFor="let candidate of ingredient.candidates"
+                  (click)="confirmIngredient(candidate)"
+                >
+                  {{ candidate.food_name }}
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-dismiss="modal"
+          (click)="activeModal.close('close')"
+        >
+          Close
+        </button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,7 +1,11 @@
 import { Component, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { DataService } from '../core/services/data-service.service'
+import { RecipeDetailsModalComponent } from 'src/app/recipe-details-modal/recipe-details-modal.component'
 import { Subscription } from 'rxjs'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import * as $ from 'jquery'
+import * as bootstrap from 'bootstrap'
 
 @Component({
   selector: 'app-recipe-details',
@@ -9,13 +13,17 @@ import { Subscription } from 'rxjs'
   styleUrls: ['./recipe-details.component.scss'],
 })
 export class RecipeDetailsComponent implements OnInit {
+  fakeNlpRecipe: any = {}
   title: string = 'nothing'
   recipeData: any = []
   ingredientsNlp: string = ''
   recipeNutrition: any[] = []
+  fullApiResult: any = {}
   ingredientNutrition: any = {}
   allIngredientNutrition: any[] = []
   loading: boolean = false
+
+  show: boolean = true
 
   fakeFoodId: string = '513fc9e73fe3ffd40300109f'
   fakeIngredientsNlp: string =
@@ -67,7 +75,8 @@ export class RecipeDetailsComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private dataService: DataService
+    private dataService: DataService,
+    private modalService: NgbModal
   ) {}
 
   ngOnInit(): void {
@@ -76,7 +85,7 @@ export class RecipeDetailsComponent implements OnInit {
     this.recipeData = this.dataService.getRecipeDB(this.title)
 
     for (let ingredient of this.recipeData.data.ingredients) {
-      this.ingredientsNlp = this.ingredientsNlp.concat(' ', ingredient)
+      this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
     }
     console.log(this.ingredientsNlp)
     this.loading = true
@@ -85,11 +94,12 @@ export class RecipeDetailsComponent implements OnInit {
       .subscribe(
         (res) => {
           this.recipeNutrition = res.foods
+          this.fullApiResult = res
           this.nutritionixNlpSubscription.unsubscribe()
           this.calculateSums(this.recipeNutrition)
-          // this.fakeIngredient = this.recipeNutrition[0]
           this.nutritionByIngredient(this.recipeNutrition)
           this.loading = false
+          this.openModal(res)
         },
         (err) => {
           console.log(err)
@@ -116,7 +126,6 @@ export class RecipeDetailsComponent implements OnInit {
         this.recipeData.data.ingredients[recipeIngredient]
       ] = recipe[recipeIngredient]
     }
-    console.log(this.allIngredientNutrition)
   }
 
   openIngredient(ingredient: any) {
@@ -129,6 +138,12 @@ export class RecipeDetailsComponent implements OnInit {
 
   closeIngredient() {
     this.ingredientNutrition = {}
+  }
+
+  openModal(res: any) {
+    const modalRef = this.modalService.open(RecipeDetailsModalComponent)
+    modalRef.componentInstance.fullApiResult = res
+    modalRef.componentInstance.recipeTitle = this.title
   }
 }
 
