@@ -1,7 +1,8 @@
-import { Component, OnInit, Input, SimpleChanges } from '@angular/core'
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 import { Subscription } from 'rxjs'
 import { DataService } from '../core/services/data-service.service'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { without } from 'underscore'
 
 @Component({
   selector: 'app-recipe-details-modal',
@@ -11,6 +12,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 export class RecipeDetailsModalComponent implements OnInit {
   @Input() fullApiResult: any[] = []
   @Input() recipeTitle: string = ''
+  @Output() emitService = new EventEmitter()
 
   gotIngredients: any[] = []
   errorIngredients: any[] = []
@@ -2111,38 +2113,48 @@ export class RecipeDetailsModalComponent implements OnInit {
   ngOnInit(): void {
     this.errorIngredients = (this.fullApiResult as any).errors
     this.gotIngredients = (this.fullApiResult as any).foods
-    console.log(JSON.stringify(this.fullApiResult))
+    // this.errorIngredients = (this.resFAKE as any).errors   //  use for mock data
+    // this.gotIngredients = (this.resFAKE as any).foods      //  use for mock data
 
-    // for (let ingredient of this.errorIngredients) {
-    let ingredientNlp = this.errorIngredients[0].original_text
-    console.log(ingredientNlp)
-    this.nutritionixNlpSubscription = this.dataService
-      .getIngredientByNlp(ingredientNlp)
-      .subscribe(
-        (res) => {
-          console.log(JSON.stringify(res))
-          this.ingredientByResults(ingredientNlp, res)
-          this.nutritionixNlpSubscription.unsubscribe()
-        },
-        (err) => {
-          console.log(err)
-          this.nutritionixNlpSubscription.unsubscribe()
-        }
-      )
-    console.log(this.allIngredientResults)
+    for (let ingredient of this.errorIngredients) {
+      let ingredientNlp = ingredient.original_text
+      // this.ingredientByResults(ingredientNlp, this.ingredientResFake)  //  use for mock data
+      this.nutritionixNlpSubscription = this.dataService
+        .getIngredientByNlp(ingredientNlp)
+        .subscribe(
+          (res) => {
+            this.ingredientByResults(ingredientNlp, res)
+            this.nutritionixNlpSubscription.unsubscribe()
+          },
+          (err) => {
+            console.log(err)
+            this.nutritionixNlpSubscription.unsubscribe()
+          }
+        )
+    }
   }
 
+  // creates dataset of original ingredient description/ MULTIPLE potential ingredient nutrition from API/ empty field for
+  // user selected ingredient nutrition
   ingredientByResults(recipeIngredient: any, ingredientsAPI: any) {
     let ingredientResults = {
       recipeIngredient: recipeIngredient,
       candidates: ingredientsAPI.foods,
+      selected: {},
     }
     this.allIngredientResults.push(ingredientResults)
   }
 
-  confirmIngredient(ingredientResult: any) {
-    console.log(ingredientResult)
+  // user select a ingredient candidate
+  confirmIngredient(ingredient: any, ingredientResult: any) {
+    ingredient.selected = ingredientResult
+    ingredient.selected.metadata.original_input = ingredient.recipeIngredient
+  }
 
-    // this.gotIngredients.push(ingredientResult)
+  // add all selected candidates to array of successfully got ingredients
+  confirmAllIngredient() {
+    for (let ingredient of this.allIngredientResults) {
+      this.gotIngredients.push(ingredient.selected)
+    }
   }
 }

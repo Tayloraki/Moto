@@ -20,7 +20,7 @@
         </button>
       </div>
       <div class="modal-body">
-        We found multitple results for some ingredients. Please select the most
+        We found multiple results for some ingredients. Please select the most
         appropriate.
         <table>
           <thead>
@@ -31,12 +31,17 @@
             <tr *ngFor="let ingredient of allIngredientResults">
               <td>{{ ingredient.recipeIngredient }}</td>
               <td>
-                <button
-                  *ngFor="let candidate of ingredient.candidates"
-                  (click)="confirmIngredient(candidate)"
-                >
-                  {{ candidate.food_name }}
-                </button>
+                <div *ngIf="!(ingredient.selected | keyvalue).length">
+                  <button
+                    *ngFor="let candidate of ingredient.candidates"
+                    (click)="confirmIngredient(ingredient, candidate)"
+                  >
+                    {{ candidate.food_name }}
+                  </button>
+                </div>
+                <div *ngIf="(ingredient.selected | keyvalue).length">
+                  {{ ingredient.selected.food_name }}
+                </div>
               </td>
             </tr>
           </tbody>
@@ -47,11 +52,17 @@
           type="button"
           class="btn btn-secondary"
           data-dismiss="modal"
-          (click)="activeModal.close('close')"
+          (click)="activeModal.close(gotIngredients)"
         >
           Close
         </button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="confirmAllIngredient()"
+        >
+          Save changes
+        </button>
       </div>
     </div>
   </div>
