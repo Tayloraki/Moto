@@ -2,7 +2,7 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core'
 import { Subscription } from 'rxjs'
 import { DataService } from '../core/services/data-service.service'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
-import { without } from 'underscore'
+import { isEmpty, without } from 'underscore'
 
 @Component({
   selector: 'app-recipe-details-modal',
@@ -18,6 +18,7 @@ export class RecipeDetailsModalComponent implements OnInit {
   errorIngredients: any[] = []
 
   allIngredientResults: any[] = []
+  finalIngredients: any[] = []
 
   nutritionixNlpSubscription: Subscription = new Subscription()
 
@@ -2113,17 +2114,17 @@ export class RecipeDetailsModalComponent implements OnInit {
   ngOnInit(): void {
     this.errorIngredients = (this.fullApiResult as any).errors
     this.gotIngredients = (this.fullApiResult as any).foods
-    // this.errorIngredients = (this.resFAKE as any).errors   //  use for mock data
-    // this.gotIngredients = (this.resFAKE as any).foods      //  use for mock data
+    // this.errorIngredients = (this.resFAKE as any).errors //  use for mock data
+    // this.gotIngredients = (this.resFAKE as any).foods //  use for mock data
 
     for (let ingredient of this.errorIngredients) {
       let ingredientNlp = ingredient.original_text
-      // this.ingredientByResults(ingredientNlp, this.ingredientResFake)  //  use for mock data
+      // this.errorIngredientByResults(ingredientNlp, this.ingredientResFake) //  use for mock data
       this.nutritionixNlpSubscription = this.dataService
         .getIngredientByNlp(ingredientNlp)
         .subscribe(
           (res) => {
-            this.ingredientByResults(ingredientNlp, res)
+            this.errorIngredientByResults(ingredientNlp, res)
             this.nutritionixNlpSubscription.unsubscribe()
           },
           (err) => {
@@ -2132,11 +2133,14 @@ export class RecipeDetailsModalComponent implements OnInit {
           }
         )
     }
+    for (let ingredient of this.gotIngredients) {
+      this.gotIngredientByResults(ingredient)
+    }
   }
 
   // creates dataset of original ingredient description/ MULTIPLE potential ingredient nutrition from API/ empty field for
   // user selected ingredient nutrition
-  ingredientByResults(recipeIngredient: any, ingredientsAPI: any) {
+  errorIngredientByResults(recipeIngredient: any, ingredientsAPI: any) {
     let ingredientResults = {
       recipeIngredient: recipeIngredient,
       candidates: ingredientsAPI.foods,
@@ -2145,7 +2149,21 @@ export class RecipeDetailsModalComponent implements OnInit {
     this.allIngredientResults.push(ingredientResults)
   }
 
+  // adds "got" ingredients to error ingredient selection dataset for display purposes in the modal (for
+  // false ingredient removal)
+  gotIngredientByResults(ingredient: any) {
+    let ingredientResults = {
+      recipeIngredient: ingredient.metadata.original_input,
+      candidates: [],
+      selected: ingredient,
+    }
+    this.allIngredientResults.push(ingredientResults)
+  }
+
   // user select a ingredient candidate
+  // probably a nonissue (only with mock data) but
+  // metadata.original_input is being shared and changed for
+  // each confirmed ingredient
   confirmIngredient(ingredient: any, ingredientResult: any) {
     ingredient.selected = ingredientResult
     ingredient.selected.metadata.original_input = ingredient.recipeIngredient
@@ -2154,7 +2172,16 @@ export class RecipeDetailsModalComponent implements OnInit {
   // add all selected candidates to array of successfully got ingredients
   confirmAllIngredient() {
     for (let ingredient of this.allIngredientResults) {
-      this.gotIngredients.push(ingredient.selected)
+      this.finalIngredients.push(ingredient.selected)
     }
+  }
+
+  deleteIngredient(ingredient: any) {
+    this.allIngredientResults = without(this.allIngredientResults, ingredient)
+  }
+
+  // boolean value if user has selected for all error ingredients
+  allConfirmed(): boolean {
+    return this.allIngredientResults.some((r) => isEmpty(r.selected))
   }
 }

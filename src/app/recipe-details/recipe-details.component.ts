@@ -2170,13 +2170,14 @@ export class RecipeDetailsComponent implements OnInit {
       this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
     }
     this.loading = true
-    // let res = this.resFAKE  //  use for mock data
-    // this.openModal(res)     //  use for mock data
+    // let res = this.resFAKE //  use for mock data
+    // this.openModal(res) //  use for mock data
     this.nutritionixNlpSubscription = this.dataService
       .getFoodByNlp(this.ingredientsNlp)
       .subscribe(
         (res) => {
           this.openModal(res)
+          console.log(res)
           this.nutritionixNlpSubscription.unsubscribe()
         },
         (err) => {
@@ -2187,7 +2188,10 @@ export class RecipeDetailsComponent implements OnInit {
   }
 
   openModal(res: any) {
-    const modalRef = this.modalService.open(RecipeDetailsModalComponent)
+    const modalRef = this.modalService.open(RecipeDetailsModalComponent, {
+      backdrop: 'static',
+      keyboard: false,
+    })
     modalRef.componentInstance.fullApiResult = res
     modalRef.componentInstance.recipeTitle = this.title
 

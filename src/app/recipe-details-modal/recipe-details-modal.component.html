@@ -14,14 +14,16 @@
           class="close"
           data-dismiss="modal"
           aria-label="Close"
-          (click)="activeModal.close('close')"
+          (click)="activeModal.close('')"
+          routerLink="/"
         >
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
         We found multiple results for some ingredients. Please select the most
-        appropriate.
+        appropriate. After, review the ingredient list for any ingredients that
+        should not be present before proceeding.
         <table>
           <thead>
             <th>recipe ingredients</th>
@@ -41,6 +43,7 @@
                 </div>
                 <div *ngIf="(ingredient.selected | keyvalue).length">
                   {{ ingredient.selected.food_name }}
+                  <button (click)="deleteIngredient(ingredient)">X</button>
                 </div>
               </td>
             </tr>
@@ -52,16 +55,10 @@
           type="button"
           class="btn btn-secondary"
           data-dismiss="modal"
-          (click)="activeModal.close(gotIngredients)"
+          (click)="confirmAllIngredient(); activeModal.close(finalIngredients)"
+          [disabled]="allConfirmed()"
         >
-          Close
-        </button>
-        <button
-          type="button"
-          class="btn btn-primary"
-          (click)="confirmAllIngredient()"
-        >
-          Save changes
+          Continue
         </button>
       </div>
     </div>
