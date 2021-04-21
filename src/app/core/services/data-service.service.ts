@@ -52,6 +52,16 @@ export class DataService {
     )
   }
 
+  searchIngredient(searchInput: string) {
+    return this.http.post<any>(
+      this.nutritionixUrl + '/v2/search/instant',
+      {
+        query: searchInput,
+      },
+      this.headers
+    )
+  }
+
   storeRecipeDB(recipe: any): void {
     sessionStorage.setItem(recipe.data.name, JSON.stringify(recipe))
   }

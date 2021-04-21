@@ -5,62 +5,88 @@
   aria-labelledby="exampleModalLabel"
   aria-hidden="true"
 >
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">{{ recipeTitle }}</h5>
-        <button
-          type="button"
-          class="close"
-          data-dismiss="modal"
-          aria-label="Close"
-          (click)="activeModal.close('')"
-          routerLink="/"
-        >
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        We found multiple results for some ingredients. Please select the most
-        appropriate. After, review the ingredient list for any ingredients that
-        should not be present before proceeding.
-        <table>
-          <thead>
-            <th>recipe ingredients</th>
-            <th>possible ingredients</th>
-          </thead>
-          <tbody>
-            <tr *ngFor="let ingredient of allIngredientResults">
-              <td>{{ ingredient.recipeIngredient }}</td>
-              <td>
-                <div *ngIf="!(ingredient.selected | keyvalue).length">
-                  <button
-                    *ngFor="let candidate of ingredient.candidates"
-                    (click)="confirmIngredient(ingredient, candidate)"
-                  >
-                    {{ candidate.food_name }}
-                  </button>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title">{{ recipeTitle }}</h5>
+      <button
+        type="button"
+        class="close"
+        data-dismiss="modal"
+        aria-label="Close"
+        (click)="activeModal.close('')"
+        routerLink="/"
+      >
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      Our website is dumb so help us out. Select the most appropriate ingredient
+      for those with options. Search for missing by a different name or suitable
+      substitute. Remove any ingredients that do not belong.
+      <table id="ingredient-table">
+        <thead>
+          <th class="recipe-text">recipe ingredients</th>
+          <th class="working-text">possible ingredients</th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ingredient of allIngredientResults">
+            <td>{{ ingredient.recipeIngredient }}</td>
+            <td>
+              <div
+                *ngIf="
+                  !(ingredient.selected | keyvalue).length &&
+                  !ingredient.candidates.length
+                "
+              >
+                <app-ingredient-search
+                  (selectResult)="
+                    getSearch($event, ingredient.recipeIngredient)
+                  "
+                ></app-ingredient-search>
+              </div>
+              <div *ngIf="!(ingredient.selected | keyvalue).length">
+                <button
+                  *ngFor="let candidate of ingredient.candidates"
+                  (click)="confirmIngredient(ingredient, candidate)"
+                >
+                  {{ candidate.food_name }}
+                </button>
+              </div>
+              <div
+                class="placeholder-name"
+                *ngIf="(ingredient.selected | keyvalue).length"
+              >
+                {{ ingredient.selected.food_name }}
+                <div
+                  class="delete-button"
+                  (click)="deleteIngredient(ingredient)"
+                >
+                  X
                 </div>
-                <div *ngIf="(ingredient.selected | keyvalue).length">
-                  {{ ingredient.selected.food_name }}
-                  <button (click)="deleteIngredient(ingredient)">X</button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div>
+        You may add any additional ingredients here.
+        <div>
+          <app-ingredient-search
+            (selectResult)="addSearch($event)"
+          ></app-ingredient-search>
+        </div>
       </div>
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          data-dismiss="modal"
-          (click)="confirmAllIngredient(); activeModal.close(finalIngredients)"
-          [disabled]="allConfirmed()"
-        >
-          Continue
-        </button>
-      </div>
+    </div>
+    <div class="modal-footer">
+      <button
+        type="button"
+        class="btn btn-secondary"
+        data-dismiss="modal"
+        (click)="confirmAllIngredient(); activeModal.close(finalIngredients)"
+        [disabled]="allConfirmed()"
+      >
+        Continue
+      </button>
     </div>
   </div>
 </div>

@@ -2119,19 +2119,23 @@ export class RecipeDetailsModalComponent implements OnInit {
 
     for (let ingredient of this.errorIngredients) {
       let ingredientNlp = ingredient.original_text
-      // this.errorIngredientByResults(ingredientNlp, this.ingredientResFake) //  use for mock data
-      this.nutritionixNlpSubscription = this.dataService
-        .getIngredientByNlp(ingredientNlp)
-        .subscribe(
-          (res) => {
-            this.errorIngredientByResults(ingredientNlp, res)
-            this.nutritionixNlpSubscription.unsubscribe()
-          },
-          (err) => {
-            console.log(err)
-            this.nutritionixNlpSubscription.unsubscribe()
-          }
-        )
+      if (ingredient.err_code === 100) {
+        // this.error100IngredientByResults(ingredientNlp, this.ingredientResFake) //  use for mock data
+        this.nutritionixNlpSubscription = this.dataService
+          .getIngredientByNlp(ingredientNlp)
+          .subscribe(
+            (res) => {
+              this.error100IngredientByResults(ingredientNlp, res)
+              this.nutritionixNlpSubscription.unsubscribe()
+            },
+            (err) => {
+              console.log(err)
+              this.nutritionixNlpSubscription.unsubscribe()
+            }
+          )
+      } else if (ingredient.err_code === 101) {
+        this.error101IngredientByResults(ingredientNlp)
+      }
     }
     for (let ingredient of this.gotIngredients) {
       this.gotIngredientByResults(ingredient)
@@ -2140,10 +2144,21 @@ export class RecipeDetailsModalComponent implements OnInit {
 
   // creates dataset of original ingredient description/ MULTIPLE potential ingredient nutrition from API/ empty field for
   // user selected ingredient nutrition
-  errorIngredientByResults(recipeIngredient: any, ingredientsAPI: any) {
+  error100IngredientByResults(recipeIngredient: any, ingredientsAPI: any) {
     let ingredientResults = {
       recipeIngredient: recipeIngredient,
       candidates: ingredientsAPI.foods,
+      selected: {},
+    }
+    this.allIngredientResults.push(ingredientResults)
+  }
+
+  // adds no return error ingredients to ingredientataset for display purposes in the modal
+  // for user ingredient search
+  error101IngredientByResults(recipeIngredient: any) {
+    let ingredientResults = {
+      recipeIngredient: recipeIngredient,
+      candidates: [],
       selected: {},
     }
     this.allIngredientResults.push(ingredientResults)
@@ -2183,5 +2198,66 @@ export class RecipeDetailsModalComponent implements OnInit {
   // boolean value if user has selected for all error ingredients
   allConfirmed(): boolean {
     return this.allIngredientResults.some((r) => isEmpty(r.selected))
+  }
+
+  // gets nutrition for selected search result ingredient
+  getSearch(ingredient: any, recipeIngredient: any) {
+    let ingredientName = ingredient.food_name
+    this.nutritionixNlpSubscription = this.dataService
+      .getIngredientByNlp(ingredientName)
+      .subscribe(
+        (res) => {
+          console.log(this.allIngredientResults)
+          this.searchIngredientByResults(res, recipeIngredient)
+          console.log(this.allIngredientResults)
+          this.nutritionixNlpSubscription.unsubscribe()
+        },
+        (err) => {
+          console.log(err)
+          this.nutritionixNlpSubscription.unsubscribe()
+        }
+      )
+  }
+
+  // updates error 101 ingredient with selected search result nutrition
+  searchIngredientByResults(res: any, recipeIngredient: any) {
+    let ingredient = res.foods[0]
+    let ingredientIndex = this.allIngredientResults.findIndex(
+      (ingredientObj) => ingredientObj.recipeIngredient == recipeIngredient
+    )
+    this.allIngredientResults[ingredientIndex].selected = ingredient
+    this.allIngredientResults[
+      ingredientIndex
+    ].selected.metadata.original_input = recipeIngredient
+  }
+
+  // gets nutrition for selected search result ingredient
+  // for user added ingredient
+  addSearch(ingredient: any) {
+    let ingredientName = ingredient.food_name
+    this.nutritionixNlpSubscription = this.dataService
+      .getIngredientByNlp(ingredientName)
+      .subscribe(
+        (res) => {
+          this.addSearchIngredientByResults(res)
+          this.nutritionixNlpSubscription.unsubscribe()
+        },
+        (err) => {
+          console.log(err)
+          this.nutritionixNlpSubscription.unsubscribe()
+        }
+      )
+  }
+
+  // adds non-recipe search result ingredients to error ingredient selection dataset for display purposes in the modal
+  addSearchIngredientByResults(res: any) {
+    let ingredient = res.foods[0]
+    console.log(ingredient)
+    let ingredientResults = {
+      recipeIngredient: ingredient.food_name,
+      candidates: [],
+      selected: ingredient,
+    }
+    this.allIngredientResults.push(ingredientResults)
   }
 }

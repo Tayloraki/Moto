@@ -2189,6 +2189,7 @@ export class RecipeDetailsComponent implements OnInit {
 
   openModal(res: any) {
     const modalRef = this.modalService.open(RecipeDetailsModalComponent, {
+      size: 'lg',
       backdrop: 'static',
       keyboard: false,
     })
