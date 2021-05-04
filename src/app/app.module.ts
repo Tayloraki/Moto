@@ -17,6 +17,13 @@ import { RecipesSummaryComponent } from './recipes-summary/recipes-summary.compo
 import { RecipeDetailsModalComponent } from './recipe-details-modal/recipe-details-modal.component'
 import { IngredientSearchComponent } from './ingredient-search/ingredient-search.component'
 
+import { SignInComponent } from './components/sign-in/sign-in.component'
+import { SignUpComponent } from './components/sign-up/sign-up.component'
+import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component'
+import { VerifyEmailComponent } from './components/verify-email/verify-email.component'
+import { AuthService } from './core/services/auth.service';
+import { DashboardComponent } from './components/dashboard/dashboard.component'
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -24,6 +31,11 @@ import { IngredientSearchComponent } from './ingredient-search/ingredient-search
     RecipesSummaryComponent,
     RecipeDetailsModalComponent,
     IngredientSearchComponent,
+    SignInComponent,
+    SignUpComponent,
+    ForgotPasswordComponent,
+    VerifyEmailComponent,
+    DashboardComponent,
   ],
   imports: [
     BrowserModule,
@@ -35,7 +47,7 @@ import { IngredientSearchComponent } from './ingredient-search/ingredient-search
     AngularFirestoreModule, // imports firebase/firestore, only needed for database features
     AngularFireAuthModule, // imports firebase/auth, only needed for auth features
   ],
-  providers: [],
+  providers: [AuthService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
