@@ -1,5 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { DataService } from '../core/services/data-service.service'
+import { AuthService } from '../core/services/auth.service'
 import { Subscription } from 'rxjs'
 import { Router } from '@angular/router'
 import { parse } from 'papaparse'
@@ -27,6 +28,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   noLinks: boolean = false
   duplicateLinks: boolean = false
   loading: boolean = false
+  error: boolean = false
+  errorMessage: any = ''
 
   spreadsheetMimes: string[] = [
     'application/vnd.ms-excel',
@@ -37,7 +40,11 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   recipeScraperSubscription: Subscription = new Subscription()
 
-  constructor(private dataService: DataService, private router: Router) {}
+  constructor(
+    private dataService: DataService,
+    private router: Router,
+    public authService: AuthService
+  ) {}
 
   ngOnInit() {
     if (this.isSessionStorage()) {
@@ -210,4 +217,37 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   clearSession(): void {
     sessionStorage.clear()
   }
+
+  signIn(userName: string, userPassword: string): void {
+    this.error = false
+    this.SignInSubscription = this.authService
+      .SignIn(userName, userPassword)
+      .subscribe(
+        (result) => {
+          this.router.navigate(['dashboard'])
+          this.authService.SetUserData(result.user)
+        },
+        (error) => {
+          console.log(error)
+          this.error = true
+          this.signInError(error)
+        }
+      )
+  }
+
+  signInError(error) {
+    if (error.code == 'auth/invalid-email') {
+      this.errorMessage = 'There is no account with this username'
+    } else if (error.code == 'auth/wrong-password') {
+      this.errorMessage = 'Incorrect password'
+    } else {
+      this.errorMessage = 'There was a problem logging in. Please try again.'
+    }
+  }
+
+  signOut(): void {
+    this.authService.SignOut()
+  }
+
+  testing(): void {}
 }

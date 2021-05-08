@@ -1,3 +1,6 @@
+<div class="signInError" *ngIf="error">
+  {{ errorMessage }}
+</div>
 <div class="displayTable">
   <div class="displayTableCell">
     <div class="authBlock">
@@ -17,6 +20,7 @@
           type="password"
           class="formControl"
           placeholder="Password"
+          (keyup.enter)="signIn(userName.value, userPassword.value)"
           #userPassword
           required
         />
@@ -28,7 +32,7 @@
           type="button"
           class="btn btnPrimary"
           value="Log in"
-          (click)="authService.SignIn(userName.value, userPassword.value)"
+          (click)="signIn(userName.value, userPassword.value)"
         />
       </div>
 

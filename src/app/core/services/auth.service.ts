@@ -7,6 +7,7 @@ import {
   AngularFirestoreDocument,
 } from '@angular/fire/firestore'
 import { Router } from '@angular/router'
+import { from } from 'rxjs'
 
 @Injectable({
   providedIn: 'root',
@@ -36,17 +37,10 @@ export class AuthService {
 
   // Sign in with email/password
   SignIn(email: any, password: any) {
-    return this.afAuth // deleted '.auth', supposedly dropped property
-      .signInWithEmailAndPassword(email, password)
-      .then((result: any) => {
-        this.ngZone.run(() => {
-          this.router.navigate(['dashboard']) // dashboard in tutorial
-        })
-        this.SetUserData(result.user)
-      })
-      .catch((error: any) => {
-        window.alert(error.message)
-      })
+    return from(
+      this.afAuth // deleted '.auth', supposedly dropped property
+        .signInWithEmailAndPassword(email, password)
+    )
   }
 
   // Sign up with email/password
@@ -129,7 +123,8 @@ export class AuthService {
   SignOut() {
     return this.afAuth.signOut().then(() => {
       localStorage.removeItem('user')
-      this.router.navigate(['sign-in'])
+      this.userData = null
+      this.router.navigate([''])
     })
   }
 }
