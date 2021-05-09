@@ -39,6 +39,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   ]
 
   recipeScraperSubscription: Subscription = new Subscription()
+  signInSubscription: Subscription = new Subscription()
 
   constructor(
     private dataService: DataService,
@@ -61,6 +62,9 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.recipeScraperSubscription) {
       this.recipeScraperSubscription.unsubscribe()
+    }
+    if (this.signInSubscription) {
+      this.signInSubscription.unsubscribe()
     }
   }
 
@@ -220,22 +224,24 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   signIn(userName: string, userPassword: string): void {
     this.error = false
-    this.SignInSubscription = this.authService
+    this.signInSubscription = this.authService
       .SignIn(userName, userPassword)
       .subscribe(
         (result) => {
           this.router.navigate(['dashboard'])
           this.authService.SetUserData(result.user)
+          this.signInSubscription.unsubscribe()
         },
         (error) => {
           console.log(error)
           this.error = true
           this.signInError(error)
+          this.signInSubscription.unsubscribe()
         }
       )
   }
 
-  signInError(error) {
+  signInError(error: any) {
     if (error.code == 'auth/invalid-email') {
       this.errorMessage = 'There is no account with this username'
     } else if (error.code == 'auth/wrong-password') {
