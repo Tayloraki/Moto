@@ -1,59 +1,57 @@
-<div class="signInError" *ngIf="error">
-  {{ errorMessage }}
-</div>
-<div class="displayTable">
-  <div class="displayTableCell">
-    <div class="authBlock">
-      <h3>Sign In</h3>
-      <div class="formGroup">
-        <input
-          type="text"
-          class="formControl"
-          placeholder="Username"
-          #userName
-          required
-        />
-      </div>
+<div class="login-container">
+  <div class="signInError" *ngIf="error">
+    {{ errorMessage }}
+  </div>
+  <div class="displayTable">
+    <div class="displayTableCell">
+      <div class="authBlock">
+        <h3>Sign In</h3>
+        <div class="formGroup">
+          <input
+            type="text"
+            class="formControl"
+            placeholder="Username"
+            #userName
+            required
+          />
+        </div>
 
-      <div class="formGroup">
-        <input
-          type="password"
-          class="formControl"
-          placeholder="Password"
-          (keyup.enter)="signIn(userName.value, userPassword.value)"
-          #userPassword
-          required
-        />
-      </div>
+        <div class="formGroup">
+          <input
+            type="password"
+            class="formControl"
+            placeholder="Password"
+            (keyup.enter)="signIn(userName.value, userPassword.value)"
+            #userPassword
+            required
+          />
+        </div>
 
-      <!-- Calling SignIn Api from AuthService -->
-      <div class="formGroup">
-        <input
-          type="button"
-          class="btn btnPrimary"
-          value="Log in"
-          (click)="signIn(userName.value, userPassword.value)"
-        />
+        <!-- Calling SignIn Api from AuthService -->
+        <div class="formGroup">
+          <button
+            type="button"
+            name="button"
+            class="btn btnPrimary"
+            (click)="signIn(userName.value, userPassword.value)"
+          >
+            sign in
+          </button>
+        </div>
+        <div class="forgotPassword">
+          <a routerLink="/forgot-password">Forgot Password?</a>
+        </div>
       </div>
-
-      <div class="formGroup">
-        <span class="or"><span class="orInner">Or</span></span>
-      </div>
-
-      <div class="forgotPassword">
-        <span routerLink="/forgot-password">Forgot Password?</span>
-      </div>
-    </div>
-
-    <div class="redirectToLogin">
-      <span
-        >Don't have an account?<span
-          class="redirect"
-          routerLink="/register-user"
+      <div class="redirectToLogin">
+        <span
+          >Don't have an account?<a
+            class="redirect"
+            routerLink="/register-user"
+          >
+            Sign Up</a
+          ></span
         >
-          Sign Up</span
-        ></span
-      >
+      </div>
     </div>
   </div>
 </div>

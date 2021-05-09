@@ -77,7 +77,14 @@ body {
   }
 }
 
-button {
+input {
+  border-radius: 5px;
+  padding: 2.5px;
+  border-color: $off-gray;
+}
+
+button,
+.btn {
   display: flex;
   align-items: center;
   background-color: $orange;
@@ -153,6 +160,29 @@ table {
     &:last-child {
       border-bottom: none;
     }
+  }
+}
+
+/* Login Styles */
+.login-container {
+  padding: 0.5rem;
+  color: #000000;
+  cursor: default;
+
+  button,
+  a {
+    cursor: pointer;
+  }
+
+  a,
+  .redirectToLogin {
+    font-size: 14px;
+  }
+
+  .btnPrimary {
+    margin-top: 0;
+    color: #ffffff;
+    border: #e8e8e8 2.5px solid;
   }
 }
 

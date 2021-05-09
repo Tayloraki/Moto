@@ -1,15 +1,34 @@
-@import "../styles.scss";
+@import '../styles.scss';
 
 header {
   background-color: $orange;
   color: white;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  // border-top-left-radius: 10px;
+  // border-top-right-radius: 10px;
   border-bottom: 1px solid $gray;
   display: flex;
   justify-content: center;
   align-items: flex-start;
   cursor: pointer;
+
+  #account-circle {
+    position: fixed;
+    right: 5px;
+    top: 2.5px;
+  }
+
+  #dropdown-container {
+    position: fixed;
+    right: 5px;
+    top: 40px;
+    border-radius: 10px;
+    background-color: $off-gray;
+    border: 5px solid white;
+
+    .directToLogin > * {
+      margin-bottom: 0.5rem;
+    }
+  }
 
   .title {
     font-size: 5.5rem;

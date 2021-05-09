@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { DataService } from '../core/services/data-service.service'
-import { AuthService } from '../core/services/auth.service'
 import { Subscription } from 'rxjs'
 import { Router } from '@angular/router'
 import { parse } from 'papaparse'
@@ -28,8 +27,6 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   noLinks: boolean = false
   duplicateLinks: boolean = false
   loading: boolean = false
-  error: boolean = false
-  errorMessage: any = ''
 
   spreadsheetMimes: string[] = [
     'application/vnd.ms-excel',
@@ -39,13 +36,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   ]
 
   recipeScraperSubscription: Subscription = new Subscription()
-  signInSubscription: Subscription = new Subscription()
 
-  constructor(
-    private dataService: DataService,
-    private router: Router,
-    public authService: AuthService
-  ) {}
+  constructor(private dataService: DataService, private router: Router) {}
 
   ngOnInit() {
     if (this.isSessionStorage()) {
@@ -62,9 +54,6 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.recipeScraperSubscription) {
       this.recipeScraperSubscription.unsubscribe()
-    }
-    if (this.signInSubscription) {
-      this.signInSubscription.unsubscribe()
     }
   }
 
@@ -220,39 +209,6 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   clearSession(): void {
     sessionStorage.clear()
-  }
-
-  signIn(userName: string, userPassword: string): void {
-    this.error = false
-    this.signInSubscription = this.authService
-      .SignIn(userName, userPassword)
-      .subscribe(
-        (result) => {
-          this.router.navigate(['dashboard'])
-          this.authService.SetUserData(result.user)
-          this.signInSubscription.unsubscribe()
-        },
-        (error) => {
-          console.log(error)
-          this.error = true
-          this.signInError(error)
-          this.signInSubscription.unsubscribe()
-        }
-      )
-  }
-
-  signInError(error: any) {
-    if (error.code == 'auth/invalid-email') {
-      this.errorMessage = 'There is no account with this username'
-    } else if (error.code == 'auth/wrong-password') {
-      this.errorMessage = 'Incorrect password'
-    } else {
-      this.errorMessage = 'There was a problem logging in. Please try again.'
-    }
-  }
-
-  signOut(): void {
-    this.authService.SignOut()
   }
 
   testing(): void {}
