@@ -1,0 +1,26 @@
+@import '../../styles.scss';
+
+th {
+  color: white;
+}
+
+#ingredient-table {
+  .recipe-text {
+    width: 60%;
+  }
+
+  .working-text {
+    width: 40%;
+  }
+}
+
+.placeholder-name {
+  display: flex;
+  justify-content: flex-end;
+
+  .delete-button {
+    color: $red;
+    cursor: pointer;
+    margin-left: 1.25rem;
+  }
+}

@@ -1,0 +1,25 @@
+@import '../../styles.scss';
+
+.results:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+thead {
+  tr {
+    display: flex;
+    justify-content: flex-start;
+
+    .close-button {
+      color: $red;
+      cursor: pointer;
+      margin-left: 8vw;
+    }
+  }
+}
+
+tbody {
+  display: block;
+  height: 10vh;
+  overflow: hidden;
+  overflow-y: scroll;
+}

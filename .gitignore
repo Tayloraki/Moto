@@ -12,6 +12,7 @@
 /server/node_modules
 
 # secrets
+/server/token.json
 /server/credentials.json
 /src/config/config.ts
 server/token.json

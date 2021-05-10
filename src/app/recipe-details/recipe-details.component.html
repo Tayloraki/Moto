@@ -1,0 +1,65 @@
+<div class="page-container">
+  <div class="page-title">{{ title }}</div>
+  <div id="details-container" *ngIf="!loading">
+    <div id="ingredients-container">
+      <table>
+        <thead>
+          <th>Ingredients</th>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let ingredient of recipeNutrition"
+            (click)="openIngredient(ingredient)"
+          >
+            <td>{{ ingredient.metadata.original_input }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div>
+      <table>
+        <thead>
+          <th>Nutrition</th>
+        </thead>
+        <tbody>
+          <div *ngIf="loading">
+            <div class="spinner-border"></div>
+          </div>
+          <div *ngIf="!loading">
+            <tr *ngFor="let key of keys">
+              <td>{{ sums[key].total }} {{ sums[key].niceName }}</td>
+            </tr>
+          </div>
+        </tbody>
+      </table>
+      <table *ngIf="(ingredientNutrition | json) != '{}'">
+        <thead>
+          <th>
+            {{ ingredientNutrition.food_name | titlecase }}
+            <!-- <div (click)="closeIngredient()">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="white"
+                width="24px"
+                height="24px"
+              >
+                <path d="M0 0h24v24H0z" fill="none" />
+                <path
+                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                />
+              </svg>
+            </div> -->
+          </th>
+        </thead>
+        <tbody>
+          <tr *ngFor="let key of keys">
+            <td>
+              {{ ingredientSums[key].total }} {{ ingredientSums[key].niceName }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

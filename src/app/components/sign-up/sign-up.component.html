@@ -1,0 +1,41 @@
+<div class="page-container">
+  <div class="lg-gray-container">
+    <div class="title">Sign Up</div>
+    <div class="firebase-container">
+      <div class="authBlock">
+        <div class="formGroup">
+          <input
+            type="email"
+            class="formControl"
+            placeholder="Email Address"
+            #userEmail
+            required
+          />
+        </div>
+        <div class="formGroup">
+          <input
+            type="password"
+            class="formControl"
+            placeholder="Password"
+            #userPwd
+            required
+          />
+        </div>
+        <div class="formGroup">
+          <input
+            type="button"
+            class="btn btnPrimary"
+            value="Sign Up"
+            (click)="authService.SignUp(userEmail.value, userPwd.value)"
+          />
+        </div>
+      </div>
+      <div class="redirectToLogin">
+        <span
+          >Already have an account?
+          <a class="redirect" routerLink="/sign-in">Log In</a>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

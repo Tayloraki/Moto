@@ -1,0 +1,20 @@
+@import '../../styles.scss';
+
+#ingredients-container {
+  width: 50%;
+  padding-right: 5vw;
+}
+
+#details-container {
+  display: flex;
+  margin-top: 5vh;
+
+  // th {
+  //   display: flex;
+  //   justify-content: center;
+  // }
+
+  // svg {
+  //   margin-left: 2vw;
+  // }
+}

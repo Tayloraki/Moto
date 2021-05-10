@@ -1,0 +1,52 @@
+<div class="page-container">
+  <div class="lg-gray-container">
+    <div class="title">Sign In</div>
+    <div class="firebase-container">
+      <div class="signInError" *ngIf="error">
+        {{ errorMessage }}
+      </div>
+      <div class="authBlock">
+        <div class="formGroup">
+          <input
+            type="text"
+            class="formControl"
+            placeholder="Username"
+            #userName
+            required
+          />
+        </div>
+
+        <div class="formGroup">
+          <input
+            type="password"
+            class="formControl"
+            placeholder="Password"
+            (keyup.enter)="signIn(userName.value, userPassword.value)"
+            #userPassword
+            required
+          />
+        </div>
+      </div>
+      <!-- Calling SignIn Api from AuthService -->
+      <div class="formGroup">
+        <button
+          type="button"
+          name="button"
+          class="btn btnPrimary"
+          (click)="signIn(userName.value, userPassword.value)"
+        >
+          sign in
+        </button>
+      </div>
+      <div class="forgotPassword">
+        <a routerLink="/forgot-password">Forgot Password?</a>
+      </div>
+      <div class="redirectToLogin">
+        <span
+          >Don't have an account?
+          <a class="redirect" routerLink="/register-user">Sign Up</a>
+        </span>
+      </div>
+    </div>
+  </div>
+</div>

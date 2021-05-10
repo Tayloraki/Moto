@@ -1,14 +1,40 @@
-@import "../styles.scss";
+@import '../styles.scss';
 
 header {
   background-color: $orange;
   color: white;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  // border-top-left-radius: 10px;
+  // border-top-right-radius: 10px;
   border-bottom: 1px solid $gray;
   display: flex;
   justify-content: center;
   align-items: flex-start;
+  cursor: pointer;
+
+  #account-circle {
+    position: fixed;
+    right: 5px;
+    top: 2.5px;
+  }
+
+  #dropdown-container {
+    position: fixed;
+    right: 5px;
+    top: 40px;
+    z-index: 10;
+    border-radius: 10px;
+    background-color: $off-gray;
+    border: 5px solid $blue;
+    padding: 0;
+    color: #000000;
+    min-height: 216px;
+    min-width: 233px;
+
+    .directToLogin > *,
+    .userInfo > * {
+      margin-bottom: 0.5rem;
+    }
+  }
 
   .title {
     font-size: 5.5rem;
@@ -20,179 +46,16 @@ header {
 
   .subtitle {
     font-weight: bolder;
-    font-size: .9rem;
+    font-size: 0.9rem;
     font-family: cursive;
     color: $blue;
     letter-spacing: 1px;
   }
 }
 
-#moto-container {
-  background-color: $gray;
-  color: white;
-  font-size: 2.5rem;
-  padding: 5vh 2.5vw;
-  min-height: 75vh;
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  letter-spacing: 1px;
+.gray-svg {
+  fill: #dddddd;
 }
-
-#top-container {
-  padding: 2.5rem;
-  border-radius: 10px;
-  background-color: $blue;
-  border: 5px solid white;
+.blue-svg {
+  fill: #5982aa;
 }
-
-#input-container {
-  display: flex;
-  justify-content: center;
-
-  #text-links {
-    width: 100vw;
-    height: 40vh;
-    padding: 1vh 1vw;
-    border-radius: 5px;
-    background-color: white;
-    border: 2.5px solid $gray;
-  }
-
-  #file-container {
-    border-left: dashed 2.5px white;
-    margin-left: 2.5vw;
-    padding-left: 2.5vw;
-  }
-
-  div {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 1vw;
-  }
-
-  label {
-    font-size: 1rem;
-    font-style: italic;
-    text-align: center;
-  }
-
-  #file-upload {
-    padding: 1vw;
-  }
-}
-
-.button-container {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-}
-
-button {
-  background-color: $orange;
-  color: white;
-  font-size: 1.5rem;
-  padding: .5vh 2.75vw;
-  margin-top: 5vh;
-  cursor: pointer;
-  border: $gray 2.5px solid;
-  border-radius: 5px;
-  background: linear-gradient(135deg, $off-orange 25%, $orange 25%);
-
-  &:disabled {
-    opacity: .75;
-    cursor: not-allowed;
-  }
-}
-
-#links-container {
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    margin-top: 5vh;
-
-    table, th, td {
-        border-collapse: collapse;
-        width: 100%;
-    }
-
-    #links-table {
-        padding: 2vw;
-        border: 2.5px solid white;
-        width: 100%;
-        min-width: 100%;
-        max-width: 100%;
-
-        .status {
-          width: 10%;
-          min-width: 10%;
-          max-width: 10%;
-          vertical-align: baseline;
-
-          div {
-            padding-top: .5rem;
-          }
-        }
-
-        .name {
-          width: 20%;
-          min-width: 20%;
-          max-width: 20%;
-          vertical-align: baseline;
-        }
-
-        .try-again {
-          display: flex;
-          align-items: center;
-
-          .material-icons {
-            cursor: pointer;
-          }
-        }
-
-        .ingredient {
-          width: 70%;
-          min-width: 70%;
-          max-width: 70%;
-        }
-
-        thead {
-          width: 100%;
-          min-width: 100%;
-          max-width: 100%;
-        }
-
-        th {
-          background-color: $orange;
-          padding: .5rem;
-          font-size: 2rem;
-
-          &:first-child {
-            background: linear-gradient(135deg, $off-orange 25%, $orange 25%);
-            border-top-left-radius: 10px;
-          }
-          &:last-child {
-            border-top-right-radius: 10px;
-          }
-        }
-
-        td {
-          background-color: white;
-          font-size: 1rem;
-          padding: 1vh 1vw;
-          color: $blue;
-
-          a {
-            color: $blue;
-            font-weight: 600;
-          }
-        }
-
-        tr {
-          border-bottom: 1px solid $gray;
-          &:last-child {
-            border-bottom: none;
-          }
-        }
-    }
-  }

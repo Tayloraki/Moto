@@ -1,0 +1,25 @@
+<textarea id="text-search" [(ngModel)]="searchInput"> </textarea>
+<button (click)="searchIngredient()">Search</button>
+<table *ngIf="searching">
+  <thead>
+    <tr>
+      RESULTS:
+      <div class="close-button" (click)="closeTable()">X</div>
+    </tr>
+  </thead>
+  <tbody>
+    <tr
+      class="results"
+      *ngFor="let result of searchResults"
+      (click)="selectIngredient(result)"
+    >
+      {{
+        result.food_name
+      }}
+    </tr>
+  </tbody>
+</table>
+<div *ngIf="noResults">
+  Sorry, no results were found. Please try again with a different name or a
+  similar ingredient.
+</div>

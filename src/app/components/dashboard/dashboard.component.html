@@ -1,0 +1,67 @@
+<!-- Sidebar navigation -->
+<div class="page-container">
+  <div class="lg-gray-container">
+    <div
+      *ngIf="!authService.userData"
+      class="spinner-border text-light d-flex justify-content-center align-items-center"
+      style="width: 10rem; height: 10rem; margin: 5rem"
+      role="status"
+    >
+      <span class="sr-only">Loading...</span>
+    </div>
+    <span *ngIf="authService.userData" class="row">
+      <div class="sidebar">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active">
+                <i class="fas fa-user"></i>User Profile
+              </a>
+            </li>
+            <!-- Calling SignOut() Api from AuthService -->
+            <li class="nav-item">
+              <a class="nav-link" (click)="authService.SignOut()">
+                <i class="fas fa-sign-out-alt"></i>Log out
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- Main content -->
+      <main role="main" class="main-container">
+        <div class="title">User Profile</div>
+        <!-- Show user data when logged in -->
+        <div class="row" *ngIf="authService.userData as user">
+          <div class="col-12">
+            <div class="media">
+              <!-- <img
+                class="align-self-start mr-5 img-thumbnail rounded-circle"
+                src="{{
+                  user.photoURL ? user.photoURL : '/assets/dummy-user.png'
+                }}"
+                alt="{{ user.displayName }}"
+              /> -->
+              <div class="media-body">
+                <h1>
+                  Hello:
+                  <strong>{{
+                    user.displayName ? user.displayName : 'User'
+                  }}</strong>
+                </h1>
+                <p>
+                  User ID: <strong>{{ user.uid }}</strong>
+                </p>
+                <p>
+                  Email: <strong>{{ user.email }}</strong>
+                </p>
+                <p>
+                  Email Verified: <strong>{{ user.emailVerified }}</strong>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </span>
+  </div>
+</div>
