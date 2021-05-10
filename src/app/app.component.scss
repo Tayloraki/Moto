@@ -21,11 +21,17 @@ header {
     position: fixed;
     right: 5px;
     top: 40px;
+    z-index: 10;
     border-radius: 10px;
     background-color: $off-gray;
-    border: 5px solid white;
+    border: 5px solid $blue;
+    padding: 0;
+    color: #000000;
+    min-height: 216px;
+    min-width: 233px;
 
-    .directToLogin > * {
+    .directToLogin > *,
+    .userInfo > * {
       margin-bottom: 0.5rem;
     }
   }

@@ -44,6 +44,22 @@ body {
   border: 5px solid white;
 }
 
+.lg-gray-container {
+  background-color: $off-gray;
+  color: #000000;
+  border-radius: 10px;
+  border: 5px solid white;
+
+  .title {
+    background-color: $blue;
+    color: #ffffff;
+    padding: 0.5rem 2.5rem;
+    font-size: 2rem;
+    letter-spacing: 2.5px;
+    font-weight: 900;
+  }
+}
+
 .textured-background {
   background: linear-gradient(135deg, $off-orange 25%, transparent 25%) 50px 0,
     linear-gradient(225deg, $off-orange 25%, transparent 25%) 50px 0,
@@ -164,10 +180,13 @@ table {
 }
 
 /* Login Styles */
-.login-container {
-  padding: 0.5rem;
-  color: #000000;
+.firebase-container {
+  padding: 0 2.5rem 2.5rem 2.5rem;
   cursor: default;
+
+  > * {
+    margin: 0.5rem;
+  }
 
   button,
   a {
@@ -177,6 +196,10 @@ table {
   a,
   .redirectToLogin {
     font-size: 14px;
+  }
+
+  .formControl {
+    margin-bottom: 0.5rem;
   }
 
   .btnPrimary {

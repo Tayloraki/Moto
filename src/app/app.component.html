@@ -19,7 +19,7 @@
   </span>
   <div
     id="dropdown-container"
-    class="login-container"
+    class="firebase-container"
     *ngIf="showAccountDropdown"
   >
     <div *ngIf="!authService.userData" class="directToLogin">
@@ -71,18 +71,18 @@
       </div>
     </div>
     <div class="userInfo" *ngIf="authService.userData as user">
-      <div>
+      <p>
         Hi <strong>{{ user.email }}</strong>
-        <div><a class="direct" routerLink="/dashboard">View Account</a></div>
-        <button
-          type="button"
-          name="button"
-          class="btn btnPrimary"
-          (click)="signOut()"
-        >
-          sign out
-        </button>
-      </div>
+      </p>
+      <div><a class="direct" routerLink="/dashboard">View Account</a></div>
+      <button
+        type="button"
+        name="button"
+        class="btn btnPrimary"
+        (click)="signOut()"
+      >
+        sign out
+      </button>
     </div>
   </div>
   <span>

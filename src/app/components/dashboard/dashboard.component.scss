@@ -1,0 +1,25 @@
+@import '../../../styles.scss';
+
+.sidebar {
+  background-color: $orange;
+  padding-top: 0.5rem;
+  a.nav-link {
+    color: white;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+.main-container {
+  padding: 0;
+
+  .media-body {
+    padding: 15px;
+  }
+  strong {
+    color: $blue;
+  }
+}
