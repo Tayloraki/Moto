@@ -1,6 +1,8 @@
 <header routerLink="/" class="textured-background">
   <span
-    (click)="toggleSignInDropdown($event)"
+    (click)="
+      $event.stopPropagation(); showAccountDropdown = !showAccountDropdown
+    "
     id="account-circle"
     class="pointer"
   >
@@ -55,13 +57,17 @@
           type="button"
           name="button"
           class="btn btnPrimary"
-          (click)="signIn(userName.value, userPassword.value)"
+          (click)="
+            $event.stopPropagation(); signIn(userName.value, userPassword.value)
+          "
         >
           sign in
         </button>
       </div>
       <div class="forgotPassword">
-        <a routerLink="/forgot-password">Forgot Password?</a>
+        <a routerLink="/forgot-password" (click)="$event.stopPropagation()"
+          >Forgot Password?</a
+        >
       </div>
       <div class="redirectToLogin">
         <span
@@ -74,12 +80,19 @@
       <p>
         Hi <strong>{{ user.email }}</strong>
       </p>
-      <div><a class="direct" routerLink="/dashboard">View Account</a></div>
+      <div>
+        <a
+          class="direct"
+          routerLink="/dashboard"
+          (click)="$event.stopPropagation()"
+          >View Account</a
+        >
+      </div>
       <button
         type="button"
         name="button"
         class="btn btnPrimary"
-        (click)="signOut()"
+        (click)="$event.stopPropagation(); signOut()"
       >
         sign out
       </button>

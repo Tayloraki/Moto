@@ -30,11 +30,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  toggleSignInDropdown(event: Event) {
-    event.stopPropagation()
-    this.showAccountDropdown = !this.showAccountDropdown
-  }
-
   signIn(userName: string, userPassword: string): void {
     this.error = false
     this.signInSubscription = this.authService
