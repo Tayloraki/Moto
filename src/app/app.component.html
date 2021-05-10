@@ -11,7 +11,10 @@
       height="36px"
       viewBox="0 0 24 24"
       width="36px"
-      fill="#e8e8e8"
+      [ngClass]="{
+        'gray-svg': !authService.userData,
+        'blue-svg': authService.userData
+      }"
     >
       <path d="M0 0h24v24H0V0z" fill="none" />
       <path

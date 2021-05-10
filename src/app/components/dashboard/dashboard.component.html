@@ -1,11 +1,16 @@
 <!-- Sidebar navigation -->
 <div class="page-container">
   <div class="lg-gray-container">
-    <div *ngIf="!authService.userData">
-      <div class="spinner-border"></div>
+    <div
+      *ngIf="!authService.userData"
+      class="spinner-border text-light d-flex justify-content-center align-items-center"
+      style="width: 10rem; height: 10rem; margin: 5rem"
+      role="status"
+    >
+      <span class="sr-only">Loading...</span>
     </div>
     <span *ngIf="authService.userData" class="row">
-      <div class="col-2 sidebar">
+      <div class="sidebar">
         <div class="sidebar-sticky">
           <ul class="nav flex-column">
             <li class="nav-item">
@@ -23,7 +28,7 @@
         </div>
       </div>
       <!-- Main content -->
-      <main role="main" class="main-container col-10">
+      <main role="main" class="main-container">
         <div class="title">User Profile</div>
         <!-- Show user data when logged in -->
         <div class="row" *ngIf="authService.userData as user">
