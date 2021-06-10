@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from '@angular/core'
-import { User } from '../services/user'
+import { User } from '../models/user'
 // import { auth } from 'firebase/app' for 3rd party sign-in (google/fb)
 import { AngularFireAuth } from '@angular/fire/auth'
 import {
@@ -112,7 +112,6 @@ export class AuthService {
       email: user.email,
       displayName: user.displayName,
       emailVerified: user.emailVerified,
-      recipes: [],
     }
     return userRef.set(userData, {
       merge: true,

@@ -2149,17 +2149,19 @@ export class RecipeDetailsModalComponent implements OnInit {
       recipeIngredient: recipeIngredient,
       candidates: ingredientsAPI.foods,
       selected: {},
+      error: true,
     }
     this.allIngredientResults.push(ingredientResults)
   }
 
-  // adds no return error ingredients to ingredientataset for display purposes in the modal
+  // adds no return error ingredients to ingredient dataset for display purposes in the modal
   // for user ingredient search
   error101IngredientByResults(recipeIngredient: any) {
     let ingredientResults = {
       recipeIngredient: recipeIngredient,
       candidates: [],
       selected: {},
+      error: true,
     }
     this.allIngredientResults.push(ingredientResults)
   }
@@ -2171,6 +2173,7 @@ export class RecipeDetailsModalComponent implements OnInit {
       recipeIngredient: ingredient.metadata.original_input,
       candidates: [],
       selected: ingredient,
+      error: false,
     }
     this.allIngredientResults.push(ingredientResults)
   }
@@ -2187,6 +2190,11 @@ export class RecipeDetailsModalComponent implements OnInit {
   // add all selected candidates to array of successfully got ingredients
   confirmAllIngredient() {
     for (let ingredient of this.allIngredientResults) {
+      if (ingredient.error) {
+        ingredient.selected.metadata.error = true
+      } else {
+        ingredient.selected.metadata.error = false
+      }
       this.finalIngredients.push(ingredient.selected)
     }
   }

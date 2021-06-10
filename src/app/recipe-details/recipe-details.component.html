@@ -8,7 +8,7 @@
         </thead>
         <tbody>
           <tr
-            *ngFor="let ingredient of recipeNutrition"
+            *ngFor="let ingredient of confirmedIngredients"
             (click)="openIngredient(ingredient)"
           >
             <td>{{ ingredient.metadata.original_input }}</td>

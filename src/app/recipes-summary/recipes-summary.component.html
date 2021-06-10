@@ -131,11 +131,16 @@
             </div>
           </td>
           <td class="name">
-            <div *ngIf="loading">
+            <!-- <div *ngIf="loading">
               <div class="spinner-border"></div>
             </div>
-            <div *ngIf="!loading">
-              <div *ngIf="recipe.status !== 'complete'" class="try-again">
+            <div *ngIf="!loading"> -->
+            <div>
+              <div
+                *ngIf="recipe.status === 'loading'"
+                class="spinner-border"
+              ></div>
+              <div *ngIf="recipe.status === 'error'" class="try-again">
                 <div (click)="retry(recipe)">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -151,9 +156,11 @@
                   </svg>
                 </div>
               </div>
-              <a href="{{ recipe.link }}" target="_blank">{{
-                recipe.data.name || recipe.link
-              }}</a>
+              <div *ngIf="recipe.status === 'complete'">
+                <a href="{{ recipe.link }}" target="_blank">{{
+                  recipe.data.name || recipe.link
+                }}</a>
+              </div>
             </div>
           </td>
         </tr>

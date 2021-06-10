@@ -1,9 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { DataService } from '../core/services/data-service.service'
-import { Subscription } from 'rxjs'
+import { Subscription, BehaviorSubject } from 'rxjs'
 import { Router } from '@angular/router'
 import { parse } from 'papaparse'
-import { flatten, some, uniq } from 'underscore'
+import { flatten, rest, some, uniq } from 'underscore'
+import { RecipeService } from 'src/app/core/services/recipe.service'
 
 @Component({
   selector: 'app-recipes-summary',
@@ -12,16 +13,20 @@ import { flatten, some, uniq } from 'underscore'
 })
 export class RecipesSummaryComponent implements OnInit, OnDestroy {
   fake_links: string[] = [
-    'https://www.seriouseats.com/recipes/2021/01/crispy-fried-garlic-garlic-oil.html',
-    'https://www.seriouseats.com/recipes/2021/01/banh-trang-nuong-grilled-vietnamese-rice-paper.html',
-    'https://www.seriouseats.com/recipes/2021/01/fried-plantain-chips.html',
-    'https://www.seriouseats.com/recipes/2017/02/detroit-style-pizza-recipe.html',
-    'https://www.seriouseats.com/recipes/2017/06/ghana-west-african-peanut-stew-chicken-groundnut-soup.html',
+    'https://www.foodandwine.com/recipes/strawberry-rhubarb-cornmeal-skillet-cake', // recipe detail page error
+    'https://www.bonappetit.com/recipe/chicken-piccata-2',
+    'https://www.allrecipes.com/recipe/273236/ninas-filipino-fried-rice/',
+    'https://www.bonappetit.com/recipe/thai-roast-chicken-thighs-with-coconut-rice',
+    'https://www.bonappetit.com/recipe/baked-minty-rice-with-feta-and-pomegranate-relish',
+    'https://www.allrecipes.com/recipe/235000/thai-yellow-chicken-curry/',
+    'https://www.allrecipes.com/recipe/16354/easy-meatloaf/',
+    // 'https://www.seriouseats.com/recipes/2017/06/ghana-west-african-peanut-stew-chicken-groundnut-soup.html',
   ]
   links: string[] = []
   linksTextInput: string = ''
   recipes: any[] = [] // [ { link: string, data: object }]
   uploadedFiles: any
+  user: any
 
   // error booleans
   noLinks: boolean = false
@@ -35,25 +40,51 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     'text/tsv',
   ]
 
+  authSubscription: Subscription = new Subscription()
+  recipesSubscription: Subscription = new Subscription()
   recipeScraperSubscription: Subscription = new Subscription()
 
-  constructor(private dataService: DataService, private router: Router) {}
+  constructor(
+    private dataService: DataService,
+    private router: Router,
+    private recipeService: RecipeService
+  ) {}
 
   ngOnInit() {
     if (this.isSessionStorage()) {
-      let sessionKeys = Object.keys(sessionStorage)
-      for (let recipeKey in sessionKeys) {
-        let recipeName = sessionKeys[recipeKey]
-        // use getRecipeDB here
-        let recipe = sessionStorage.getItem(recipeName)
-        this.recipes.push(JSON.parse(recipe || '{}'))
-      }
+      this.recipes = this.dataService.getRecipesDB()
+    } else {
+      this.authSubscription = this.recipeService.authBehaviorSubject.subscribe(
+        (user: any) => {
+          if (user) {
+            this.user = user
+            this.recipesSubscription = this.recipeService
+              .getRecipesList()
+              .subscribe(
+                (res) => {
+                  this.recipes = res
+                  this.dataService.storeRecipesDB(res)
+                },
+                (error) => {
+                  console.log(error)
+                }
+              )
+            this.authSubscription.unsubscribe()
+          }
+        }
+      )
     }
   }
 
   ngOnDestroy(): void {
     if (this.recipeScraperSubscription) {
       this.recipeScraperSubscription.unsubscribe()
+    }
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe()
+    }
+    if (this.recipesSubscription) {
+      this.recipesSubscription.unsubscribe()
     }
   }
 
@@ -81,7 +112,6 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     // populates this.links with links from text and file inputs
     this.noLinks = false
     this.duplicateLinks = false
-    console.log(this.links)
 
     if (this.linksTextInput) {
       let inputLinks = this.splitLinks(this.linksTextInput)
@@ -98,21 +128,30 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   listRecipes(): void {
     // iterate over links, checking if they're already in recipes, and if not then getting the recipe for it
+    // also stores in session storage
     for (let link of this.links) {
       if (link) {
         if (this.recipes.some((r) => r.link === link)) {
           this.duplicateLinks = true
         } else {
           let recipe = {
+            name: '',
             link: link,
             data: {},
             status: 'loading',
+            // confirmedIngredients: [],
           }
           this.recipes.push(recipe)
-          this.getRecipe(recipe)
         }
       }
     }
+    for (let recipe of this.recipes) {
+      if (recipe.status !== 'loading') {
+      } else {
+        this.getRecipe(recipe)
+      }
+    }
+    this.dataService.storeRecipesDB(this.recipes)
   }
 
   getRecipe(recipe: any): void {
@@ -124,12 +163,13 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
         (res) => {
           if ((res as any).value) {
             recipe.data = (res as any).value
+            recipe.name = recipe.data.name
             recipe.status = 'complete'
-            this.dataService.storeRecipeDB(recipe)
             this.loading = false
+            this.storeRecipeFireDB(recipe)
           } else {
+            console.log(res)
             recipe.status = 'error'
-            console.log('no recipe')
           }
           this.recipeScraperSubscription.unsubscribe()
         },
@@ -154,8 +194,6 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   checkIfUrl(str: string) {
     let geturl = new RegExp(
       '((ftp|http|https|gopher|mailto|news|nntp|telnet|wais|file|prospero|aim|webcal):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))',
-      // one below gets bothered by things before the https
-      // "(^|[ \t\r\n])((ftp|http|https|gopher|mailto|news|nntp|telnet|wais|file|prospero|aim|webcal):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))"
       'g'
     )
     return str.match(geturl)
@@ -199,7 +237,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   }
 
   openRecipeDetails(recipe: any): void {
-    let title = recipe.data.name.replace(/ /g, '-')
+    let title = recipe.data.name.replace('-', '^')
+    title = title.replace(/ /g, '-')
     this.router.navigate(['/recipe', title])
   }
 
@@ -211,5 +250,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     sessionStorage.clear()
   }
 
-  testing(): void {}
+  storeRecipeFireDB(recipe: any): void {
+    this.recipeService.createRecipe(recipe)
+  }
 }

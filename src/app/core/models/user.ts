@@ -3,9 +3,4 @@ export interface User {
   email: string
   displayName: string
   emailVerified: boolean
-  recipes: {
-    name: string
-    link: string
-    //anything else
-  }[]
 }

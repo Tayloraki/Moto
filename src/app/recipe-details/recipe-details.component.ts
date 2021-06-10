@@ -13,18 +13,8 @@ import * as bootstrap from 'bootstrap'
   styleUrls: ['./recipe-details.component.scss'],
 })
 export class RecipeDetailsComponent implements OnInit {
+  // mock data variables
   fakeNlpRecipe: any = {}
-  title: string = 'nothing'
-  recipeData: any = []
-  ingredientsNlp: string = ''
-  recipeNutrition: any = []
-  fullApiResult: any = {}
-  ingredientNutrition: any = {}
-  allIngredientNutrition: any[] = []
-  loading: boolean = false
-
-  show: boolean = true
-
   fakeFoodId: string = '513fc9e73fe3ffd40300109f'
   fakeIngredientsNlp: string =
     'for breakfast i ate 2 eggs, bacon, a tomato, a grapefruit and half a cup of fish sauce'
@@ -2111,8 +2101,21 @@ export class RecipeDetailsComponent implements OnInit {
       },
     ],
   }
+  tempRecipeNutrition: string = '' // not being used
+  // mock data varialbles
 
-  tempRecipeNutrition: string = ''
+  recipe: any // single recipe object, app-wide class
+  title: string = 'nothing' // recipe niceName, used for url handling
+  recipeData: any = [] // entire recipes object in session storage
+  ingredientsNlp: string = '' // full list of recipe ingredients
+  confirmedIngredients: any = [] // full list of recipe ingredients AFTER user confirmation (in recipe-details-modal)
+  fullApiResult: any = {} // nutrionix API return of this.confirmedIngredients ingredients, sent to recipe-details-modal for error handling
+  ingredientNutrition: any = {} // nutritionix API return of single ingredient, changes with opening and closing of ingredient
+  allIngredientNutrition: any[] = [] // not being used
+  loading: boolean = false // used for display logic, (true after recipe-details-modal is completed)
+  show: boolean = true // not being used
+
+  confirmedIngredientsREF: any = []
 
   keys: string[] = [
     'nf_calories',
@@ -2138,7 +2141,6 @@ export class RecipeDetailsComponent implements OnInit {
     nf_total_carbohydrate: { total: 0, niceName: 'Carbohydrates (g)' },
     nf_total_fat: { total: 0, niceName: 'Fat (g)' },
   }
-
   ingredientSums: any = {
     nf_calories: { total: 0, niceName: 'Calories' },
     nf_cholesterol: { total: 0, niceName: 'Cholesterol' },
@@ -2164,27 +2166,53 @@ export class RecipeDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.title = this.route.snapshot.params.title
     this.title = this.title.split('-').join(' ')
-    this.recipeData = this.dataService.getRecipeDB(this.title)
+    this.title = this.title.replace('^', '-')
+    this.recipeData = this.dataService.getRecipesDB()
+    this.recipe = this.recipeData.find((x: any) => x.name === this.title)
 
-    for (let ingredient of this.recipeData.data.ingredients) {
-      this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
+    if (
+      this.recipe.confirmedIngredients === [] ||
+      !this.recipe.confirmedIngredients
+    ) {
+      for (let ingredient of this.recipe.data.ingredients) {
+        this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
+      }
+      this.loading = true
+      // let res = this.resFAKE //  use for mock data
+      // this.openModal(res) //  use for mock data
+      this.nutritionixNlpSubscription = this.dataService
+        .getFoodByNlp(this.ingredientsNlp)
+        .subscribe(
+          (res) => {
+            this.openModal(res)
+            this.nutritionixNlpSubscription.unsubscribe()
+          },
+          (err) => {
+            console.log(err)
+            this.nutritionixNlpSubscription.unsubscribe()
+          }
+        )
+    } else {
+      this.confirmedIngredients = this.recipe.confirmedIngredients
+      for (let ingredient of this.confirmedIngredients) {
+        this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
+      }
+      this.loading = true
+      this.nutritionixNlpSubscription = this.dataService
+        .getFoodByNlp(this.ingredientsNlp)
+        .subscribe(
+          (res) => {
+            this.confirmedIngredients = res.foods
+            this.calculateSums(this.confirmedIngredients)
+            this.loading = false
+            this.nutritionixNlpSubscription.unsubscribe()
+          },
+          (err) => {
+            console.log(err)
+            this.nutritionixNlpSubscription.unsubscribe()
+          }
+        )
     }
-    this.loading = true
-    // let res = this.resFAKE //  use for mock data
-    // this.openModal(res) //  use for mock data
-    this.nutritionixNlpSubscription = this.dataService
-      .getFoodByNlp(this.ingredientsNlp)
-      .subscribe(
-        (res) => {
-          this.openModal(res)
-          console.log(res)
-          this.nutritionixNlpSubscription.unsubscribe()
-        },
-        (err) => {
-          console.log(err)
-          this.nutritionixNlpSubscription.unsubscribe()
-        }
-      )
   }
 
   openModal(res: any) {
@@ -2197,8 +2225,9 @@ export class RecipeDetailsComponent implements OnInit {
     modalRef.componentInstance.recipeTitle = this.title
 
     modalRef.result.then((confirmedIngredients) => {
-      this.recipeNutrition = confirmedIngredients
-      this.calculateSums(this.recipeNutrition)
+      this.confirmedIngredients = confirmedIngredients
+      this.calculateSums(this.confirmedIngredients)
+      this.editRecipeIngredients(this.confirmedIngredients)
       this.loading = false
     })
   }
@@ -2222,6 +2251,24 @@ export class RecipeDetailsComponent implements OnInit {
     for (let property in this.ingredientSums) {
       this.ingredientSums[property].total = this.ingredientNutrition[property]
     }
+  }
+
+  // edits recipe object with new confirmed ingredients for session storage and fireDB
+  editRecipeIngredients(ingredients: any) {
+    // this.recipe.confirmedIngredients = ingredients
+    for (let ingredient of ingredients) {
+      if (ingredient.metadata.error) {
+        this.confirmedIngredientsREF.push(ingredient.food_name)
+      } else {
+        this.confirmedIngredientsREF.push(ingredient.metadata.original_input)
+      }
+    }
+    this.recipe.confirmedIngredients = this.confirmedIngredientsREF
+    let recipesIndex = this.recipeData.findIndex(
+      (recipe: any) => recipe.name === this.recipe.name
+    )
+    this.recipeData[recipesIndex] = this.recipe
+    this.dataService.storeRecipesDB(this.recipeData)
   }
 
   // empties specific ingredient dataset to remove table display

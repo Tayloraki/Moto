@@ -14,6 +14,7 @@ export const environment = {
     apiKey: config.firebase_apiKey,
     authDomain: config.firebase_authDomain,
     projectId: config.firebase_projectId,
+    databaseURL: config.firebase_databaseURL,
     storageBucket: config.firebase_storageBucket,
     messagingSenderId: config.firebase_messagingSenderId,
     // appId: config.firebase_appId,
