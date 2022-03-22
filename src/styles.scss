@@ -147,6 +147,7 @@ td {
 table {
   padding: 2vw;
   border: 2.5px solid $orange;
+  border-radius: 10px;
   width: 100%;
   min-width: 100%;
   max-width: 100%;
@@ -161,6 +162,7 @@ table {
   th {
     background-color: $orange;
     font-size: 1.5rem;
+    color: #ffffff;
 
     &:first-child {
       border-top-left-radius: 10px;
