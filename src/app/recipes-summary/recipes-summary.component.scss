@@ -9,12 +9,12 @@
     height: 40vh;
     padding: 1vh 1vw;
     border-radius: 5px;
-    background-color: white;
-    border: 2.5px solid $gray;
+    background-color: #ffffff;
+    border: 1px solid $light-gray;
   }
 
   #file-container {
-    border-left: dashed 2.5px white;
+    border-left: dashed 1px $light-gray;
     margin-left: 2.5vw;
     padding-left: 2.5vw;
     width: 35%;
@@ -64,7 +64,7 @@
     }
 
     td.name {
-      border-left: dashed 2.5px $gray;
+      border-left: dashed 2.5px #ffffff;
 
       div {
         display: flex;

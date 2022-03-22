@@ -1,13 +1,35 @@
 /* You can add global styles to this file, and also import other style files */
-$blue: #5982aa;
-$gray: #e8e8e8;
-$off-gray: #dddddd;
-$orange: #d24b4c;
+$blue: #0250ff;
+$orange: #ff3403;
+$gray: #333333;
+$light-gray: #e3e3e3;
 $off-orange: #ea5455;
 $error-red: #ea5455;
 
 body {
   font-family: Arial, Helvetica, sans-serif;
+}
+
+textarea {
+  box-shadow: rgba(255, 52, 3, 0.125) 2px 8px 10px;
+  &:hover,
+  &:active,
+  &:focus {
+    box-shadow: rgba(255, 52, 3, 0.125) 4px 16px 20px;
+  }
+}
+header,
+button,
+input {
+  box-shadow: rgba(0, 0, 0, 0.33) 2px 8px 10px;
+  &:hover,
+  &:active,
+  &:focus {
+    box-shadow: rgba(0, 0, 0, 0.33) 4px 16px 20px;
+  }
+}
+header {
+  margin-bottom: 3px;
 }
 
 .error-container {
@@ -16,7 +38,7 @@ body {
 
   div {
     background-color: $error-red;
-    border: 2.5px white solid;
+    border: 2.5px #ffffff solid;
     margin-top: 3rem;
     padding: 1rem;
     border-radius: 5px;
@@ -26,8 +48,8 @@ body {
 }
 
 .page-container {
-  background-color: $gray;
-  color: white;
+  background-color: #ffffff;
+  color: $gray;
   font-size: 0.9rem;
   font-family: Arial, Helvetica, sans-serif;
   padding: 5vh 2.5vw;
@@ -37,21 +59,20 @@ body {
   letter-spacing: 1px;
 }
 
-.lg-blue-container {
+.lg-container {
   padding: 2.5rem;
   border-radius: 10px;
-  background-color: $blue;
-  border: 5px solid white;
+  // border: 5px solid $gray;
 }
 
 .lg-gray-container {
-  background-color: $off-gray;
+  background-color: $light-gray;
   color: #000000;
   border-radius: 10px;
-  border: 5px solid white;
+  border: 5px solid #ffffff;
 
   .title {
-    background-color: $blue;
+    background-color: $orange;
     color: #ffffff;
     padding: 0.5rem 2.5rem;
     font-size: 2rem;
@@ -60,20 +81,11 @@ body {
   }
 }
 
-.textured-background {
-  background: linear-gradient(135deg, $off-orange 25%, transparent 25%) 50px 0,
-    linear-gradient(225deg, $off-orange 25%, transparent 25%) 50px 0,
-    linear-gradient(315deg, $off-orange 25%, transparent 25%),
-    linear-gradient(45deg, $off-orange 25%, transparent 25%);
-  background-size: 175px 150px;
-  background-color: $orange;
-}
-
 .page-title {
-  color: $blue;
+  color: $orange;
   font-weight: 900;
   letter-spacing: 2.5px;
-  text-shadow: 2.5px 1.5px white;
+  text-shadow: 2.5px 1.5px #ffffff;
   text-decoration: underline;
   font-size: 2rem;
 }
@@ -96,7 +108,7 @@ body {
 input {
   border-radius: 5px;
   padding: 2.5px;
-  border-color: $off-gray;
+  border-color: #ffffff;
 }
 
 button,
@@ -104,14 +116,14 @@ button,
   display: flex;
   align-items: center;
   background-color: $orange;
-  color: white;
+  color: #ffffff;
   font-size: 1.5rem;
   padding: 0.5vh 2.75vw;
   margin-top: 5vh;
   cursor: pointer;
-  border: $gray 2.5px solid;
-  border-radius: 5px;
-  background: linear-gradient(135deg, $off-orange 25%, $orange 25%);
+  border: #ffffff 1px solid;
+  border-radius: 10px;
+  // background: linear-gradient(135deg, $off-orange 25%, $orange 25%);
 
   &:disabled {
     opacity: 0.75;
@@ -134,10 +146,11 @@ td {
 
 table {
   padding: 2vw;
-  border: 2.5px solid white;
+  border: 2.5px solid $orange;
   width: 100%;
   min-width: 100%;
   max-width: 100%;
+  color: $gray;
 
   thead {
     width: 100%;
@@ -147,12 +160,11 @@ table {
 
   th {
     background-color: $orange;
-    padding: 0.5rem;
-    font-size: 2rem;
+    font-size: 1.5rem;
 
     &:first-child {
-      background: linear-gradient(135deg, $off-orange 25%, $orange 25%);
       border-top-left-radius: 10px;
+      padding-left: 0.5rem;
     }
     &:last-child {
       border-top-right-radius: 10px;
@@ -160,10 +172,10 @@ table {
   }
 
   td {
-    background-color: white;
+    background-color: #ffffff;
     font-size: 1rem;
     padding: 1vh 1vw;
-    color: $blue;
+    color: #ffffff;
 
     a {
       color: $blue;
@@ -172,7 +184,7 @@ table {
   }
 
   tr {
-    border-bottom: 1px solid $gray;
+    border-bottom: 1px solid #ffffff;
     &:last-child {
       border-bottom: none;
     }
@@ -204,9 +216,13 @@ table {
 
   .btnPrimary {
     margin-top: 0;
-    color: #ffffff;
-    border: #e8e8e8 2.5px solid;
+    color: $orange;
+    border: $orange 2.5px solid;
   }
+}
+
+.spinner-border {
+  color: $orange;
 }
 
 /* Importing Bootstrap SCSS file. */

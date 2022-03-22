@@ -49,6 +49,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
         this.recipes.push(JSON.parse(recipe || '{}'))
       }
     }
+    this.links = this.fake_links
   }
 
   ngOnDestroy(): void {

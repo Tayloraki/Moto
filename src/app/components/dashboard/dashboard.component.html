@@ -29,7 +29,7 @@
       </div>
       <!-- Main content -->
       <main role="main" class="main-container">
-        <div class="title">User Profile</div>
+        <div class="bar-title">User Profile</div>
         <!-- Show user data when logged in -->
         <div class="row" *ngIf="authService.userData as user">
           <div class="col-12">
@@ -42,20 +42,23 @@
                 alt="{{ user.displayName }}"
               /> -->
               <div class="media-body">
-                <h1>
-                  Hello:
-                  <strong>{{
+                <h1 class="row">
+                  <span class="col-2">hello</span>
+                  <strong class="col">{{
                     user.displayName ? user.displayName : 'User'
                   }}</strong>
                 </h1>
-                <p>
-                  User ID: <strong>{{ user.uid }}</strong>
+                <p class="row">
+                  <span class="col-2">user id </span
+                  ><strong class="col">{{ user.uid }}</strong>
                 </p>
-                <p>
-                  Email: <strong>{{ user.email }}</strong>
+                <p class="row">
+                  <span class="col-2">email </span
+                  ><strong class="col">{{ user.email }}</strong>
                 </p>
-                <p>
-                  Email Verified: <strong>{{ user.emailVerified }}</strong>
+                <p class="row">
+                  <span class="col-2">email verified </span
+                  ><strong class="col">{{ user.emailVerified }}</strong>
                 </p>
               </div>
             </div>
