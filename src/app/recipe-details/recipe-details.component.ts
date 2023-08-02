@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core'
+import { Component, Input, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { DataService } from '../core/services/data-service.service'
 import { RecipeDetailsModalComponent } from 'src/app/recipe-details-modal/recipe-details-modal.component'
@@ -14,7 +14,7 @@ import * as bootstrap from 'bootstrap'
 })
 export class RecipeDetailsComponent implements OnInit {
   fakeNlpRecipe: any = {}
-  title: string = 'nothing'
+  @Input() title: string = ''
   recipeData: any = []
   ingredientsNlp: string = ''
   recipeNutrition: any = []
@@ -2162,11 +2162,11 @@ export class RecipeDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.title = this.route.snapshot.params.title
-    this.title = this.title.split('-').join(' ')
+    // this.title = this.route.snapshot.params.title    when details was separate page
+    // this.title = this.title.split('-').join(' ')
     this.recipeData = this.dataService.getRecipeDB(this.title)
 
-    for (let ingredient of this.recipeData.data.ingredients) {
+    for (let ingredient of this.recipeData.data.recipeIngredients) {
       this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
     }
     this.loading = true

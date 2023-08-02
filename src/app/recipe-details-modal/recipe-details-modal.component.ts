@@ -2114,7 +2114,7 @@ export class RecipeDetailsModalComponent implements OnInit {
   ngOnInit(): void {
     this.errorIngredients = (this.fullApiResult as any).errors
     this.gotIngredients = (this.fullApiResult as any).foods
-    // this.errorIngredients = (this.resFAKE as any).errors //  use for mock data
+    // this.errorIngredients = (this.resFAKE as any).errors //  use for mock data 
     // this.gotIngredients = (this.resFAKE as any).foods //  use for mock data
 
     for (let ingredient of this.errorIngredients) {

@@ -22,6 +22,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   linksTextInput: string = ''
   recipes: any[] = [] // [ { link: string, data: object }]
   uploadedFiles: any
+  title: string = ''
 
   // error booleans
   noLinks: boolean = false
@@ -40,16 +41,16 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   constructor(private dataService: DataService, private router: Router) {}
 
   ngOnInit() {
-    if (this.isSessionStorage()) {
-      let sessionKeys = Object.keys(sessionStorage)
-      for (let recipeKey in sessionKeys) {
-        let recipeName = sessionKeys[recipeKey]
-        // use getRecipeDB here
-        let recipe = sessionStorage.getItem(recipeName)
-        this.recipes.push(JSON.parse(recipe || '{}'))
-      }
-    }
-    this.links = this.fake_links
+    // if (this.isSessionStorage()) {
+    //   let sessionKeys = Object.keys(sessionStorage)
+    //   for (let recipeKey in sessionKeys) {
+    //     let recipeName = sessionKeys[recipeKey]
+    //     // use getRecipeDB here
+    //     let recipe = sessionStorage.getItem(recipeName)
+    //     this.recipes.push(JSON.parse(recipe || '{}'))
+    //   }
+    // }
+    // this.links = this.fake_links
   }
 
   ngOnDestroy(): void {
@@ -59,6 +60,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   }
 
   convertButton() {
+    this.title = ''
     this.listLinks()
     this.listRecipes()
   }
@@ -82,7 +84,6 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     // populates this.links with links from text and file inputs
     this.noLinks = false
     this.duplicateLinks = false
-    console.log(this.links)
 
     if (this.linksTextInput) {
       let inputLinks = this.splitLinks(this.linksTextInput)
@@ -200,8 +201,9 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   }
 
   openRecipeDetails(recipe: any): void {
-    let title = recipe.data.name.replace(/ /g, '-')
-    this.router.navigate(['/recipe', title])
+    // let title = recipe.data.name.replace(/ /g, '-')    for when details opened new page
+    // this.router.navigate(['/recipe', title])
+    this.title = recipe.data.name
   }
 
   isSessionStorage(): boolean {

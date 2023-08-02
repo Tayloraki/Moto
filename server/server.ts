@@ -1,6 +1,7 @@
 const express = require('express')
 const app = express()
-const recipeScraper = require('recipe-scraper')
+// const recipeScraper = require('recipe-scraper')
+import getRecipeData from '@dimfu/recipe-scraper'
 
 app.listen(8000, () => {
   console.log('Server started!')
@@ -12,7 +13,7 @@ app.get('/', (req: any, res: any) => {
 
 app.get('/api/recipe/*', (req: any, res: any) => {
   let recipeUrl = req.params[0]
-  recipeScraper(recipeUrl)
+  getRecipeData(recipeUrl)
     .then((recipe) => {
       res.send({ value: recipe })
     })

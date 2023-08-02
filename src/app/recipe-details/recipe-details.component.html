@@ -1,6 +1,6 @@
 <div class="page-container">
   <div class="page-title">{{ title }}</div>
-  <div id="details-container" *ngIf="!loading">
+  <div id="details-container" *ngIf="!loading && title">
     <div id="ingredients-container">
       <table>
         <thead>
@@ -36,7 +36,7 @@
         <thead>
           <th>
             {{ ingredientNutrition.food_name | titlecase }}
-            <!-- <div (click)="closeIngredient()">
+            <!-- <div (click)="closeIngredient()" >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
