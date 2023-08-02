@@ -67,7 +67,7 @@ export class AuthService {
       })
   }
 
-  // Reset Forggot password
+  // Reset Forgot password
   ForgotPassword(passwordResetEmail: any) {
     return this.afAuth
       .sendPasswordResetEmail(passwordResetEmail)
@@ -79,7 +79,7 @@ export class AuthService {
       })
   }
 
-  // Returns true when user is looged in and email is verified
+  // Returns true when user is logged in and email is verified
   get isLoggedIn(): boolean {
     const user = JSON.parse(localStorage.getItem('user') || '{}') // added {} but preventing null may be issue
     return user !== null && user.emailVerified !== false ? true : false

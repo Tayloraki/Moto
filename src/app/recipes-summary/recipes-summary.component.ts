@@ -82,6 +82,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   listLinks() {
     // populates this.links with links from text and file inputs
+    this.links = []
     this.noLinks = false
     this.duplicateLinks = false
 
@@ -129,6 +130,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
             recipe.status = 'complete'
             this.dataService.storeRecipeDB(recipe)
             this.loading = false
+            this.openRecipeDetails(recipe)
           } else {
             recipe.status = 'error'
             console.log('no recipe')
@@ -154,6 +156,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   }
 
   checkIfUrl(str: string) {
+    // slightly pointless, bad links get through
     let geturl = new RegExp(
       '((ftp|http|https|gopher|mailto|news|nntp|telnet|wais|file|prospero|aim|webcal):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))',
       // one below gets bothered by things before the https
