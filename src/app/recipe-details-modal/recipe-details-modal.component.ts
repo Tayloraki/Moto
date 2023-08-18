@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs'
 import { DataService } from '../core/services/data-service.service'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { isEmpty, without } from 'underscore'
+import { AnyARecord } from 'dns'
 
 @Component({
   selector: 'app-recipe-details-modal',
@@ -12,7 +13,11 @@ import { isEmpty, without } from 'underscore'
 export class RecipeDetailsModalComponent implements OnInit {
   @Input() fullApiResult: any[] = []
   @Input() recipeTitle: string = ''
-  @Output() emitService = new EventEmitter()
+  // @Input() userPrompt: boolean
+  // @Output() userSelect = new EventEmitter()
+  recipeData: any = {}
+  servingSize: number = 1
+  userSetSize: number = 1
 
   gotIngredients: any[] = []
   errorIngredients: any[] = []
@@ -2114,9 +2119,13 @@ export class RecipeDetailsModalComponent implements OnInit {
   ngOnInit(): void {
     this.errorIngredients = (this.fullApiResult as any).errors
     this.gotIngredients = (this.fullApiResult as any).foods
-    // this.errorIngredients = (this.resFAKE as any).errors //  use for mock data 
+    // this.errorIngredients = (this.resFAKE as any).errors //  use for mock data
     // this.gotIngredients = (this.resFAKE as any).foods //  use for mock data
-
+    this.recipeData = this.dataService.getRecipeDB(this.recipeTitle)
+    console.log(this.recipeData)
+    this.servingSize = Number(this.recipeData.original_data.recipeYield)
+    this.userSetSize = this.servingSize
+    console.log(this.servingSize)
     for (let ingredient of this.errorIngredients) {
       let ingredientNlp = ingredient.original_text
       if (ingredient.err_code === 100) {
@@ -2184,7 +2193,7 @@ export class RecipeDetailsModalComponent implements OnInit {
     ingredient.selected.metadata.original_input = ingredient.recipeIngredient
   }
 
-  // add all selected candidates to array of successfully got ingredients
+  // add all selected candidates to array of successfully got ingredients, finalIngredients used as confirmedIngredients in parent component
   confirmAllIngredient() {
     for (let ingredient of this.allIngredientResults) {
       this.finalIngredients.push(ingredient.selected)
@@ -2258,6 +2267,25 @@ export class RecipeDetailsModalComponent implements OnInit {
       candidates: [],
       selected: ingredient,
     }
+    ingredientResults.selected.metadata.original_input = ingredient.food_name
     this.allIngredientResults.push(ingredientResults)
+    console.log(this.userSetSize)
+    console.log(this.recipeData)
   }
+
+  setServing() {
+    this.recipeData.filter_data.recipeYield = this.userSetSize
+    this.updateItem(this.recipeData)
+  }
+
+  updateItem(x: any) {
+    this.dataService.getRecipeDB(x.original_data.name)
+    this.dataService.storeRecipeDB(x)
+  }
+
+  // boolean handling to control ASYNC loading
+  // recipeReady() {
+  //   this.userPrompt = true
+  //   this.userSelect.emit(this.userPrompt)
+  // }
 }

@@ -1,0 +1,10 @@
+<h2>Percent of Daily Nutritional Needs</h2>
+<div>
+  <input
+    type="number"
+    name="numServes"
+    [ngModel]="numServes"
+    (ngModelChange)="changeNumServes($event)"
+  />
+</div>
+<figure id="bar"></figure>

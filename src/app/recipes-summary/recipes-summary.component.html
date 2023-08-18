@@ -161,6 +161,10 @@
         </tbody>
       </table>
     </div> -->
-    <app-recipe-details [title]="title" *ngIf="title"></app-recipe-details>
+    <app-recipe-details
+      [recipeNutrition]="recipeNutrition"
+      [recipeTitle]="title"
+      *ngIf="!detailsLoading"
+    ></app-recipe-details>
   </div>
 </div>

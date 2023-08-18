@@ -1,6 +1,6 @@
 <div class="page-container">
-  <div class="page-title">{{ title }}</div>
-  <div id="details-container" *ngIf="!loading && title">
+  <div class="page-title">{{ recipeTitle }}</div>
+  <div id="details-container">
     <div id="ingredients-container">
       <table>
         <thead>
@@ -62,4 +62,9 @@
       </table>
     </div>
   </div>
+  <app-figure
+    *ngIf="(figureData | json) != '{}'"
+    [figureData]="figureData"
+    [recipeTitle]="recipeTitle"
+  ></app-figure>
 </div>

@@ -4,6 +4,9 @@ import { Subscription } from 'rxjs'
 import { Router } from '@angular/router'
 import { parse } from 'papaparse'
 import { flatten, some, uniq } from 'underscore'
+import { RecipeDetailsModalComponent } from 'src/app/recipe-details-modal/recipe-details-modal.component'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import clone from 'just-clone'
 
 @Component({
   selector: 'app-recipes-summary',
@@ -28,6 +31,52 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   noLinks: boolean = false
   duplicateLinks: boolean = false
   loading: boolean = false
+  show: boolean = false
+
+  // new (previous recipe-details)
+  recipeData: any = []
+  ingredientsNlp: string = ''
+  recipeNutrition: any = []
+  fullApiResult: any = {}
+  ingredientNutrition: any = {}
+  keys: string[] = [
+    'nf_calories',
+    'nf_cholesterol',
+    'nf_dietary_fiber',
+    'nf_potassium',
+    'nf_protein',
+    'nf_saturated_fat',
+    'nf_sodium',
+    'nf_sugars',
+    'nf_total_carbohydrate',
+    'nf_total_fat',
+  ]
+  sums: any = {
+    nf_calories: { total: 0, niceName: 'Calories' },
+    nf_cholesterol: { total: 0, niceName: 'Cholesterol (mg)' },
+    nf_dietary_fiber: { total: 0, niceName: 'Dietary Fiber (g)' },
+    nf_potassium: { total: 0, niceName: 'Potassium (mg)' },
+    nf_protein: { total: 0, niceName: 'Protein (g)' },
+    nf_saturated_fat: { total: 0, niceName: 'Saturated Fat (mg)' },
+    nf_sodium: { total: 0, niceName: 'Sodium (mg)' },
+    nf_sugars: { total: 0, niceName: 'Sugars (g)' },
+    nf_total_carbohydrate: { total: 0, niceName: 'Carbohydrates (g)' },
+    nf_total_fat: { total: 0, niceName: 'Fat (g)' },
+  }
+  figureData: any = []
+  ingredientSums: any = {
+    nf_calories: { total: 0, niceName: 'Calories' },
+    nf_cholesterol: { total: 0, niceName: 'Cholesterol' },
+    nf_dietary_fiber: { total: 0, niceName: 'Dietary Fiber' },
+    nf_potassium: { total: 0, niceName: 'Potassium' },
+    nf_protein: { total: 0, niceName: 'Protein' },
+    nf_saturated_fat: { total: 0, niceName: 'Saturated Fat' },
+    nf_sodium: { total: 0, niceName: 'Sodium' },
+    nf_sugars: { total: 0, niceName: 'Sugars' },
+    nf_total_carbohydrate: { total: 0, niceName: 'Carbohydrates' },
+    nf_total_fat: { total: 0, niceName: 'Fat' },
+  }
+  detailsLoading: boolean = true
 
   spreadsheetMimes: string[] = [
     'application/vnd.ms-excel',
@@ -37,8 +86,14 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   ]
 
   recipeScraperSubscription: Subscription = new Subscription()
+  nutritionixFoodByIdSubscription: Subscription = new Subscription()
+  nutritionixNlpSubscription: Subscription = new Subscription()
 
-  constructor(private dataService: DataService, private router: Router) {}
+  constructor(
+    private dataService: DataService,
+    private router: Router,
+    private modalService: NgbModal
+  ) {}
 
   ngOnInit() {
     // if (this.isSessionStorage()) {
@@ -51,12 +106,19 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     //   }
     // }
     // this.links = this.fake_links
+    this.test() // TODO: comment out
   }
 
   ngOnDestroy(): void {
     if (this.recipeScraperSubscription) {
       this.recipeScraperSubscription.unsubscribe()
     }
+  }
+
+  test() {
+    this.linksTextInput =
+      'https://www.allrecipes.com/recipe/244188/copycat-chipotle-chicken/'
+    this.convertButton()
   }
 
   convertButton() {
@@ -108,7 +170,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
         } else {
           let recipe = {
             link: link,
-            data: {},
+            original_data: {},
+            filter_data: {},
             status: 'loading',
           }
           this.recipes.push(recipe)
@@ -126,11 +189,15 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       .subscribe(
         (res) => {
           if ((res as any).value) {
-            recipe.data = (res as any).value
+            console.log(res)
+            recipe.original_data = (res as any).value
+            recipe.filter_data = clone((res as any).value)
+            // recipe.filter_data.recipeYield = ''
             recipe.status = 'complete'
             this.dataService.storeRecipeDB(recipe)
             this.loading = false
             this.openRecipeDetails(recipe)
+            this.show = true
           } else {
             recipe.status = 'error'
             console.log('no recipe')
@@ -204,9 +271,60 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   }
 
   openRecipeDetails(recipe: any): void {
-    // let title = recipe.data.name.replace(/ /g, '-')    for when details opened new page
+    // let title = recipe.data.name.replace(/ /g, '-')    from when details opened new page
     // this.router.navigate(['/recipe', title])
-    this.title = recipe.data.name
+    // this.title = recipe.data.name
+    this.recipeData = recipe
+    for (let ingredient of recipe.original_data.recipeIngredients) {
+      this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
+    }
+    this.detailsLoading = true
+    // let res = this.resFAKE //  use for mock data
+    // this.openModal(res)    //  use for mock data
+    this.nutritionixNlpSubscription = this.dataService
+      .getFoodByNlp(this.ingredientsNlp)
+      .subscribe(
+        (res) => {
+          this.title = recipe.original_data.name
+          this.openModal(res)
+          console.log(res)
+          this.nutritionixNlpSubscription.unsubscribe()
+        },
+        (err) => {
+          console.log(err)
+          this.nutritionixNlpSubscription.unsubscribe()
+        }
+      )
+  }
+
+  // opens recipe-details-modal, passes recipe ingredient API results for user edit and submission
+  openModal(res: any) {
+    const modalRef = this.modalService.open(RecipeDetailsModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false,
+    })
+    modalRef.componentInstance.fullApiResult = res
+    modalRef.componentInstance.recipeTitle = this.title
+
+    modalRef.result.then((confirmedIngredients) => {
+      this.recipeNutrition = confirmedIngredients
+      this.calculateSums(this.recipeNutrition)
+      this.detailsLoading = false
+    })
+  }
+
+  // adds (desired) nutrition of each ingredient together, rounds
+  calculateSums(recipe: any) {
+    for (let ingredient of recipe) {
+      for (let property in this.sums) {
+        this.sums[property].total += ingredient[property]
+      }
+    }
+    for (let property in this.sums) {
+      this.sums[property].total =
+        Math.round(this.sums[property].total * 10) / 10
+    }
   }
 
   isSessionStorage(): boolean {

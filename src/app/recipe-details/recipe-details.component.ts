@@ -13,18 +13,59 @@ import * as bootstrap from 'bootstrap'
   styleUrls: ['./recipe-details.component.scss'],
 })
 export class RecipeDetailsComponent implements OnInit {
-  fakeNlpRecipe: any = {}
-  @Input() title: string = ''
   recipeData: any = []
   ingredientsNlp: string = ''
-  recipeNutrition: any = []
+  @Input() recipeNutrition: any = []
   fullApiResult: any = {}
   ingredientNutrition: any = {}
-  allIngredientNutrition: any[] = []
+  allIngredientNutrition: any[] = [] // currently not called
+  tempRecipeNutrition: string = '' // currently not called
+  @Input() recipeTitle: string = ''
+
+  keys: string[] = [
+    'nf_calories',
+    'nf_cholesterol',
+    'nf_dietary_fiber',
+    'nf_potassium',
+    'nf_protein',
+    'nf_saturated_fat',
+    'nf_sodium',
+    'nf_sugars',
+    'nf_total_carbohydrate',
+    'nf_total_fat',
+  ]
+  sums: any = {
+    nf_calories: { total: 0, niceName: 'Calories' },
+    nf_cholesterol: { total: 0, niceName: 'Cholesterol (mg)' },
+    nf_dietary_fiber: { total: 0, niceName: 'Dietary Fiber (g)' },
+    nf_potassium: { total: 0, niceName: 'Potassium (mg)' },
+    nf_protein: { total: 0, niceName: 'Protein (g)' },
+    nf_saturated_fat: { total: 0, niceName: 'Saturated Fat (mg)' },
+    nf_sodium: { total: 0, niceName: 'Sodium (mg)' },
+    nf_sugars: { total: 0, niceName: 'Sugars (g)' },
+    nf_total_carbohydrate: { total: 0, niceName: 'Carbohydrates (g)' },
+    nf_total_fat: { total: 0, niceName: 'Fat (g)' },
+  }
+  figureData: any = []
+  ingredientSums: any = {
+    nf_calories: { total: 0, niceName: 'Calories' },
+    nf_cholesterol: { total: 0, niceName: 'Cholesterol' },
+    nf_dietary_fiber: { total: 0, niceName: 'Dietary Fiber' },
+    nf_potassium: { total: 0, niceName: 'Potassium' },
+    nf_protein: { total: 0, niceName: 'Protein' },
+    nf_saturated_fat: { total: 0, niceName: 'Saturated Fat' },
+    nf_sodium: { total: 0, niceName: 'Sodium' },
+    nf_sugars: { total: 0, niceName: 'Sugars' },
+    nf_total_carbohydrate: { total: 0, niceName: 'Carbohydrates' },
+    nf_total_fat: { total: 0, niceName: 'Fat' },
+  }
+
+  // error booleans
   loading: boolean = false
+  show: boolean = false // currently not called
 
-  show: boolean = true
-
+  // mock data for testing
+  fakeNlpRecipe: any = {}
   fakeFoodId: string = '513fc9e73fe3ffd40300109f'
   fakeIngredientsNlp: string =
     'for breakfast i ate 2 eggs, bacon, a tomato, a grapefruit and half a cup of fish sauce'
@@ -2112,46 +2153,6 @@ export class RecipeDetailsComponent implements OnInit {
     ],
   }
 
-  tempRecipeNutrition: string = ''
-
-  keys: string[] = [
-    'nf_calories',
-    'nf_cholesterol',
-    'nf_dietary_fiber',
-    'nf_potassium',
-    'nf_protein',
-    'nf_saturated_fat',
-    'nf_sodium',
-    'nf_sugars',
-    'nf_total_carbohydrate',
-    'nf_total_fat',
-  ]
-  sums: any = {
-    nf_calories: { total: 0, niceName: 'Calories' },
-    nf_cholesterol: { total: 0, niceName: 'Cholesterol (mg)' },
-    nf_dietary_fiber: { total: 0, niceName: 'Dietary Fiber (g)' },
-    nf_potassium: { total: 0, niceName: 'Potassium (mg)' },
-    nf_protein: { total: 0, niceName: 'Protein (g)' },
-    nf_saturated_fat: { total: 0, niceName: 'Saturated Fat (mg)' },
-    nf_sodium: { total: 0, niceName: 'Sodium (mg)' },
-    nf_sugars: { total: 0, niceName: 'Sugars (g)' },
-    nf_total_carbohydrate: { total: 0, niceName: 'Carbohydrates (g)' },
-    nf_total_fat: { total: 0, niceName: 'Fat (g)' },
-  }
-
-  ingredientSums: any = {
-    nf_calories: { total: 0, niceName: 'Calories' },
-    nf_cholesterol: { total: 0, niceName: 'Cholesterol' },
-    nf_dietary_fiber: { total: 0, niceName: 'Dietary Fiber' },
-    nf_potassium: { total: 0, niceName: 'Potassium' },
-    nf_protein: { total: 0, niceName: 'Protein' },
-    nf_saturated_fat: { total: 0, niceName: 'Saturated Fat' },
-    nf_sodium: { total: 0, niceName: 'Sodium' },
-    nf_sugars: { total: 0, niceName: 'Sugars' },
-    nf_total_carbohydrate: { total: 0, niceName: 'Carbohydrates' },
-    nf_total_fat: { total: 0, niceName: 'Fat' },
-  }
-
   nutritionixFoodByIdSubscription: Subscription = new Subscription()
   nutritionixNlpSubscription: Subscription = new Subscription()
 
@@ -2162,48 +2163,55 @@ export class RecipeDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // this.title = this.route.snapshot.params.title    when details was separate page
-    // this.title = this.title.split('-').join(' ')
-    this.recipeData = this.dataService.getRecipeDB(this.title)
-
-    for (let ingredient of this.recipeData.data.recipeIngredients) {
-      this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
-    }
-    this.loading = true
-    // let res = this.resFAKE //  use for mock data
-    // this.openModal(res) //  use for mock data
-    this.nutritionixNlpSubscription = this.dataService
-      .getFoodByNlp(this.ingredientsNlp)
-      .subscribe(
-        (res) => {
-          this.openModal(res)
-          console.log(res)
-          this.nutritionixNlpSubscription.unsubscribe()
-        },
-        (err) => {
-          console.log(err)
-          this.nutritionixNlpSubscription.unsubscribe()
-        }
-      )
+    console.log(this.recipeNutrition)
+    console.log(this.recipeData)
+    this.calculateSums(this.recipeNutrition)
+    this.openFigures(this.sums)
+    // // this.title = this.route.snapshot.params.title    when details was separate page
+    // // this.title = this.title.split('-').join(' ')
+    // this.recipeData = this.dataService.getRecipeDB(this.title)
+    // for (let ingredient of this.recipeData.data.recipeIngredients) {
+    //   this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
+    // }
+    // this.loading = true
+    // // let res = this.resFAKE //  use for mock data
+    // // this.openModal(res)    //  use for mock data
+    // this.nutritionixNlpSubscription = this.dataService
+    //   .getFoodByNlp(this.ingredientsNlp)
+    //   .subscribe(
+    //     (res) => {
+    //       this.openModal(res)
+    //       console.log(res)
+    //       this.openFigures(this.sums)
+    //       console.log(this.figureData)
+    //       this.nutritionixNlpSubscription.unsubscribe()
+    //     },
+    //     (err) => {
+    //       console.log(err)
+    //       this.nutritionixNlpSubscription.unsubscribe()
+    //     }
+    //   )
+    // console.log(this.recipeNutrition)
   }
 
-  openModal(res: any) {
-    const modalRef = this.modalService.open(RecipeDetailsModalComponent, {
-      size: 'lg',
-      backdrop: 'static',
-      keyboard: false,
-    })
-    modalRef.componentInstance.fullApiResult = res
-    modalRef.componentInstance.recipeTitle = this.title
+  // // opens recipe-details-modal, passes recipe ingredient API results for user edit and submission
+  // openModal(res: any) {
+  //   const modalRef = this.modalService.open(RecipeDetailsModalComponent, {
+  //     size: 'lg',
+  //     backdrop: 'static',
+  //     keyboard: false,
+  //   })
+  //   modalRef.componentInstance.fullApiResult = res
+  //   modalRef.componentInstance.recipeTitle = this.title
 
-    modalRef.result.then((confirmedIngredients) => {
-      this.recipeNutrition = confirmedIngredients
-      this.calculateSums(this.recipeNutrition)
-      this.loading = false
-    })
-  }
+  //   modalRef.result.then((confirmedIngredients) => {
+  //     this.recipeNutrition = confirmedIngredients
+  //     this.calculateSums(this.recipeNutrition)
+  //     this.loading = false
+  //   })
+  // }
 
-  // adds (desired) nutrition of each ingredient together, rounds
+  // // adds (desired) nutrition of each ingredient together, rounds
   calculateSums(recipe: any) {
     for (let ingredient of recipe) {
       for (let property in this.sums) {
@@ -2222,10 +2230,22 @@ export class RecipeDetailsComponent implements OnInit {
     for (let property in this.ingredientSums) {
       this.ingredientSums[property].total = this.ingredientNutrition[property]
     }
+    // this.recipeData = this.dataService.getRecipeDB(this.recipeTitle)
+    // console.log(this.recipeData)
   }
 
   // empties specific ingredient dataset to remove table display
   closeIngredient() {
     this.ingredientNutrition = {}
   }
+
+  // populates this.figureData to display and pass to figure component
+  openFigures(recipeData: any) {
+    for (let property in recipeData) {
+      this.figureData.push(this.sums[property])
+    }
+  }
+
+  // recipeReady() {
+  // }
 }

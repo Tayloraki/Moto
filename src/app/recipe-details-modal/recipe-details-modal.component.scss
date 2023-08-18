@@ -24,3 +24,12 @@ th {
     margin-left: 1.25rem;
   }
 }
+
+#body-additional {
+  display: flex;
+  padding: 1vh;
+
+  .modal-additional {
+    padding: 1vh;
+  }
+}

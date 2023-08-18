@@ -63,10 +63,10 @@ export class DataService {
   }
 
   storeRecipeDB(recipe: any): void {
-    sessionStorage.setItem(recipe.data.name, JSON.stringify(recipe))
+    sessionStorage.setItem(recipe.original_data.name, JSON.stringify(recipe))
   }
 
-  getRecipeDB(title: string): void {
+  getRecipeDB(title: string): any {
     let recipe = sessionStorage.getItem(title)
     return JSON.parse(recipe || '{}')
   }

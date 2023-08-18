@@ -68,12 +68,20 @@
           </tr>
         </tbody>
       </table>
-      <div>
-        You may add any additional ingredients here.
-        <div>
-          <app-ingredient-search
-            (selectResult)="addSearch($event)"
-          ></app-ingredient-search>
+      <div id="body-additional">
+        <div class="modal-additional">
+          You may add any additional ingredients here.
+          <div>
+            <app-ingredient-search
+              (selectResult)="addSearch($event)"
+            ></app-ingredient-search>
+          </div>
+        </div>
+        <div class="modal-additional">
+          Please set how many servings this will make for you.
+          <div>
+            <input type="number" name="userSetSize" [(ngModel)]="userSetSize" />
+          </div>
         </div>
       </div>
     </div>
@@ -82,7 +90,11 @@
         type="button"
         class="btn btn-secondary"
         data-dismiss="modal"
-        (click)="confirmAllIngredient(); activeModal.close(finalIngredients)"
+        (click)="
+          confirmAllIngredient();
+          activeModal.close(finalIngredients);
+          setServing()
+        "
         [disabled]="allConfirmed()"
       >
         Continue
