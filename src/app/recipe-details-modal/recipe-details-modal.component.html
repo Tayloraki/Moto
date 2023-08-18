@@ -80,7 +80,12 @@
         <div class="modal-additional">
           Please set how many servings this will make for you.
           <div>
-            <input type="number" name="userSetSize" [(ngModel)]="userSetSize" />
+            <input
+              type="number"
+              name="userSetSize"
+              [(ngModel)]="userSetSize"
+              min="1"
+            />
           </div>
         </div>
       </div>

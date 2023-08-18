@@ -16,8 +16,8 @@ export class RecipeDetailsModalComponent implements OnInit {
   // @Input() userPrompt: boolean
   // @Output() userSelect = new EventEmitter()
   recipeData: any = {}
-  servingSize: number = 1
-  userSetSize: number = 1
+  servingSize: number = 1 // original recipeYield
+  userSetSize: number = 1 // user-set recipeYield
 
   gotIngredients: any[] = []
   errorIngredients: any[] = []
@@ -2122,10 +2122,9 @@ export class RecipeDetailsModalComponent implements OnInit {
     // this.errorIngredients = (this.resFAKE as any).errors //  use for mock data
     // this.gotIngredients = (this.resFAKE as any).foods //  use for mock data
     this.recipeData = this.dataService.getRecipeDB(this.recipeTitle)
-    console.log(this.recipeData)
     this.servingSize = Number(this.recipeData.original_data.recipeYield)
     this.userSetSize = this.servingSize
-    console.log(this.servingSize)
+    // this.checkVariables()
     for (let ingredient of this.errorIngredients) {
       let ingredientNlp = ingredient.original_text
       if (ingredient.err_code === 100) {
@@ -2149,6 +2148,13 @@ export class RecipeDetailsModalComponent implements OnInit {
     for (let ingredient of this.gotIngredients) {
       this.gotIngredientByResults(ingredient)
     }
+  }
+
+  checkVariables(): void {
+    console.log('this.recipeData:')
+    console.log(this.recipeData)
+    console.log('this.servingSize:')
+    console.log(this.servingSize)
   }
 
   // creates dataset of original ingredient description/ MULTIPLE potential ingredient nutrition from API/ empty field for
@@ -2269,23 +2275,17 @@ export class RecipeDetailsModalComponent implements OnInit {
     }
     ingredientResults.selected.metadata.original_input = ingredient.food_name
     this.allIngredientResults.push(ingredientResults)
-    console.log(this.userSetSize)
-    console.log(this.recipeData)
   }
 
+  // updates filtered recipeYield
   setServing() {
     this.recipeData.filter_data.recipeYield = this.userSetSize
     this.updateItem(this.recipeData)
   }
 
+  // updates recipe object
   updateItem(x: any) {
     this.dataService.getRecipeDB(x.original_data.name)
     this.dataService.storeRecipeDB(x)
   }
-
-  // boolean handling to control ASYNC loading
-  // recipeReady() {
-  //   this.userPrompt = true
-  //   this.userSelect.emit(this.userPrompt)
-  // }
 }

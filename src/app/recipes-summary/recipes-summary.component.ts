@@ -106,7 +106,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     //   }
     // }
     // this.links = this.fake_links
-    this.test() // TODO: comment out
+    // this.test() // TODO: comment out
   }
 
   ngOnDestroy(): void {
@@ -117,7 +117,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   test() {
     this.linksTextInput =
-      'https://www.allrecipes.com/recipe/244188/copycat-chipotle-chicken/'
+      'https://www.seriouseats.com/negroni-cocktail-recipe-gin-campari-vermouth'
     this.convertButton()
   }
 
@@ -127,14 +127,14 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     this.listRecipes()
   }
 
+  // retry scraping a recipe
   retry(recipe: any): void {
-    // retry scraping a recipe
     recipe.status = 'loading'
     this.getRecipe(recipe)
   }
 
+  // search recipes for any incomplete/errors and retry scraping their recipes
   retryMany(): void {
-    // search recipes for any incomplete/errors and retry scraping their recipes
     for (let recipe of this.recipes) {
       if (recipe.status !== 'complete') {
         this.retry(recipe)
@@ -142,8 +142,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
+  // populates this.links with links from text and file inputs
   listLinks() {
-    // populates this.links with links from text and file inputs
     this.links = []
     this.noLinks = false
     this.duplicateLinks = false
@@ -161,8 +161,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
+  // iterate over links, checking if they're already in recipes, and if not then getting the recipe for it
   listRecipes(): void {
-    // iterate over links, checking if they're already in recipes, and if not then getting the recipe for it
     for (let link of this.links) {
       if (link) {
         if (this.recipes.some((r) => r.link === link)) {
@@ -181,18 +181,18 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
+  // scrape recipe for a link
   getRecipe(recipe: any): void {
-    // scrape recipe for a link
     this.loading = true
     this.recipeScraperSubscription = this.dataService
       .getScrapedRecipe(recipe.link)
       .subscribe(
         (res) => {
           if ((res as any).value) {
-            console.log(res)
+            // console.log(res)
+            console.log('recipe object gotten')
             recipe.original_data = (res as any).value
             recipe.filter_data = clone((res as any).value)
-            // recipe.filter_data.recipeYield = ''
             recipe.status = 'complete'
             this.dataService.storeRecipeDB(recipe)
             this.loading = false
@@ -222,8 +222,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     }
   }
 
+  // slightly pointless, bad links get through
   checkIfUrl(str: string) {
-    // slightly pointless, bad links get through
     let geturl = new RegExp(
       '((ftp|http|https|gopher|mailto|news|nntp|telnet|wais|file|prospero|aim|webcal):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))',
       // one below gets bothered by things before the https
@@ -271,9 +271,6 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   }
 
   openRecipeDetails(recipe: any): void {
-    // let title = recipe.data.name.replace(/ /g, '-')    from when details opened new page
-    // this.router.navigate(['/recipe', title])
-    // this.title = recipe.data.name
     this.recipeData = recipe
     for (let ingredient of recipe.original_data.recipeIngredients) {
       this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
@@ -287,7 +284,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
         (res) => {
           this.title = recipe.original_data.name
           this.openModal(res)
-          console.log(res)
+          // console.log(res)
+          console.log('recipe ingredients gotten')
           this.nutritionixNlpSubscription.unsubscribe()
         },
         (err) => {

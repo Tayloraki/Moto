@@ -2163,53 +2163,17 @@ export class RecipeDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.recipeNutrition)
-    console.log(this.recipeData)
     this.calculateSums(this.recipeNutrition)
     this.openFigures(this.sums)
-    // // this.title = this.route.snapshot.params.title    when details was separate page
-    // // this.title = this.title.split('-').join(' ')
-    // this.recipeData = this.dataService.getRecipeDB(this.title)
-    // for (let ingredient of this.recipeData.data.recipeIngredients) {
-    //   this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
-    // }
-    // this.loading = true
-    // // let res = this.resFAKE //  use for mock data
-    // // this.openModal(res)    //  use for mock data
-    // this.nutritionixNlpSubscription = this.dataService
-    //   .getFoodByNlp(this.ingredientsNlp)
-    //   .subscribe(
-    //     (res) => {
-    //       this.openModal(res)
-    //       console.log(res)
-    //       this.openFigures(this.sums)
-    //       console.log(this.figureData)
-    //       this.nutritionixNlpSubscription.unsubscribe()
-    //     },
-    //     (err) => {
-    //       console.log(err)
-    //       this.nutritionixNlpSubscription.unsubscribe()
-    //     }
-    //   )
-    // console.log(this.recipeNutrition)
+    // this.checkVariables()
   }
 
-  // // opens recipe-details-modal, passes recipe ingredient API results for user edit and submission
-  // openModal(res: any) {
-  //   const modalRef = this.modalService.open(RecipeDetailsModalComponent, {
-  //     size: 'lg',
-  //     backdrop: 'static',
-  //     keyboard: false,
-  //   })
-  //   modalRef.componentInstance.fullApiResult = res
-  //   modalRef.componentInstance.recipeTitle = this.title
-
-  //   modalRef.result.then((confirmedIngredients) => {
-  //     this.recipeNutrition = confirmedIngredients
-  //     this.calculateSums(this.recipeNutrition)
-  //     this.loading = false
-  //   })
-  // }
+  checkVariables(): void {
+    console.log('this.recipeNutrition:')
+    console.log(this.recipeNutrition)
+    console.log('this.recipeData:')
+    console.log(this.recipeData)
+  }
 
   // // adds (desired) nutrition of each ingredient together, rounds
   calculateSums(recipe: any) {
@@ -2230,8 +2194,6 @@ export class RecipeDetailsComponent implements OnInit {
     for (let property in this.ingredientSums) {
       this.ingredientSums[property].total = this.ingredientNutrition[property]
     }
-    // this.recipeData = this.dataService.getRecipeDB(this.recipeTitle)
-    // console.log(this.recipeData)
   }
 
   // empties specific ingredient dataset to remove table display
@@ -2245,7 +2207,4 @@ export class RecipeDetailsComponent implements OnInit {
       this.figureData.push(this.sums[property])
     }
   }
-
-  // recipeReady() {
-  // }
 }
