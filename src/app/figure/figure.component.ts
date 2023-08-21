@@ -23,7 +23,7 @@ export class FigureComponent implements OnInit {
     'nf_total_carbohydrate',
     'nf_total_fat',
   ]
-  dailyValues = [
+  dailyValuesDefault = [
     // https://ods.od.nih.gov/HealthInformation/nutrientrecommendations.aspx
     { total: 2000, niceName: 'Calories' },
     { total: 300, niceName: 'Cholesterol (mg)' },
@@ -46,6 +46,30 @@ export class FigureComponent implements OnInit {
   private width = 750 - this.margin * 2
   private height = 400 - this.margin * 2
 
+  // BMR
+  user: any = {
+    age: 0,
+    sex: 'M',
+    height: {
+      imperial: {},
+    },
+    weight: {
+      imperial: {},
+    },
+  }
+  units: string = 'Metric'
+  // calculated daily values
+  sexes: any = ['M', 'F']
+  userBMR: number = 0
+  percentFat: number = 25
+  percentCarb: number = 50
+  percentProtein: number = 25
+  userFat: number = 0
+  userCarb: number = 0
+  userProtein: number = 0
+
+  convert: any
+
   constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
@@ -62,6 +86,48 @@ export class FigureComponent implements OnInit {
     console.log(this.recipeData)
   }
 
+  // TODO: use for userNutrition()
+  calculateBMR() {
+    if (this.user.sex === 'M')
+      this.userBMR =
+        10 * this.user.weight.metric +
+        6.25 * this.user.height.metric -
+        5 * this.user.age +
+        5
+    else if (this.user.sex === 'F')
+      this.userBMR =
+        10 * this.user.weight.metric +
+        6.25 * this.user.height.metric -
+        5 * this.user.age -
+        161
+  }
+
+  // TODO: use for userNutrition()
+  calculateMacro() {
+    this.userFat = this.userBMR * (this.percentFat / 100)
+    this.userCarb = this.userBMR * (this.percentCarb / 100)
+    this.userProtein = this.userBMR * (this.percentProtein / 100)
+  }
+
+  // TODO: will calculate user-specific nutrition numbers for custom variant of dailyValuesDefault
+  userNutrition() {}
+
+  // TODO: use for userForm submit
+  onSubmit() {
+    console.log(this.user)
+  }
+
+  // TODO: use library to convert between units
+  // convertUnits() {
+  //   if (this.user.height.metric === null)
+  //     let convertInches = (this.user.height.imperial.ft * 12) + this.user.height.imperial.inch
+  //     this.user.height.metric = this.convert.(convertInches).from('in').to('cm')
+  //   if (this.user.height.imperial === null)
+  //     let totalInches = this.convert.(this.user.height.metric).from('cm').to('in')
+  //     this.user.height.imperial.ft = Math.floor(totalInches/12);
+  //     this.user.height.imperial.inch = totalInches % 12;
+  // }
+
   makeFigure(): void {
     this.perServing(this.figureData)
     this.percentData = []
@@ -73,11 +139,12 @@ export class FigureComponent implements OnInit {
     // look into higher order functions, convert this function into map()
     for (let property of rawData) {
       let percentTotal: number = 0
-      let dailyTotalIndex: number = this.dailyValues.findIndex(
+      let dailyTotalIndex: number = this.dailyValuesDefault.findIndex(
         (dv) => dv.niceName === property.niceName
       )
       if (property && property.total && dailyTotalIndex > -1) {
-        let dailyTotal: number = this.dailyValues[dailyTotalIndex].total || 0
+        let dailyTotal: number =
+          this.dailyValuesDefault[dailyTotalIndex].total || 0
         let propertyTotal: number = property.total || 0
         percentTotal = +(
           ((property.total / dailyTotal).toFixed(2) as any) * 100

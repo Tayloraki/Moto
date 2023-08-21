@@ -1,5 +1,6 @@
 <h2>Percent of Daily Nutritional Needs</h2>
 <div>
+  Number of Servings
   <input
     type="number"
     name="numServes"
@@ -9,3 +10,122 @@
   />
 </div>
 <figure id="bar"></figure>
+<div class="container">
+  <h1>Your Info</h1>
+  <form (ngSubmit)="onSubmit()" #userForm="ngForm">
+    <div class="form-group">
+      <label for="age">Age</label>
+      <input
+        type="number"
+        class="form-control"
+        id="age"
+        required
+        [(ngModel)]="user.age"
+        name="age"
+      />
+    </div>
+    <div class="form-group">
+      <label for="sex">Sex</label>
+      <select
+        class="form-control"
+        id="sex"
+        required
+        [(ngModel)]="user.sex"
+        name="sex"
+      >
+        <option *ngFor="let sex of sexes" [value]="sex">{{ sex }}</option>
+      </select>
+    </div>
+    <div>
+      <div>
+        <input
+          type="radio"
+          id="metric"
+          name="units"
+          value="Metric"
+          [(ngModel)]="units"
+        />
+        <label for="metric">Metric</label>
+      </div>
+      <div>
+        <input
+          type="radio"
+          id="imperial"
+          name="units"
+          value="Imperial"
+          [(ngModel)]="units"
+        />
+        <label for="imperial">Imperial</label>
+      </div>
+    </div>
+    <div *ngIf="units === 'Metric'">
+      <div class="form-group">
+        <label for="height">Height (cm)</label>
+        <input
+          type="number"
+          class="form-control"
+          id="height"
+          required
+          [(ngModel)]="user.height.metric"
+          name="height"
+        />
+      </div>
+      <div class="form-group">
+        <label for="weight">Weight (kg)</label>
+        <input
+          type="number"
+          class="form-control"
+          id="weight"
+          required
+          [(ngModel)]="user.weight.metric"
+          name="weight"
+        />
+      </div>
+    </div>
+    <div *ngIf="units === 'Imperial'">
+      <div class="form-group">
+        <div>
+          <label for="height-ft">ft</label>
+          <input
+            type="number"
+            class="form-control"
+            id="height-ft"
+            required
+            [(ngModel)]="user.height.imperial.ft"
+            name="height"
+          />
+          Height
+        </div>
+        <div>
+          <label for="height-inch">in</label>
+          <input
+            type="number"
+            class="form-control"
+            id="height-inch"
+            required
+            [(ngModel)]="user.height.imperial.inch"
+            name="height"
+          />
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="weight">Weight (lbs)</label>
+        <input
+          type="number"
+          class="form-control"
+          id="weight"
+          required
+          [(ngModel)]="user.weight.imperial"
+          name="weight"
+        />
+      </div>
+    </div>
+    <button
+      type="submit"
+      class="btn btn-success"
+      [disabled]="!userForm.form.valid"
+    >
+      Submit
+    </button>
+  </form>
+</div>
