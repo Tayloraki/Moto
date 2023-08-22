@@ -16,14 +16,14 @@
     "@angular/common": "~13.4.0",
     "@angular/compiler": "~13.4.0",
     "@angular/core": "~13.4.0",
-    "@angular/fire": "^6.1.4",
+    "@angular/fire": "^7.2",
     "@angular/forms": "~13.4.0",
     "@angular/localize": "~13.4.0",
     "@angular/platform-browser": "~13.4.0",
     "@angular/platform-browser-dynamic": "~13.4.0",
     "@angular/router": "~13.4.0",
     "@dimfu/recipe-scraper": "^0.3.0",
-    "@ng-bootstrap/ng-bootstrap": "^10.0.0",
+    "@ng-bootstrap/ng-bootstrap": "^11.0.0",
     "@types/bootstrap": "^5.0.8",
     "@types/jquery": "^3.5.5",
     "@types/papaparse": "^5.2.5",
@@ -41,7 +41,7 @@
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
-    "@angular-devkit/build-angular": "~13.0.0",
+    "@angular-devkit/build-angular": "~13.0.4",
     "@angular/cli": "~13.0.0",
     "@angular/compiler-cli": "~13.4.0",
     "@types/d3": "^7.4.0",
@@ -59,6 +59,6 @@
     "protractor": "~7.0.0",
     "ts-node": "~8.3.0",
     "tslint": "~6.1.0",
-    "typescript": "~4.6.4"
+    "typescript": "~4.4.3"
   }
 }
