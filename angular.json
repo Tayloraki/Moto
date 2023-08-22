@@ -136,7 +136,6 @@
       }
     }
   },
-  "defaultProject": "moto",
   "cli": {
     "analytics": false
   }
