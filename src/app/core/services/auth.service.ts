@@ -1,11 +1,11 @@
 import { Injectable, NgZone } from '@angular/core'
 import { User } from '../services/user'
 // import { auth } from 'firebase/app' for 3rd party sign-in (google/fb)
-import { AngularFireAuth } from '@angular/fire/auth'
+import { AngularFireAuth } from '@angular/fire/compat/auth'
 import {
   AngularFirestore,
   AngularFirestoreDocument,
-} from '@angular/fire/firestore'
+} from '@angular/fire/compat/firestore'
 import { Router } from '@angular/router'
 import { from } from 'rxjs'
 

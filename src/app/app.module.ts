@@ -5,9 +5,9 @@ import { HttpClientModule } from '@angular/common/http'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 
 // Firebase
-import { AngularFireModule } from '@angular/fire'
-import { AngularFirestoreModule } from '@angular/fire/firestore'
-import { AngularFireAuthModule } from '@angular/fire/auth'
+import { AngularFireModule } from '@angular/fire/compat'
+import { AngularFirestoreModule } from '@angular/fire/compat/firestore'
+import { AngularFireAuthModule } from '@angular/fire/compat/auth'
 import { environment } from '../environments/environment'
 
 import { AppRoutingModule } from './app-routing.module'
@@ -21,8 +21,8 @@ import { SignInComponent } from './components/sign-in/sign-in.component'
 import { SignUpComponent } from './components/sign-up/sign-up.component'
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component'
 import { VerifyEmailComponent } from './components/verify-email/verify-email.component'
-import { AuthService } from './core/services/auth.service';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { AuthService } from './core/services/auth.service'
+import { DashboardComponent } from './components/dashboard/dashboard.component'
 import { FigureComponent } from './figure/figure.component'
 
 @NgModule({
