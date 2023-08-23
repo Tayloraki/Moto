@@ -125,6 +125,16 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     this.title = ''
     this.listLinks()
     this.listRecipes()
+    // this.checkVariables()
+  }
+
+  checkVariables() {
+    console.log('links')
+    console.log(this.links)
+    console.log('linksTextInput')
+    console.log(this.linksTextInput)
+    console.log('recipes: ')
+    console.log(this.recipes)
   }
 
   // retry scraping a recipe
@@ -189,8 +199,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       .subscribe(
         (res) => {
           if ((res as any).value) {
+            // console.log('res')
             // console.log(res)
-            console.log('recipe object gotten')
             recipe.original_data = (res as any).value
             recipe.filter_data = clone((res as any).value)
             recipe.status = 'complete'
@@ -272,6 +282,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   openRecipeDetails(recipe: any): void {
     this.recipeData = recipe
+    this.ingredientsNlp = ''
     for (let ingredient of recipe.original_data.recipeIngredients) {
       this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
     }
@@ -284,8 +295,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
         (res) => {
           this.title = recipe.original_data.name
           this.openModal(res)
+          // console.log('res')
           // console.log(res)
-          console.log('recipe ingredients gotten')
           this.nutritionixNlpSubscription.unsubscribe()
         },
         (err) => {

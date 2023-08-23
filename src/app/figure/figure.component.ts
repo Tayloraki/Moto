@@ -39,6 +39,7 @@ export class FigureComponent implements OnInit {
     { total: 78, niceName: 'Fat (g)' },
   ]
   DailyValuesCustom: any[] = []
+  hasCustom: boolean = false
   numServes: number = 0
   userSetSize: string = ''
 
@@ -92,8 +93,14 @@ export class FigureComponent implements OnInit {
   }
 
   checkVariables(): void {
-    // console.log('this.recipeData:')
-    // console.log(this.recipeData)
+    console.log('this.user:')
+    console.log(this.user)
+    console.log('this.recipeData:')
+    console.log(this.recipeData)
+    console.log('this.servingData:')
+    console.log(this.servingData)
+    console.log('this.percentData:')
+    console.log(this.percentData)
   }
 
   // formula to find BMR (daily calorie needs)
@@ -139,17 +146,18 @@ export class FigureComponent implements OnInit {
     ]
   }
 
-  // // takes user info form to create dailyValuesCustom, update data figure
+  // takes user info form to create dailyValuesCustom, update data figure
   onSubmit() {
     this.convertUnits()
     this.userNutrition()
+    this.hasCustom = true
     this.makeFigure()
+    // this.checkVariables()
   }
 
   // converts user weight/height (BMR formula uses metric)
-  // TODO: improve fragile logic
   convertUnits() {
-    if (this.user.metric.height === 0) {
+    if (this.units === 'Imperial') {
       let convertInches =
         this.user.imperial.height.ft * 12 + this.user.imperial.height.inch
       this.user.metric.height = this.convert(convertInches).from('in').to('cm')
@@ -169,11 +177,10 @@ export class FigureComponent implements OnInit {
   }
 
   // prepares raw recipe nutrition for visual data figure in daily % + per serving
-  // TODO: improve fragile logic for makePercent
   makeFigure(): void {
     this.perServing(this.figureData)
     this.percentData = []
-    if (this.DailyValuesCustom.length === 0) {
+    if (!this.hasCustom) {
       this.makePercent(this.servingData, this.dailyValuesDefault)
     } else {
       this.makePercent(this.servingData, this.DailyValuesCustom)
@@ -189,8 +196,6 @@ export class FigureComponent implements OnInit {
       temp.total = temp.total / this.numServes
       return temp
     })
-    // console.log('this.servingData:')
-    // console.log(this.servingData)
   }
 
   // creates new data array of recipe nutrients in daily % value
@@ -218,15 +223,11 @@ export class FigureComponent implements OnInit {
         this.percentData.push(percent)
       }
     }
-    // console.log('this.percentData:')
-    // console.log(this.percentData)
   }
 
   // user-updated value for perServing() calculation
   changeNumServes(e: any) {
     this.numServes = e
-    // console.log('this.numServes')
-    // console.log(this.numServes)
     this.makeFigure()
   }
 

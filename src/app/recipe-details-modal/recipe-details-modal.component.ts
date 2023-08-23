@@ -2133,6 +2133,8 @@ export class RecipeDetailsModalComponent implements OnInit {
           .getIngredientByNlp(ingredientNlp)
           .subscribe(
             (res) => {
+              // console.log('res')
+              // console.log(res)
               this.error100IngredientByResults(ingredientNlp, res)
               this.nutritionixNlpSubscription.unsubscribe()
             },
@@ -2222,9 +2224,9 @@ export class RecipeDetailsModalComponent implements OnInit {
       .getIngredientByNlp(ingredientName)
       .subscribe(
         (res) => {
-          console.log(this.allIngredientResults)
+          // console.log('res')
+          // console.log(res)
           this.searchIngredientByResults(res, recipeIngredient)
-          console.log(this.allIngredientResults)
           this.nutritionixNlpSubscription.unsubscribe()
         },
         (err) => {
@@ -2254,6 +2256,8 @@ export class RecipeDetailsModalComponent implements OnInit {
       .getIngredientByNlp(ingredientName)
       .subscribe(
         (res) => {
+          // console.log('res')
+          // console.log(res)
           this.addSearchIngredientByResults(res)
           this.nutritionixNlpSubscription.unsubscribe()
         },
@@ -2267,7 +2271,6 @@ export class RecipeDetailsModalComponent implements OnInit {
   // adds non-recipe search result ingredients to error ingredient selection dataset for display purposes in the modal
   addSearchIngredientByResults(res: any) {
     let ingredient = res.foods[0]
-    console.log(ingredient)
     let ingredientResults = {
       recipeIngredient: ingredient.food_name,
       candidates: [],

@@ -43,6 +43,12 @@
                     getSearch($event, ingredient.recipeIngredient)
                   "
                 ></app-ingredient-search>
+                <div
+                  class="delete-button"
+                  (click)="deleteIngredient(ingredient)"
+                >
+                  X
+                </div>
               </div>
               <div *ngIf="!(ingredient.selected | keyvalue).length">
                 <button

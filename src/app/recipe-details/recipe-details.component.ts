@@ -2171,8 +2171,6 @@ export class RecipeDetailsComponent implements OnInit {
   checkVariables(): void {
     console.log('this.recipeNutrition:')
     console.log(this.recipeNutrition)
-    console.log('this.recipeData:')
-    console.log(this.recipeData)
   }
 
   // // adds (desired) nutrition of each ingredient together, rounds
