@@ -1,6 +1,8 @@
 import { Component, OnInit, Input } from '@angular/core'
 import * as d3 from 'd3'
 import { DataService } from '../core/services/data-service.service'
+import configureMeasurements, { allMeasures } from 'convert-units'
+import clone from 'just-clone'
 
 @Component({
   selector: 'app-figure',
@@ -36,6 +38,7 @@ export class FigureComponent implements OnInit {
     { total: 275, niceName: 'Carbohydrates (g)' },
     { total: 78, niceName: 'Fat (g)' },
   ]
+  DailyValuesCustom: any[] = []
   numServes: number = 0
   userSetSize: string = ''
 
@@ -50,11 +53,16 @@ export class FigureComponent implements OnInit {
   user: any = {
     age: 0,
     sex: 'M',
-    height: {
-      imperial: {},
+    metric: {
+      height: 0,
+      weight: 0,
     },
-    weight: {
-      imperial: {},
+    imperial: {
+      height: {
+        ft: 0,
+        inch: 0,
+      },
+      weight: 0,
     },
   }
   units: string = 'Metric'
@@ -67,8 +75,10 @@ export class FigureComponent implements OnInit {
   userFat: number = 0
   userCarb: number = 0
   userProtein: number = 0
+  userSatFat: number = 0
+  userSugar: number = 0
 
-  convert: any
+  convert: any = configureMeasurements(allMeasures)
 
   constructor(private dataService: DataService) {}
 
@@ -82,70 +92,118 @@ export class FigureComponent implements OnInit {
   }
 
   checkVariables(): void {
-    console.log('this.recipeData:')
-    console.log(this.recipeData)
+    // console.log('this.recipeData:')
+    // console.log(this.recipeData)
   }
 
-  // TODO: use for userNutrition()
+  // formula to find BMR (daily calorie needs)
   calculateBMR() {
     if (this.user.sex === 'M')
       this.userBMR =
-        10 * this.user.weight.metric +
-        6.25 * this.user.height.metric -
+        10 * this.user.metric.weight +
+        6.25 * this.user.metric.height -
         5 * this.user.age +
         5
     else if (this.user.sex === 'F')
       this.userBMR =
-        10 * this.user.weight.metric +
-        6.25 * this.user.height.metric -
+        10 * this.user.metric.weight +
+        6.25 * this.user.metric.height -
         5 * this.user.age -
         161
   }
 
-  // TODO: use for userNutrition()
+  // finds daily macromolecule needs (in grams) based on BMR
   calculateMacro() {
-    this.userFat = this.userBMR * (this.percentFat / 100)
-    this.userCarb = this.userBMR * (this.percentCarb / 100)
-    this.userProtein = this.userBMR * (this.percentProtein / 100)
+    this.userFat = (this.userBMR * (this.percentFat / 100)) / 9 // this may need to get offset with SatFat
+    this.userCarb = (this.userBMR * (this.percentCarb / 100)) / 4 // this may need to get offset with Sugar
+    this.userProtein = (this.userBMR * (this.percentProtein / 100)) / 4
+    this.userSatFat = (this.userBMR * 0.1) / 9
+    this.userSugar = (this.userBMR * 0.1) / 4
   }
 
-  // TODO: will calculate user-specific nutrition numbers for custom variant of dailyValuesDefault
-  userNutrition() {}
+  // creates user-info calculated nutrient daily values
+  userNutrition() {
+    this.calculateBMR()
+    this.calculateMacro()
+    this.DailyValuesCustom = [
+      { total: this.userBMR, niceName: 'Calories' },
+      { total: 300, niceName: 'Cholesterol (mg)' }, // hard number
+      { total: 28, niceName: 'Dietary Fiber (g)' }, // age/sex dependent
+      { total: 4700, niceName: 'Potassium (mg)' }, // age/sex dependent
+      { total: this.userProtein, niceName: 'Protein (g)' },
+      { total: this.userSatFat, niceName: 'Saturated Fat (mg)' },
+      { total: 2300, niceName: 'Sodium (mg)' }, // hard number
+      { total: this.userSugar, niceName: 'Sugars (g)' },
+      { total: this.userCarb, niceName: 'Carbohydrates (g)' },
+      { total: this.userFat, niceName: 'Fat (g)' },
+    ]
+  }
 
-  // TODO: use for userForm submit
+  // // takes user info form to create dailyValuesCustom, update data figure
   onSubmit() {
-    console.log(this.user)
+    this.convertUnits()
+    this.userNutrition()
+    this.makeFigure()
   }
 
-  // TODO: use library to convert between units
-  // convertUnits() {
-  //   if (this.user.height.metric === null)
-  //     let convertInches = (this.user.height.imperial.ft * 12) + this.user.height.imperial.inch
-  //     this.user.height.metric = this.convert.(convertInches).from('in').to('cm')
-  //   if (this.user.height.imperial === null)
-  //     let totalInches = this.convert.(this.user.height.metric).from('cm').to('in')
-  //     this.user.height.imperial.ft = Math.floor(totalInches/12);
-  //     this.user.height.imperial.inch = totalInches % 12;
-  // }
+  // converts user weight/height (BMR formula uses metric)
+  // TODO: improve fragile logic
+  convertUnits() {
+    if (this.user.metric.height === 0) {
+      let convertInches =
+        this.user.imperial.height.ft * 12 + this.user.imperial.height.inch
+      this.user.metric.height = this.convert(convertInches).from('in').to('cm')
+      this.user.metric.weight = this.convert(this.user.imperial.weight)
+        .from('lb')
+        .to('kg')
+    } else {
+      let totalInches = this.convert(this.user.metric.height)
+        .from('cm')
+        .to('in')
+      this.user.imperial.height.ft = Math.floor(totalInches / 12)
+      this.user.imperial.height.inch = totalInches % 12
+      this.user.imperial.weight = this.convert(this.user.metric.weight)
+        .from('kg')
+        .to('lb')
+    }
+  }
 
+  // prepares raw recipe nutrition for visual data figure in daily % + per serving
+  // TODO: improve fragile logic for makePercent
   makeFigure(): void {
     this.perServing(this.figureData)
     this.percentData = []
-    this.makePercent(this.servingData)
+    if (this.DailyValuesCustom.length === 0) {
+      this.makePercent(this.servingData, this.dailyValuesDefault)
+    } else {
+      this.makePercent(this.servingData, this.DailyValuesCustom)
+    }
     this.drawBars(this.percentData)
   }
 
-  makePercent(rawData: any) {
+  // creates new data array of recipe nutrients in per serving value
+  perServing(rawData: any) {
+    let properties = rawData
+    this.servingData = properties.map((property: any) => {
+      let temp = Object.assign({}, property)
+      temp.total = temp.total / this.numServes
+      return temp
+    })
+    // console.log('this.servingData:')
+    // console.log(this.servingData)
+  }
+
+  // creates new data array of recipe nutrients in daily % value
+  // rawData = post-perServing recipe nutrition, dailyValues = default or custom
+  makePercent(rawData: any, dailyValues: any) {
     // look into higher order functions, convert this function into map()
     for (let property of rawData) {
       let percentTotal: number = 0
-      let dailyTotalIndex: number = this.dailyValuesDefault.findIndex(
-        (dv) => dv.niceName === property.niceName
+      let dailyTotalIndex: number = dailyValues.findIndex(
+        (dv: any) => dv.niceName === property.niceName
       )
       if (property && property.total && dailyTotalIndex > -1) {
-        let dailyTotal: number =
-          this.dailyValuesDefault[dailyTotalIndex].total || 0
-        let propertyTotal: number = property.total || 0
+        let dailyTotal: number = dailyValues[dailyTotalIndex].total || 0
         percentTotal = +(
           ((property.total / dailyTotal).toFixed(2) as any) * 100
         )
@@ -164,17 +222,7 @@ export class FigureComponent implements OnInit {
     // console.log(this.percentData)
   }
 
-  perServing(rawData: any) {
-    let properties = rawData
-    this.servingData = properties.map((property: any) => {
-      let temp = Object.assign({}, property)
-      temp.total = temp.total / this.numServes
-      return temp
-    })
-    // console.log('this.servingData:')
-    // console.log(this.servingData)
-  }
-
+  // user-updated value for perServing() calculation
   changeNumServes(e: any) {
     this.numServes = e
     // console.log('this.numServes')
@@ -182,6 +230,7 @@ export class FigureComponent implements OnInit {
     this.makeFigure()
   }
 
+  // creates foundation html object for visual data figure
   private createSvg(): void {
     this.svg = d3
       .select('figure#bar')
@@ -192,6 +241,7 @@ export class FigureComponent implements OnInit {
       .attr('transform', 'translate(' + this.margin + ',' + this.margin + ')')
   }
 
+  // creates visual data figure
   private drawBars(data: any[]): void {
     let t = this.svg.transition().duration(500)
 

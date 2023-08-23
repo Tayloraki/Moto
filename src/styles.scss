@@ -32,6 +32,13 @@ header {
   margin-bottom: 3px;
 }
 
+.hide {
+  display: none;
+}
+.show {
+  display: block !important;
+}
+
 .error-container {
   display: flex;
   justify-content: center;

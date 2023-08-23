@@ -58,65 +58,65 @@
         <label for="imperial">Imperial</label>
       </div>
     </div>
+    <!-- <div class="hide" [class.show]="units === 'Metric'"> -->
     <div *ngIf="units === 'Metric'">
       <div class="form-group">
-        <label for="height">Height (cm)</label>
+        <label for="height-cm">Height (cm)</label>
         <input
           type="number"
           class="form-control"
-          id="height"
-          required
-          [(ngModel)]="user.height.metric"
-          name="height"
+          id="height-cm"
+          [attr.required]="units === 'Metric'"
+          [(ngModel)]="user.metric.height"
+          name="metric.height"
         />
       </div>
       <div class="form-group">
-        <label for="weight">Weight (kg)</label>
+        <label for="weight-kg">Weight (kg)</label>
         <input
           type="number"
           class="form-control"
-          id="weight"
-          required
-          [(ngModel)]="user.weight.metric"
-          name="weight"
+          id="weight-kg"
+          [attr.required]="units === 'Metric'"
+          [(ngModel)]="user.metric.weight"
+          name="metric.weight"
         />
       </div>
     </div>
+    <!-- <div class="hide" [class.show]="units === 'Imperial'"> -->
     <div *ngIf="units === 'Imperial'">
       <div class="form-group">
-        <div>
-          <label for="height-ft">ft</label>
-          <input
-            type="number"
-            class="form-control"
-            id="height-ft"
-            required
-            [(ngModel)]="user.height.imperial.ft"
-            name="height"
-          />
-          Height
-        </div>
-        <div>
-          <label for="height-inch">in</label>
-          <input
-            type="number"
-            class="form-control"
-            id="height-inch"
-            required
-            [(ngModel)]="user.height.imperial.inch"
-            name="height"
-          />
-        </div>
-      </div>
-      <div class="form-group">
-        <label for="weight">Weight (lbs)</label>
+        <label for="height-ft">ft</label>
         <input
           type="number"
           class="form-control"
-          id="weight"
-          required
-          [(ngModel)]="user.weight.imperial"
-          name="weight"
+          id="height-ft"
+          [attr.required]="units === 'Imperial'"
+          [(ngModel)]="user.imperial.height.ft"
+          name="imperial.height.ft"
+        />
+        Height
+      </div>
+      <div class="form-group">
+        <label for="height-inch">in</label>
+        <input
+          type="number"
+          class="form-control"
+          id="height-inch"
+          [attr.required]="units === 'Imperial'"
+          [(ngModel)]="user.imperial.height.inch"
+          name="imperial.height.inch"
+        />
+      </div>
+      <div class="form-group">
+        <label for="weight-lb">Weight (lbs)</label>
+        <input
+          type="number"
+          class="form-control"
+          id="weight-lb"
+          [attr.required]="units === 'Imperial'"
+          [(ngModel)]="user.imperial.weight"
+          name="imperial.weight"
         />
       </div>
     </div>
