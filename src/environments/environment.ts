@@ -16,8 +16,8 @@ export const environment = {
     projectId: config.firebase_projectId,
     storageBucket: config.firebase_storageBucket,
     messagingSenderId: config.firebase_messagingSenderId,
-    // appId: config.firebase_appId,
-    // measurementId: config.firebase_measurementId
+    appId: config.firebase_appId,
+    measurementId: config.firebase_measurementId,
   },
 }
 

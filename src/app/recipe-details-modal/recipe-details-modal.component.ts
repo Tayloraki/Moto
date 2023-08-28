@@ -27,6 +27,7 @@ export class RecipeDetailsModalComponent implements OnInit {
 
   nutritionixNlpSubscription: Subscription = new Subscription()
 
+  // mock data
   resFAKE: any = {
     foods: [
       {
@@ -1673,7 +1674,6 @@ export class RecipeDetailsModalComponent implements OnInit {
       },
     ],
   }
-
   ingredientResFake: any = {
     foods: [
       {
@@ -2110,6 +2110,88 @@ export class RecipeDetailsModalComponent implements OnInit {
       },
     ],
   }
+  recipeFake: any = {
+    link: 'https://www.seriouseats.com/jamaican-pepper-shrimp',
+    original_data: {
+      url: 'https://www.seriouseats.com/jamaican-pepper-shrimp',
+      name: 'Jamaican Pepper Shrimp Recipe',
+      image:
+        'https://www.seriouseats.com/thmb/680uC6Dv-AN3pArTio1qnxYcZ1c=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2021__01__20210114-jamaican-pepper-shrimp-jillian-atkinson-8-83ed21f3c5b24e988e9cef830ff1e118.jpg',
+      description:
+        'Stewed in a flavorful aromatic broth loaded with onion, garlic, allspice, thyme, and Scotch bonnet peppers, this Jamaican roadside snack can now be made right in your kitchen.',
+      cookTime: '25 minutes',
+      prepTime: '20 minutes',
+      totalTime: '75 minutes',
+      recipeYield: '4',
+      recipeIngredients: [
+        '3 Scotch bonnet chile peppers (about 3/4 ounce; 20g)',
+        '1 pound (455g) large shell-on shrimp, preferably head-on, rinsed',
+        'Half of 1 medium (8-ounce; 225g) red bell pepper, stemmed, seeded, and finely diced',
+        'Half of 1 medium (8-ounce; 225g) yellow onion, finely diced',
+        '4 sprigs fresh thyme',
+        '3 medium garlic cloves, minced',
+        '1 tablespoon (15ml) annatto oil or neutral oil such as vegetable oil',
+        '1 1/2 teaspoons (6g) Diamond Crystal kosher salt; for table salt use half as much by volume or the same weight, plus more if needed',
+        '1 1/2 teaspoons (6g) annatto (achiote) powder',
+        '1/2 teaspoon garlic powder',
+        '1/2 teaspoon onion powder',
+        '1 1/2 cups (355ml) water',
+        '2 tablespoons (30ml) distilled white vinegar',
+        '6 allspice berries',
+      ],
+      recipeInstructions: [
+        'Wearing latex gloves, prepare Scotch bonnet peppers; preparation will depend on your heat tolerance. For very spicy heat, stem and chop or slice peppers, keeping seeds and white pith; for medium heat, stem and seed peppers, then chop or slice; for mild heat, leave peppers whole, including stems.',
+        'In a medium bowl, add shrimp with Scotch bonnets, bell pepper, onion, thyme, garlic, annatto oil (or neutral oil), salt, annatto powder, garlic powder, and onion powder. Stir to combine well. Cover with plastic and refrigerate at least 30 minutes and up to overnight.',
+        'Using a gloved hand, scrape aromatic vegetables and herbs off shrimp and set shrimp aside in a clean bowl. Add water to vegetable marinade, then pour mixture into a stainless-steel skillet large enough to hold shrimp in a single layer.',
+        'Bring to a simmer over medium heat, add allspice berries, then cover and cook at a simmer for 15 minutes.',
+        'Add vinegar, turn heat to medium-low, and add shrimp to the skillet in a single layer. Cover and cook for 2 minutes.',
+        'Turn off heat, uncover, and stir until shrimp are just cooked through and no longer translucent, about 2 minutes longer. Season with additional salt, if desired.',
+        'Transfer shrimp to a serving plate and let cool slightly. Discard cooking liquid and vegetables. Serve shrimp warm or at room temperature, peeling them at the table.',
+      ],
+      recipeCategories: ["Appetizers and Hors d'Oeuvres", 'Snacks'],
+      recipeCuisines: ['Caribbean'],
+    },
+    filter_data: {
+      url: 'https://www.seriouseats.com/jamaican-pepper-shrimp',
+      name: 'Jamaican Pepper Shrimp Recipe',
+      image:
+        'https://www.seriouseats.com/thmb/680uC6Dv-AN3pArTio1qnxYcZ1c=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/__opt__aboutcom__coeus__resources__content_migration__serious_eats__seriouseats.com__2021__01__20210114-jamaican-pepper-shrimp-jillian-atkinson-8-83ed21f3c5b24e988e9cef830ff1e118.jpg',
+      description:
+        'Stewed in a flavorful aromatic broth loaded with onion, garlic, allspice, thyme, and Scotch bonnet peppers, this Jamaican roadside snack can now be made right in your kitchen.',
+      cookTime: '25 minutes',
+      prepTime: '20 minutes',
+      totalTime: '75 minutes',
+      recipeYield: '4',
+      recipeIngredients: [
+        '3 Scotch bonnet chile peppers (about 3/4 ounce; 20g)',
+        '1 pound (455g) large shell-on shrimp, preferably head-on, rinsed',
+        'Half of 1 medium (8-ounce; 225g) red bell pepper, stemmed, seeded, and finely diced',
+        'Half of 1 medium (8-ounce; 225g) yellow onion, finely diced',
+        '4 sprigs fresh thyme',
+        '3 medium garlic cloves, minced',
+        '1 tablespoon (15ml) annatto oil or neutral oil such as vegetable oil',
+        '1 1/2 teaspoons (6g) Diamond Crystal kosher salt; for table salt use half as much by volume or the same weight, plus more if needed',
+        '1 1/2 teaspoons (6g) annatto (achiote) powder',
+        '1/2 teaspoon garlic powder',
+        '1/2 teaspoon onion powder',
+        '1 1/2 cups (355ml) water',
+        '2 tablespoons (30ml) distilled white vinegar',
+        '6 allspice berries',
+      ],
+      recipeInstructions: [
+        'Wearing latex gloves, prepare Scotch bonnet peppers; preparation will depend on your heat tolerance. For very spicy heat, stem and chop or slice peppers, keeping seeds and white pith; for medium heat, stem and seed peppers, then chop or slice; for mild heat, leave peppers whole, including stems.',
+        'In a medium bowl, add shrimp with Scotch bonnets, bell pepper, onion, thyme, garlic, annatto oil (or neutral oil), salt, annatto powder, garlic powder, and onion powder. Stir to combine well. Cover with plastic and refrigerate at least 30 minutes and up to overnight.',
+        'Using a gloved hand, scrape aromatic vegetables and herbs off shrimp and set shrimp aside in a clean bowl. Add water to vegetable marinade, then pour mixture into a stainless-steel skillet large enough to hold shrimp in a single layer.',
+        'Bring to a simmer over medium heat, add allspice berries, then cover and cook at a simmer for 15 minutes.',
+        'Add vinegar, turn heat to medium-low, and add shrimp to the skillet in a single layer. Cover and cook for 2 minutes.',
+        'Turn off heat, uncover, and stir until shrimp are just cooked through and no longer translucent, about 2 minutes longer. Season with additional salt, if desired.',
+        'Transfer shrimp to a serving plate and let cool slightly. Discard cooking liquid and vegetables. Serve shrimp warm or at room temperature, peeling them at the table.',
+      ],
+      recipeCategories: ["Appetizers and Hors d'Oeuvres", 'Snacks'],
+      recipeCuisines: ['Caribbean'],
+    },
+    status: 'complete',
+  }
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -2117,32 +2199,33 @@ export class RecipeDetailsModalComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.errorIngredients = (this.fullApiResult as any).errors
-    this.gotIngredients = (this.fullApiResult as any).foods
-    // this.errorIngredients = (this.resFAKE as any).errors //  use for mock data
-    // this.gotIngredients = (this.resFAKE as any).foods //  use for mock data
-    this.recipeData = this.dataService.getRecipeDB(this.recipeTitle)
+    // this.errorIngredients = (this.fullApiResult as any).errors
+    // this.gotIngredients = (this.fullApiResult as any).foods
+    this.errorIngredients = (this.resFAKE as any).errors //  use for mock data
+    this.gotIngredients = (this.resFAKE as any).foods //  use for mock data
+    this.recipeData = this.recipeFake
+    // this.recipeData = this.dataService.getRecipeDB(this.recipeTitle)
     this.servingSize = Number(this.recipeData.original_data.recipeYield)
     this.userSetSize = this.servingSize
     // this.checkVariables()
     for (let ingredient of this.errorIngredients) {
       let ingredientNlp = ingredient.original_text
       if (ingredient.err_code === 100) {
-        // this.error100IngredientByResults(ingredientNlp, this.ingredientResFake) //  use for mock data
-        this.nutritionixNlpSubscription = this.dataService
-          .getIngredientByNlp(ingredientNlp)
-          .subscribe(
-            (res) => {
-              // console.log('res')
-              // console.log(res)
-              this.error100IngredientByResults(ingredientNlp, res)
-              this.nutritionixNlpSubscription.unsubscribe()
-            },
-            (err) => {
-              console.log(err)
-              this.nutritionixNlpSubscription.unsubscribe()
-            }
-          )
+        this.error100IngredientByResults(ingredientNlp, this.ingredientResFake) //  use for mock data
+        // this.nutritionixNlpSubscription = this.dataService
+        //   .getIngredientByNlp(ingredientNlp)
+        //   .subscribe(
+        //     (res) => {
+        //       // console.log('res')
+        //       // console.log(res)
+        //       this.error100IngredientByResults(ingredientNlp, res)
+        //       this.nutritionixNlpSubscription.unsubscribe()
+        //     },
+        //     (err) => {
+        //       console.log(err)
+        //       this.nutritionixNlpSubscription.unsubscribe()
+        //     }
+        //   )
       } else if (ingredient.err_code === 101) {
         this.error101IngredientByResults(ingredientNlp)
       }

@@ -1,6 +1,7 @@
 import { Injectable, NgZone } from '@angular/core'
 import { User } from '../services/user'
 // import { auth } from 'firebase/app' for 3rd party sign-in (google/fb)
+import { AngularFireModule } from '@angular/fire/compat'
 import { AngularFireAuth } from '@angular/fire/compat/auth'
 import {
   AngularFirestore,
@@ -14,6 +15,7 @@ import { from } from 'rxjs'
 })
 export class AuthService {
   userData: any // Save logged in user data
+  auth: any | undefined
 
   constructor(
     public afs: AngularFirestore, // Inject Firestore service

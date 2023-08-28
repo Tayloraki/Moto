@@ -75,7 +75,13 @@
       <div class="redirectToLogin">
         <span
           >Don't have an account?
-          <a class="redirect" routerLink="/register-user"> Sign Up</a>
+          <a
+            class="redirect"
+            routerLink="/register-user"
+            (click)="$event.stopPropagation()"
+          >
+            Sign Up</a
+          >
         </span>
       </div>
     </div>
