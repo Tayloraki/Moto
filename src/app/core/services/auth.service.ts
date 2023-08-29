@@ -16,6 +16,7 @@ import { from } from 'rxjs'
 export class AuthService {
   userData: any // Save logged in user data
   auth: any | undefined
+  signedIn: boolean = false
 
   constructor(
     public afs: AngularFirestore, // Inject Firestore service
@@ -28,6 +29,7 @@ export class AuthService {
     this.afAuth.authState.subscribe((user) => {
       if (user) {
         this.userData = user
+        this.signedIn = true
         localStorage.setItem('user', JSON.stringify(this.userData))
         JSON.parse(localStorage.getItem('user') || '{}') // added {} but preventing null may be issue
       } else {
@@ -114,7 +116,6 @@ export class AuthService {
       email: user.email,
       displayName: user.displayName,
       emailVerified: user.emailVerified,
-      recipes: [],
     }
     return userRef.set(userData, {
       merge: true,

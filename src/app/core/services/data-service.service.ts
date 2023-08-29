@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { environment } from '../../../environments/environment'
+import {
+  AngularFireDatabase,
+  AngularFireList,
+  AngularFireObject,
+} from '@angular/fire/compat/database'
+import { Observable } from 'rxjs'
 
 @Injectable({
   providedIn: 'root',
@@ -16,8 +22,13 @@ export class DataService {
       accept: 'application/json',
     },
   }
+  fireRef: AngularFireObject<any> | any
+  fireList: AngularFireList<any> | any
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private fireDB: AngularFireDatabase // TODO: change database rules to "write: false" or to ".read": "auth != null",".write": "auth != null"
+  ) {}
 
   getScrapedRecipe(recipeUrl: string) {
     return this.http.get('/api/recipe/' + recipeUrl)
@@ -78,5 +89,25 @@ export class DataService {
   getNutritionDB(name: string): void {
     let ingredient = sessionStorage.getItem(name)
     return JSON.parse(ingredient || '{}')
+  }
+
+  createFire(object: any, data: any): any {
+    this.fireRef = this.fireDB.object(object)
+    this.fireRef.set(data)
+  }
+
+  updateFire(object: any, data: any): any {
+    this.fireRef = this.fireDB.object(object)
+    this.fireRef.set(data)
+  }
+
+  getFireList(list: any): Observable<any> {
+    this.fireList = this.fireDB.list(list)
+    return this.fireList.valueChanges()
+  }
+
+  getFireObject(object: any): Observable<any> {
+    this.fireRef = this.fireDB.object(object)
+    return this.fireRef.valueChanges()
   }
 }

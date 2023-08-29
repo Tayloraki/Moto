@@ -8,6 +8,7 @@ import {
   AngularFireList,
   AngularFireObject,
 } from '@angular/fire/compat/database'
+import { Subscription } from 'rxjs'
 
 @Component({
   selector: 'app-figure',
@@ -172,27 +173,40 @@ export class FigureComponent implements OnInit {
   auth: any = undefined
   login: any = {}
   userRef: AngularFireObject<any> | undefined
-  usersRef: AngularFireList<any>
-
   convert: any = configureMeasurements(allMeasures)
+  usersPath: string = 'users/'
+  recipesPath: string = 'recipes/'
+  signedIn: boolean = false
+
+  userSubscription: Subscription = new Subscription()
 
   constructor(
     private dataService: DataService,
-    public authService: AuthService,
-    private fireDB: AngularFireDatabase // TODO: change database rules to "write: false" or to ".read": "auth != null",".write": "auth != null"
-  ) {
-    this.usersRef = fireDB.list('/users')
-    // fireDB.list('/users').subscribe(res => this.usersRef = res);
-  }
+    public authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    console.log(this.usersRef)
+    this.signedIn = this.authService.signedIn
+    console.log(this.signedIn)
     this.login = this.authService.userData
-    console.log(this.login)
-    this.userRef = this.fireDB.object('users/' + this.login.uid)
-    this.userRef = this.fireDB.object('recipes/' + this.login.uid)
-    this.userRef.set({ title: 'such a good title' })
-    // this.writeUserData(this.login.uid, this.login.email)
+    if (this.signedIn) {
+      this.dataService.getFireObject(this.usersPath + this.login.uid).subscribe(
+        (res) => {
+          if (res === null) {
+            console.log('no user info')
+          } else {
+            this.user = res
+          }
+        },
+        (error) => {
+          console.error(error)
+        }
+      )
+      // this.user = this.dataService.getFireObject(
+      //   this.usersPath + this.login.uid
+      // )
+      // console.log(this.user)
+    }
     this.recipeData = this.recipeFake
     // this.recipeData = this.dataService.getRecipeDB(this.recipeTitle)
     // this.checkVariables()
@@ -201,14 +215,6 @@ export class FigureComponent implements OnInit {
     this.createSvg()
     this.makeFigure()
   }
-
-  // writeUserData(userId: any, email: any) {
-  //   const db = getDatabase()
-  //   set(ref(db, 'users/' + userId), {
-  //     username: name,
-  //     email: email,
-  //   })
-  // }
 
   checkVariables(): void {
     console.log('this.user:')
@@ -271,6 +277,7 @@ export class FigureComponent implements OnInit {
     this.hasCustom = true
     this.makeFigure()
     // this.checkVariables()
+    this.dataService.createFire(this.usersPath + this.login.uid, this.user)
   }
 
   // converts user weight/height (BMR formula uses metric)
@@ -346,6 +353,17 @@ export class FigureComponent implements OnInit {
   // user-updated value for perServing() calculation
   changeNumServes(e: any) {
     this.numServes = e
+    this.userSubscription = this.dataService
+      .getFireObject(this.usersPath + this.login.uid)
+      .subscribe(
+        (res) => {
+          let user = res
+          console.log(user)
+        },
+        (error) => {
+          console.error(error)
+        }
+      )
     this.makeFigure()
   }
 

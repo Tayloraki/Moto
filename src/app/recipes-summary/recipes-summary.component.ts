@@ -2239,6 +2239,10 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   }
   detailsLoading: boolean = true
 
+  // firebase
+  usersPath: string = 'users/'
+  recipesPath: string = 'recipes/'
+
   spreadsheetMimes: string[] = [
     'application/vnd.ms-excel',
     'text/plain',
@@ -2370,6 +2374,10 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     //         recipe.filter_data = clone((res as any).value)
     //         recipe.status = 'complete'
     //         this.dataService.storeRecipeDB(recipe)
+    this.dataService.createFire(
+      this.recipesPath + recipe.original_data.name,
+      recipe
+    )
     //         this.loading = false
     //         this.openRecipeDetails(recipe)
     //         this.show = true
@@ -2485,6 +2493,12 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       this.recipeNutrition = confirmedIngredients
       this.calculateSums(this.recipeNutrition)
       this.detailsLoading = false
+      this.dataService.updateFire(
+        this.recipesPath +
+          this.recipeData.original_data.name +
+          '/final_ingredients',
+        confirmedIngredients
+      )
     })
   }
 
