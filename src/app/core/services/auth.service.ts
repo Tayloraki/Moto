@@ -8,7 +8,8 @@ import {
   AngularFirestoreDocument,
 } from '@angular/fire/compat/firestore'
 import { Router } from '@angular/router'
-import { from } from 'rxjs'
+import { from, Observable, of } from 'rxjs'
+import { catchError, map } from 'rxjs/operators'
 
 @Injectable({
   providedIn: 'root',
@@ -16,7 +17,6 @@ import { from } from 'rxjs'
 export class AuthService {
   userData: any // Save logged in user data
   auth: any | undefined
-  signedIn: boolean = false
 
   constructor(
     public afs: AngularFirestore, // Inject Firestore service
@@ -29,7 +29,7 @@ export class AuthService {
     this.afAuth.authState.subscribe((user) => {
       if (user) {
         this.userData = user
-        this.signedIn = true
+        console.log(this.userData)
         localStorage.setItem('user', JSON.stringify(this.userData))
         JSON.parse(localStorage.getItem('user') || '{}') // added {} but preventing null may be issue
       } else {
@@ -49,17 +49,21 @@ export class AuthService {
 
   // Sign up with email/password
   SignUp(email: any, password: any) {
-    return this.afAuth
-      .createUserWithEmailAndPassword(email, password)
-      .then((result: any) => {
+    return from(
+      this.afAuth.createUserWithEmailAndPassword(email, password)
+    ).pipe(
+      catchError((error: any) => {
+        window.alert(error.message)
+        return error
+      }),
+      map((result: any) => {
         /* Call the SendVerificaitonMail() function when new user sign
-        up and returns promise */
+      up and returns promise */
         this.SendVerificationMail()
         this.SetUserData(result.user)
+        return result
       })
-      .catch((error: any) => {
-        window.alert(error.message)
-      })
+    )
   }
 
   // Email verification when new user register
@@ -129,5 +133,10 @@ export class AuthService {
       this.userData = null
       this.router.navigate(['sign-in'])
     })
+  }
+
+  getUser() {
+    console.log(this.userData)
+    return of(this.userData)
   }
 }

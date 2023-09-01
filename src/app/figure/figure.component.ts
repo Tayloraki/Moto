@@ -56,8 +56,10 @@ export class FigureComponent implements OnInit {
   private width = 750 - this.margin * 2
   private height = 400 - this.margin * 2
 
+  user: any = {}
+
   // BMR
-  user: any = {
+  userPhysical: any = {
     age: 0,
     sex: 'M',
     metric: {
@@ -186,9 +188,10 @@ export class FigureComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.signedIn = this.authService.signedIn
-    console.log(this.signedIn)
-    this.login = this.authService.userData
+    this.signedIn = true
+    this.login.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2'
+    // this.signedIn = this.dataService.signedIn
+    // this.login = this.dataService.user
     if (this.signedIn) {
       this.dataService.getFireObject(this.usersPath + this.login.uid).subscribe(
         (res) => {
@@ -196,18 +199,18 @@ export class FigureComponent implements OnInit {
             console.log('no user info')
           } else {
             this.user = res
+            if (this.user.physical === !null) {
+            } else {
+              this.userPhysical = this.user.physical
+            }
           }
         },
         (error) => {
           console.error(error)
         }
       )
-      // this.user = this.dataService.getFireObject(
-      //   this.usersPath + this.login.uid
-      // )
-      // console.log(this.user)
     }
-    this.recipeData = this.recipeFake
+    this.recipeData = this.recipeFake // use for mock data
     // this.recipeData = this.dataService.getRecipeDB(this.recipeTitle)
     // this.checkVariables()
     this.numServes = this.recipeData.filter_data.recipeYield
@@ -229,17 +232,17 @@ export class FigureComponent implements OnInit {
 
   // formula to find BMR (daily calorie needs)
   calculateBMR() {
-    if (this.user.sex === 'M')
+    if (this.userPhysical.sex === 'M')
       this.userBMR =
-        10 * this.user.metric.weight +
-        6.25 * this.user.metric.height -
-        5 * this.user.age +
+        10 * this.userPhysical.metric.weight +
+        6.25 * this.userPhysical.metric.height -
+        5 * this.userPhysical.age +
         5
-    else if (this.user.sex === 'F')
+    else if (this.userPhysical.sex === 'F')
       this.userBMR =
-        10 * this.user.metric.weight +
-        6.25 * this.user.metric.height -
-        5 * this.user.age -
+        10 * this.userPhysical.metric.weight +
+        6.25 * this.userPhysical.metric.height -
+        5 * this.userPhysical.age -
         161
   }
 
@@ -277,27 +280,40 @@ export class FigureComponent implements OnInit {
     this.hasCustom = true
     this.makeFigure()
     // this.checkVariables()
-    this.dataService.createFire(this.usersPath + this.login.uid, this.user)
+    this.dataService.createFire(
+      this.usersPath + this.login.uid + '/physical',
+      this.userPhysical
+    )
   }
 
   // converts user weight/height (BMR formula uses metric)
   convertUnits() {
     if (this.units === 'Imperial') {
       let convertInches =
-        this.user.imperial.height.ft * 12 + this.user.imperial.height.inch
-      this.user.metric.height = this.convert(convertInches).from('in').to('cm')
-      this.user.metric.weight = this.convert(this.user.imperial.weight)
+        this.userPhysical.imperial.height.ft * 12 +
+        this.userPhysical.imperial.height.inch
+      this.userPhysical.metric.height = this.convert(convertInches)
+        .from('in')
+        .to('cm')
+        .toFixed(2)
+      this.userPhysical.metric.weight = this.convert(
+        this.userPhysical.imperial.weight
+      )
         .from('lb')
         .to('kg')
+        .toFixed(2)
     } else {
-      let totalInches = this.convert(this.user.metric.height)
+      let totalInches = this.convert(this.userPhysical.metric.height)
         .from('cm')
         .to('in')
-      this.user.imperial.height.ft = Math.floor(totalInches / 12)
-      this.user.imperial.height.inch = totalInches % 12
-      this.user.imperial.weight = this.convert(this.user.metric.weight)
+      this.userPhysical.imperial.height.ft = Math.floor(totalInches / 12)
+      this.userPhysical.imperial.height.inch = (totalInches % 12).toFixed(1)
+      this.userPhysical.imperial.weight = this.convert(
+        this.userPhysical.metric.weight
+      )
         .from('kg')
         .to('lb')
+        .toFixed(1)
     }
   }
 
@@ -353,17 +369,6 @@ export class FigureComponent implements OnInit {
   // user-updated value for perServing() calculation
   changeNumServes(e: any) {
     this.numServes = e
-    this.userSubscription = this.dataService
-      .getFireObject(this.usersPath + this.login.uid)
-      .subscribe(
-        (res) => {
-          let user = res
-          console.log(user)
-        },
-        (error) => {
-          console.error(error)
-        }
-      )
     this.makeFigure()
   }
 

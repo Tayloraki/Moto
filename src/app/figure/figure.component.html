@@ -20,7 +20,7 @@
         class="form-control"
         id="age"
         required
-        [(ngModel)]="user.age"
+        [(ngModel)]="userPhysical.age"
         name="age"
       />
     </div>
@@ -30,7 +30,7 @@
         class="form-control"
         id="sex"
         required
-        [(ngModel)]="user.sex"
+        [(ngModel)]="userPhysical.sex"
         name="sex"
       >
         <option *ngFor="let sex of sexes" [value]="sex">{{ sex }}</option>
@@ -67,7 +67,7 @@
           class="form-control"
           id="height-cm"
           [attr.required]="units === 'Metric'"
-          [(ngModel)]="user.metric.height"
+          [(ngModel)]="userPhysical.metric.height"
           name="metric.height"
         />
       </div>
@@ -78,7 +78,7 @@
           class="form-control"
           id="weight-kg"
           [attr.required]="units === 'Metric'"
-          [(ngModel)]="user.metric.weight"
+          [(ngModel)]="userPhysical.metric.weight"
           name="metric.weight"
         />
       </div>
@@ -92,7 +92,7 @@
           class="form-control"
           id="height-ft"
           [attr.required]="units === 'Imperial'"
-          [(ngModel)]="user.imperial.height.ft"
+          [(ngModel)]="userPhysical.imperial.height.ft"
           name="imperial.height.ft"
         />
         Height
@@ -104,7 +104,7 @@
           class="form-control"
           id="height-inch"
           [attr.required]="units === 'Imperial'"
-          [(ngModel)]="user.imperial.height.inch"
+          [(ngModel)]="userPhysical.imperial.height.inch"
           name="imperial.height.inch"
         />
       </div>
@@ -115,7 +115,7 @@
           class="form-control"
           id="weight-lb"
           [attr.required]="units === 'Imperial'"
-          [(ngModel)]="user.imperial.weight"
+          [(ngModel)]="userPhysical.imperial.weight"
           name="imperial.weight"
         />
       </div>

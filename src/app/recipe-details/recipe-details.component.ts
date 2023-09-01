@@ -1,11 +1,4 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { ActivatedRoute } from '@angular/router'
-import { DataService } from '../core/services/data-service.service'
-import { RecipeDetailsModalComponent } from 'src/app/recipe-details-modal/recipe-details-modal.component'
-import { Subscription } from 'rxjs'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import * as $ from 'jquery'
-import * as bootstrap from 'bootstrap'
 
 @Component({
   selector: 'app-recipe-details',
@@ -71,14 +64,7 @@ export class RecipeDetailsComponent implements OnInit {
     'for breakfast i ate 2 eggs, bacon, a tomato, a grapefruit and half a cup of fish sauce'
   fakeIngredient: any = {}
 
-  nutritionixFoodByIdSubscription: Subscription = new Subscription()
-  nutritionixNlpSubscription: Subscription = new Subscription()
-
-  constructor(
-    private route: ActivatedRoute,
-    private dataService: DataService,
-    private modalService: NgbModal
-  ) {}
+  constructor() {}
 
   ngOnInit(): void {
     this.calculateSums(this.recipeNutrition)

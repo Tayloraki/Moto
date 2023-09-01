@@ -1,12 +1,13 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { DataService } from '../core/services/data-service.service'
 import { Subscription } from 'rxjs'
-import { Router } from '@angular/router'
 import { parse } from 'papaparse'
 import { flatten, some, uniq } from 'underscore'
 import { RecipeDetailsModalComponent } from 'src/app/recipe-details-modal/recipe-details-modal.component'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import clone from 'just-clone'
+
+import { AuthService } from '../core/services/auth.service'
 
 @Component({
   selector: 'app-recipes-summary',
@@ -74,7 +75,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   linksTextInputFAKE: string =
     'https://www.seriouseats.com/jamaican-pepper-shrimp'
   recipeFake: any = {
-    link: 'https://www.seriouseats.com/jamaican-pepper-shrimp',
+    link: 'seriouseats.com/jamaican-pepper-shrimp',
     original_data: {
       url: 'https://www.seriouseats.com/jamaican-pepper-shrimp',
       name: 'Jamaican Pepper Shrimp Recipe',
@@ -2240,8 +2241,15 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   detailsLoading: boolean = true
 
   // firebase
-  usersPath: string = 'users/'
-  recipesPath: string = 'recipes/'
+  usersPath: string = '/users/'
+  recipesPath: string = '/recipes/'
+  ingredientsPath: string = '/final_ingredients/'
+  linksPath: string = '/links/'
+  userLinks: any
+  savedLink: boolean = false
+  recipeKey: string | undefined
+
+  userLogin: any = {}
 
   spreadsheetMimes: string[] = [
     'application/vnd.ms-excel',
@@ -2254,22 +2262,36 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   nutritionixFoodByIdSubscription: Subscription = new Subscription()
   nutritionixNlpSubscription: Subscription = new Subscription()
 
+  signInSubscription: Subscription = new Subscription()
+
   constructor(
     private dataService: DataService,
-    private router: Router,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private authService: AuthService
   ) {}
 
   ngOnInit() {
-    // if (this.isSessionStorage()) {
-    //   let sessionKeys = Object.keys(sessionStorage)
-    //   for (let recipeKey in sessionKeys) {
-    //     let recipeName = sessionKeys[recipeKey]
-    //     // use getRecipeDB here
-    //     let recipe = sessionStorage.getItem(recipeName)
-    //     this.recipes.push(JSON.parse(recipe || '{}'))
+    this.userLogin.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2'
+    // this.dataService.getUser().subscribe(
+    //   (res) => {
+    //     this.userLogin = res
+    //     console.log(this.userLogin)
+    //   },
+    //   (err) => {
+    //     console.log(err)
     //   }
-    // }
+    // )
+    this.dataService
+      .getFireObject(this.usersPath + this.userLogin.uid + this.linksPath)
+      .subscribe(
+        (res) => {
+          this.userLinks = res
+          console.log(this.userLinks)
+        },
+        (err) => {
+          console.log(err)
+        }
+      )
     // this.links = this.fake_links
     // this.test() // TODO: comment out
   }
@@ -2322,7 +2344,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     this.links = []
     this.noLinks = false
     this.duplicateLinks = false
-    this.linksTextInput = this.linksTextInputFAKE
+    this.linksTextInput = this.linksTextInputFAKE // mock data
     if (this.linksTextInput) {
       let inputLinks = this.splitLinks(this.linksTextInput)
       this.addToLinks(inputLinks)
@@ -2339,13 +2361,33 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   // iterate over links, checking if they're already in recipes, and if not then getting the recipe for it
   listRecipes(): void {
     for (let link of this.links) {
+      let standardLink = this.standardUrl(this.links[0])
+      if (this.userLinks === null) {
+      } else {
+        this.savedLink = Object.values(this.userLinks).includes(standardLink)
+      }
       if (link) {
-        if (this.recipes.some((r) => r.link === link)) {
+        if (this.recipes.some((r) => r.link === standardLink)) {
           this.duplicateLinks = true
+        }
+        if (this.savedLink) {
+          this.recipeKey = Object.keys(this.userLinks).find(
+            (key) => this.userLinks[key] === standardLink
+          )
+          this.dataService
+            .getFireObject(this.recipesPath + this.recipeKey)
+            .subscribe(
+              (res) => {
+                this.recipes.push(res)
+                this.openRecipeDetails(res)
+              },
+              (err) => {
+                console.log(err)
+              }
+            )
         } else {
           let recipe = {
-            link: link,
-            original_data: {},
+            original_data: { url: link },
             filter_data: {},
             status: 'loading',
           }
@@ -2359,12 +2401,19 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   // scrape recipe for a link
   getRecipe(recipe: any): void {
     this.loading = true
-    recipe = this.recipeFake // use for mock data
-    this.loading = false // use for mock data
-    this.openRecipeDetails(recipe) // use for mock data
-    this.show = true // use for mock data
+    // ** USE FOR MOCK DATA
+    recipe = this.recipeFake
+    recipe.user = this.userLogin.uid
+    this.loading = false
+    this.recipeKey = this.dataService.addFire(
+      this.usersPath + recipe.user + this.linksPath,
+      recipe.link
+    )
+    this.dataService.createFire(this.recipesPath + this.recipeKey, recipe)
+    this.openRecipeDetails(recipe)
+    // ** USE FOR MOCK DATA
     // this.recipeScraperSubscription = this.dataService
-    //   .getScrapedRecipe(recipe.link)
+    //   .getScrapedRecipe(recipe.original_data.url)
     //   .subscribe(
     //     (res) => {
     //       if ((res as any).value) {
@@ -2372,15 +2421,16 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
     //         // console.log(res)
     //         recipe.original_data = (res as any).value
     //         recipe.filter_data = clone((res as any).value)
+    //         recipe.user = this.userLogin.uid
     //         recipe.status = 'complete'
     //         this.dataService.storeRecipeDB(recipe)
-    this.dataService.createFire(
-      this.recipesPath + recipe.original_data.name,
-      recipe
-    )
+    //         this.dataService.addFire(this.recipesPath, recipe)
+    //         this.dataService.addFire(
+    //           this.usersPath + this.userLogin.uid + this.linksPath,
+    //           recipe.link
+    //         )
     //         this.loading = false
     //         this.openRecipeDetails(recipe)
-    //         this.show = true
     //       } else {
     //         recipe.status = 'error'
     //         console.log('no recipe')
@@ -2414,6 +2464,10 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       'g'
     )
     return str.match(geturl)
+  }
+
+  standardUrl(str: string) {
+    return str.split('www.')[1]
   }
 
   addToLinks(links: string[]) {
@@ -2460,23 +2514,31 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
     }
     this.detailsLoading = true
-    let res = this.resFAKE //  use for mock data
-    this.openModal(res) //  use for mock data
-    // this.nutritionixNlpSubscription = this.dataService
-    //   .getFoodByNlp(this.ingredientsNlp)
-    //   .subscribe(
-    //     (res) => {
-    //       this.title = recipe.original_data.name
-    //       this.openModal(res)
-    //       // console.log('res')
-    //       // console.log(res)
-    //       this.nutritionixNlpSubscription.unsubscribe()
-    //     },
-    //     (err) => {
-    //       console.log(err)
-    //       this.nutritionixNlpSubscription.unsubscribe()
-    //     }
-    //   )
+    if (this.savedLink) {
+      this.recipeNutrition = recipe.final_ingredients
+      this.calculateSums(this.recipeNutrition)
+      this.detailsLoading = false
+    } else {
+      // ** USE FOR MOCK DATA **
+      let res = this.resFAKE
+      this.openModal(res)
+      // ** USE FOR MOCK DATA **
+      // this.nutritionixNlpSubscription = this.dataService
+      //   .getFoodByNlp(this.ingredientsNlp)
+      //   .subscribe(
+      //     (res) => {
+      //       this.title = recipe.original_data.name
+      //       this.openModal(res)
+      //       // console.log('res')
+      //       // console.log(res)
+      //       this.nutritionixNlpSubscription.unsubscribe()
+      //     },
+      //     (err) => {
+      //       console.log(err)
+      //       this.nutritionixNlpSubscription.unsubscribe()
+      //     }
+      //   )
+    }
   }
 
   // opens recipe-details-modal, passes recipe ingredient API results for user edit and submission
@@ -2494,9 +2556,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       this.calculateSums(this.recipeNutrition)
       this.detailsLoading = false
       this.dataService.updateFire(
-        this.recipesPath +
-          this.recipeData.original_data.name +
-          '/final_ingredients',
+        this.recipesPath + this.recipeKey + this.ingredientsPath,
         confirmedIngredients
       )
     })

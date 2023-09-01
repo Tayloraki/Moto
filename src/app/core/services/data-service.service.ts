@@ -7,6 +7,8 @@ import {
   AngularFireObject,
 } from '@angular/fire/compat/database'
 import { Observable } from 'rxjs'
+import { AuthService } from './auth.service'
+import { of, Subscription } from 'rxjs'
 
 @Injectable({
   providedIn: 'root',
@@ -24,11 +26,43 @@ export class DataService {
   }
   fireRef: AngularFireObject<any> | any
   fireList: AngularFireList<any> | any
+  user: any
+  signedIn: boolean = false
+  usersPath: string = '/users/'
 
   constructor(
     private http: HttpClient,
-    private fireDB: AngularFireDatabase // TODO: change database rules to "write: false" or to ".read": "auth != null",".write": "auth != null"
+    private fireDB: AngularFireDatabase, // TODO: change database rules to "write: false" or to ".read": "auth != null",".write": "auth != null"
+    public authService: AuthService
   ) {}
+
+  getUser() {
+    if (this.user) {
+      console.log(this.user)
+      return of(this.user)
+    } else {
+      this.authService.getUser().subscribe(
+        (res: any) => {
+          console.log(res)
+          this.user = res
+          return of(this.user)
+        },
+        (err: any) => {
+          console.log(err)
+          return of(null)
+        }
+      )
+      // const authUser = this.authService.getUser()
+      // console.log(authUser)
+      // this.user = this.getFireObject(this.usersPath + authUser.uid)
+      // TODO: hit the user db, get their data (list of recipes, etc., and save it to this.user and then return that)
+      // return this.http.get('/users/'+uid).pipe(map => {this.user = {data}}; maybe return this.user})
+      // return of(this.user)
+      //get it from auth service, etc. and then save to this.user
+    }
+    console.log(this.user)
+    return of(null)
+  }
 
   getScrapedRecipe(recipeUrl: string) {
     return this.http.get('/api/recipe/' + recipeUrl)
@@ -109,5 +143,12 @@ export class DataService {
   getFireObject(object: any): Observable<any> {
     this.fireRef = this.fireDB.object(object)
     return this.fireRef.valueChanges()
+  }
+
+  addFire(object: any, data: any): any {
+    this.fireRef = this.fireDB.list(object)
+    // this.fireRef.push(data)
+    let add = this.fireRef.push(data)
+    return add.key
   }
 }
