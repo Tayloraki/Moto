@@ -2272,7 +2272,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.userLogin.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2'
+    // this.userLogin.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2'
     // this.dataService.getUser().subscribe(
     //   (res) => {
     //     this.userLogin = res
@@ -2375,9 +2375,10 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   // each link: checking if they're already in this.recipes AND/OR firebase, and if not then getting the recipe for it
   listRecipes(): void {
+    console.log(this.userLinks)
     for (let link of this.links) {
       let standardLink = this.standardUrl(link)
-      if (this.userLinks === null) {
+      if (this.userLinks === null || this.userLinks === undefined) {
       } else {
         this.savedLink = Object.values(this.userLinks).includes(standardLink)
         this.loadedLink = this.recipes.some((e) => e.link === standardLink)
@@ -2531,12 +2532,14 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   openRecipeDetails(recipe: any): void {
     this.selectRecipe = recipe
-    this.recipeKey = Object.keys(this.userLinks).find(
-      (key) => this.userLinks[key] === this.selectRecipe.link
-    )
-    this.savedLink = Object.values(this.userLinks).includes(
-      this.selectRecipe.link
-    )
+    if (this.userLogin.uid) {
+      this.recipeKey = Object.keys(this.userLinks).find(
+        (key) => this.userLinks[key] === this.selectRecipe.link
+      )
+      this.savedLink = Object.values(this.userLinks).includes(
+        this.selectRecipe.link
+      )
+    }
     this.ingredientsNlp = ''
     for (let ingredient of recipe.original_data.recipeIngredients) {
       this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
@@ -2579,17 +2582,20 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
     modalRef.result.then((modalOutput: any) => {
       //  TODO: selectRecipe --> recipe-details but after modal input, selectRecipe needs manual update or updated Fire object needs to be got
+      // update: components are sharing so using updated selectRecipe
       this.selectRecipe.final_ingredients = modalOutput.finalIngredients
-      // same for .recipeYield
+      this.selectRecipe.filter_data.recipeYield = modalOutput.userSetSize
       // ***
-      this.dataService.updateFire(
-        this.recipesPath + this.recipeKey + this.ingredientsPath,
-        modalOutput.finalIngredients
-      )
-      this.dataService.updateFire(
-        this.recipesPath + this.recipeKey + '/filter_data/recipeYield',
-        modalOutput.userSetSize
-      )
+      if (this.userLogin.uid) {
+        this.dataService.updateFire(
+          this.recipesPath + this.recipeKey + this.ingredientsPath,
+          modalOutput.finalIngredients
+        )
+        this.dataService.updateFire(
+          this.recipesPath + this.recipeKey + '/filter_data/recipeYield',
+          modalOutput.userSetSize
+        )
+      }
       this.detailsLoading = false
     })
   }

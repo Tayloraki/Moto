@@ -43,7 +43,7 @@ export class FigureComponent implements OnInit {
   ]
   DailyValuesCustom: any[] = []
   hasCustom: boolean = false
-  numServes: number = 0
+  @Input() numServes: number = 0
   userSetSize: string = ''
 
   servingData: any[] = []
@@ -185,8 +185,8 @@ export class FigureComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.signedIn = true
-    this.login.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2'
+    // this.signedIn = true
+    // this.login.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2'
     // this.signedIn = this.dataService.signedIn
     // this.login = this.dataService.user
     if (this.signedIn) {
@@ -206,27 +206,11 @@ export class FigureComponent implements OnInit {
           console.error(error)
         }
       )
-      this.dataService
-        .getFireObject(this.recipesPath + this.recipeKey)
-        .subscribe(
-          (res) => {
-            if (res === null) {
-              console.log('no saved recipe')
-            } else {
-              this.recipeData = res
-              console.log(res)
-              this.numServes = this.recipeData.original_data.recipeYield
-              this.userSetSize = '' + this.numServes
-              this.createSvg()
-              this.makeFigure()
-              // this.checkVariables()
-            }
-          },
-          (error) => {
-            console.error(error)
-          }
-        )
     }
+    this.userSetSize = '' + this.numServes
+    this.createSvg()
+    this.makeFigure()
+    // this.checkVariables()
   }
 
   checkVariables(): void {
@@ -285,15 +269,17 @@ export class FigureComponent implements OnInit {
 
   // takes user info form to create dailyValuesCustom, update data figure
   onSubmit() {
+    if (this.signedIn) {
+      this.dataService.createFire(
+        this.usersPath + this.login.uid + '/physical',
+        this.userPhysical
+      )
+    }
     this.convertUnits()
     this.userNutrition()
     this.hasCustom = true
     this.makeFigure()
     // this.checkVariables()
-    this.dataService.createFire(
-      this.usersPath + this.login.uid + '/physical',
-      this.userPhysical
-    )
   }
 
   // converts user weight/height (BMR formula uses metric)

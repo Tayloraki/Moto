@@ -64,11 +64,14 @@ export class RecipeDetailsComponent implements OnInit {
 
   recipesPath: string = '/recipes/'
   @Input() recipeKey: string | undefined
+  recipeYield: any
+
   constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
     this.finalIngredients = this.recipeDetails.final_ingredients
     this.recipeTitle = this.recipeDetails.original_data.name
+    this.recipeYield = this.recipeDetails.filter_data.recipeYield
     // this.recipeKey = Object.keys(this.userLinks).find(
     //   (key) => this.userLinks[key] === this.recipeDetails.link
     // )
