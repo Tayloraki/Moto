@@ -3,7 +3,6 @@ import { Subscription } from 'rxjs'
 import { DataService } from '../core/services/data-service.service'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { isEmpty, without } from 'underscore'
-import { AnyARecord } from 'dns'
 
 @Component({
   selector: 'app-recipe-details-modal',
@@ -11,12 +10,12 @@ import { AnyARecord } from 'dns'
   styleUrls: ['./recipe-details-modal.component.scss'],
 })
 export class RecipeDetailsModalComponent implements OnInit {
-  @Input() fullApiResult: any[] = []
+  @Input() IngredientApiReturn: any[] = []
   @Input() recipeTitle: string = ''
   // @Input() userPrompt: boolean
   // @Output() userSelect = new EventEmitter()
   recipeData: any = {}
-  servingSize: number = 1 // original recipeYield
+  @Input() servingSize: number = 1 // original recipeYield
   userSetSize: number = 1 // user-set recipeYield
 
   gotIngredients: any[] = []
@@ -24,6 +23,7 @@ export class RecipeDetailsModalComponent implements OnInit {
 
   allIngredientResults: any[] = []
   finalIngredients: any[] = []
+  modalOutput: any
 
   nutritionixNlpSubscription: Subscription = new Subscription()
 
@@ -2199,33 +2199,32 @@ export class RecipeDetailsModalComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // this.errorIngredients = (this.fullApiResult as any).errors
-    // this.gotIngredients = (this.fullApiResult as any).foods
-    this.errorIngredients = (this.resFAKE as any).errors //  use for mock data
-    this.gotIngredients = (this.resFAKE as any).foods //  use for mock data
-    this.recipeData = this.recipeFake
-    // this.recipeData = this.dataService.getRecipeDB(this.recipeTitle)
-    this.servingSize = Number(this.recipeData.original_data.recipeYield)
+    this.errorIngredients = (this.IngredientApiReturn as any).errors
+    this.gotIngredients = (this.IngredientApiReturn as any).foods
+    // ** MOCK DATA
+    // this.errorIngredients = (this.resFAKE as any).errors
+    // this.gotIngredients = (this.resFAKE as any).foods
+    // this.recipeData = this.recipeFake
+    // ** MOCK DATA
     this.userSetSize = this.servingSize
     // this.checkVariables()
     for (let ingredient of this.errorIngredients) {
       let ingredientNlp = ingredient.original_text
       if (ingredient.err_code === 100) {
-        this.error100IngredientByResults(ingredientNlp, this.ingredientResFake) //  use for mock data
-        // this.nutritionixNlpSubscription = this.dataService
-        //   .getIngredientByNlp(ingredientNlp)
-        //   .subscribe(
-        //     (res) => {
-        //       // console.log('res')
-        //       // console.log(res)
-        //       this.error100IngredientByResults(ingredientNlp, res)
-        //       this.nutritionixNlpSubscription.unsubscribe()
-        //     },
-        //     (err) => {
-        //       console.log(err)
-        //       this.nutritionixNlpSubscription.unsubscribe()
-        //     }
-        //   )
+        // this.error100IngredientByResults(ingredientNlp, this.ingredientResFake) //  use for mock data
+        this.nutritionixNlpSubscription = this.dataService
+          .getIngredientByNlp(ingredientNlp)
+          .subscribe(
+            (res) => {
+              // console.log(res)
+              this.error100IngredientByResults(ingredientNlp, res)
+              this.nutritionixNlpSubscription.unsubscribe()
+            },
+            (err) => {
+              console.log(err)
+              this.nutritionixNlpSubscription.unsubscribe()
+            }
+          )
       } else if (ingredient.err_code === 101) {
         this.error101IngredientByResults(ingredientNlp)
       }
@@ -2276,9 +2275,6 @@ export class RecipeDetailsModalComponent implements OnInit {
   }
 
   // user select a ingredient candidate
-  // probably a nonissue (only with mock data) but
-  // metadata.original_input is being shared and changed for
-  // each confirmed ingredient
   confirmIngredient(ingredient: any, ingredientResult: any) {
     ingredient.selected = ingredientResult
     ingredient.selected.metadata.original_input = ingredient.recipeIngredient
@@ -2288,6 +2284,10 @@ export class RecipeDetailsModalComponent implements OnInit {
   confirmAllIngredient() {
     for (let ingredient of this.allIngredientResults) {
       this.finalIngredients.push(ingredient.selected)
+    }
+    this.modalOutput = {
+      finalIngredients: this.finalIngredients,
+      userSetSize: this.userSetSize,
     }
   }
 
@@ -2307,7 +2307,6 @@ export class RecipeDetailsModalComponent implements OnInit {
       .getIngredientByNlp(ingredientName)
       .subscribe(
         (res) => {
-          // console.log('res')
           // console.log(res)
           this.searchIngredientByResults(res, recipeIngredient)
           this.nutritionixNlpSubscription.unsubscribe()
@@ -2339,7 +2338,6 @@ export class RecipeDetailsModalComponent implements OnInit {
       .getIngredientByNlp(ingredientName)
       .subscribe(
         (res) => {
-          // console.log('res')
           // console.log(res)
           this.addSearchIngredientByResults(res)
           this.nutritionixNlpSubscription.unsubscribe()
@@ -2361,17 +2359,5 @@ export class RecipeDetailsModalComponent implements OnInit {
     }
     ingredientResults.selected.metadata.original_input = ingredient.food_name
     this.allIngredientResults.push(ingredientResults)
-  }
-
-  // updates filtered recipeYield
-  setServing() {
-    this.recipeData.filter_data.recipeYield = this.userSetSize
-    this.updateItem(this.recipeData)
-  }
-
-  // updates recipe object
-  updateItem(x: any) {
-    this.dataService.getRecipeDB(x.original_data.name)
-    this.dataService.storeRecipeDB(x)
   }
 }

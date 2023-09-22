@@ -1,9 +1,10 @@
 <div class="page-container">
-  <div class="page-title">{{ recipeTitle }}</div>
+  <div class="page-title">{{ recipeDetails.original_data.name }}</div>
   <app-figure
     *ngIf="(figureData | json) != '{}'"
     [figureData]="figureData"
     [recipeTitle]="recipeTitle"
+    [recipeKey]="recipeKey"
   ></app-figure>
   <div id="details-container">
     <div id="ingredients-container">
@@ -13,7 +14,7 @@
         </thead>
         <tbody>
           <tr
-            *ngFor="let ingredient of recipeNutrition"
+            *ngFor="let ingredient of finalIngredients"
             (click)="openIngredient(ingredient)"
           >
             <td>{{ ingredient.metadata.original_input }}</td>

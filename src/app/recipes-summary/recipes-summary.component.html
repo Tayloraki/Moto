@@ -57,7 +57,7 @@
         </button>
       </div>
     </div>
-    <!-- <div id="links-container" *ngIf="recipes.length">
+    <div id="links-container" *ngIf="recipes.length">
       <table id="links-table">
         <thead>
           <tr>
@@ -69,7 +69,7 @@
           <tr
             *ngFor="let recipe of recipes"
             (click)="openRecipeDetails(recipe)"
-            [class.pointer]="recipe.data.name"
+            [class.pointer]="recipe.original_data.name"
           >
             <td class="status">
               <div *ngIf="recipe.status === 'error'">
@@ -152,18 +152,18 @@
                     </svg>
                   </div>
                 </div>
-                <a href="{{ recipe.link }}" target="_blank">{{
-                  recipe.data.name || recipe.link
+                <a href="{{ recipe.original_data.url }}" target="_blank">{{
+                  recipe.original_data.name || recipe.original_data.url
                 }}</a>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
-    </div> -->
+    </div>
     <app-recipe-details
-      [recipeNutrition]="recipeNutrition"
-      [recipeTitle]="title"
+      [recipeDetails]="selectRecipe"
+      [recipeKey]="recipeKey"
       *ngIf="!detailsLoading"
     ></app-recipe-details>
   </div>

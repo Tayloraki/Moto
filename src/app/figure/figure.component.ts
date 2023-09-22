@@ -3,11 +3,7 @@ import * as d3 from 'd3'
 import { DataService } from '../core/services/data-service.service'
 import { AuthService } from '../core/services/auth.service'
 import configureMeasurements, { allMeasures } from 'convert-units'
-import {
-  AngularFireDatabase,
-  AngularFireList,
-  AngularFireObject,
-} from '@angular/fire/compat/database'
+import { AngularFireObject } from '@angular/fire/compat/database'
 import { Subscription } from 'rxjs'
 
 @Component({
@@ -18,6 +14,7 @@ import { Subscription } from 'rxjs'
 export class FigureComponent implements OnInit {
   recipeData: any = []
   @Input() recipeTitle: string = ''
+  @Input() recipeKey: string | undefined
   @Input() figureData: any[] = []
   keys: string[] = [
     'nf_calories',
@@ -209,14 +206,27 @@ export class FigureComponent implements OnInit {
           console.error(error)
         }
       )
+      this.dataService
+        .getFireObject(this.recipesPath + this.recipeKey)
+        .subscribe(
+          (res) => {
+            if (res === null) {
+              console.log('no saved recipe')
+            } else {
+              this.recipeData = res
+              console.log(res)
+              this.numServes = this.recipeData.original_data.recipeYield
+              this.userSetSize = '' + this.numServes
+              this.createSvg()
+              this.makeFigure()
+              // this.checkVariables()
+            }
+          },
+          (error) => {
+            console.error(error)
+          }
+        )
     }
-    this.recipeData = this.recipeFake // use for mock data
-    // this.recipeData = this.dataService.getRecipeDB(this.recipeTitle)
-    // this.checkVariables()
-    this.numServes = this.recipeData.filter_data.recipeYield
-    this.userSetSize = '' + this.numServes
-    this.createSvg()
-    this.makeFigure()
   }
 
   checkVariables(): void {

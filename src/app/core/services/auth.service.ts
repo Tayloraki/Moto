@@ -30,11 +30,11 @@ export class AuthService {
       if (user) {
         this.userData = user
         console.log(this.userData)
-        localStorage.setItem('user', JSON.stringify(this.userData))
-        JSON.parse(localStorage.getItem('user') || '{}') // added {} but preventing null may be issue
-      } else {
-        localStorage.setItem('user', '{}') // originally user, null but wouldnt allow set null, may be issue
-        JSON.parse(localStorage.getItem('user') || '{}') // added {} but preventing null may be issue
+        //   localStorage.setItem('user', JSON.stringify(this.userData))
+        //   JSON.parse(localStorage.getItem('user') || '{}') // added {} but preventing null may be issue
+        // } else {
+        //   localStorage.setItem('user', '{}') // originally user, null but wouldnt allow set null, may be issue
+        //   JSON.parse(localStorage.getItem('user') || '{}') // added {} but preventing null may be issue
       }
     })
   }

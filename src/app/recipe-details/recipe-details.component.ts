@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core'
+import { DataService } from '../core/services/data-service.service'
 
 @Component({
   selector: 'app-recipe-details',
@@ -6,14 +7,11 @@ import { Component, Input, OnInit } from '@angular/core'
   styleUrls: ['./recipe-details.component.scss'],
 })
 export class RecipeDetailsComponent implements OnInit {
-  recipeData: any = []
   ingredientsNlp: string = ''
-  @Input() recipeNutrition: any = []
-  fullApiResult: any = {}
+  @Input() recipeDetails: any = {}
+  finalIngredients: any = []
   ingredientNutrition: any = {}
-  allIngredientNutrition: any[] = [] // currently not called
-  tempRecipeNutrition: string = '' // currently not called
-  @Input() recipeTitle: string = ''
+  recipeTitle: any = ''
 
   keys: string[] = [
     'nf_calories',
@@ -64,22 +62,37 @@ export class RecipeDetailsComponent implements OnInit {
     'for breakfast i ate 2 eggs, bacon, a tomato, a grapefruit and half a cup of fish sauce'
   fakeIngredient: any = {}
 
-  constructor() {}
+  recipesPath: string = '/recipes/'
+  @Input() recipeKey: string | undefined
+  constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
-    this.calculateSums(this.recipeNutrition)
+    this.finalIngredients = this.recipeDetails.final_ingredients
+    this.recipeTitle = this.recipeDetails.original_data.name
+    // this.recipeKey = Object.keys(this.userLinks).find(
+    //   (key) => this.userLinks[key] === this.recipeDetails.link
+    // )
+    // this.dataService.getFireObject(this.recipesPath + this.recipeKey).subscribe(
+    //   (res) => {
+    //     console.log(res)
+    //   },
+    //   (err) => {
+    //     console.log(err)
+    //   }
+    // )
+    this.calculateSums(this.finalIngredients)
     this.openFigures(this.sums)
     // this.checkVariables()
   }
 
   checkVariables(): void {
-    console.log('this.recipeNutrition:')
-    console.log(this.recipeNutrition)
+    console.log('this.finalIngredients:')
+    console.log(this.finalIngredients)
   }
 
   // // adds (desired) nutrition of each ingredient together, rounds
-  calculateSums(recipe: any) {
-    for (let ingredient of recipe) {
+  calculateSums(recipeIngredients: any) {
+    for (let ingredient of recipeIngredients) {
       for (let property in this.sums) {
         this.sums[property].total += ingredient[property]
       }

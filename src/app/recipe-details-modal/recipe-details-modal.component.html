@@ -101,11 +101,7 @@
         type="button"
         class="btn btn-secondary"
         data-dismiss="modal"
-        (click)="
-          confirmAllIngredient();
-          activeModal.close(finalIngredients);
-          setServing()
-        "
+        (click)="confirmAllIngredient(); activeModal.close(modalOutput)"
         [disabled]="allConfirmed()"
       >
         Continue
