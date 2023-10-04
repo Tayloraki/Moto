@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input, OnInit, OnChanges } from '@angular/core'
 import { DataService } from '../core/services/data-service.service'
 
 @Component({
@@ -6,7 +6,7 @@ import { DataService } from '../core/services/data-service.service'
   templateUrl: './recipe-details.component.html',
   styleUrls: ['./recipe-details.component.scss'],
 })
-export class RecipeDetailsComponent implements OnInit {
+export class RecipeDetailsComponent implements OnInit, OnChanges {
   ingredientsNlp: string = ''
   @Input() recipeDetails: any = {}
   finalIngredients: any = []
@@ -69,23 +69,21 @@ export class RecipeDetailsComponent implements OnInit {
   constructor(private dataService: DataService) {}
 
   ngOnInit(): void {
+    this.setRecipe()
+    // this.checkVariables()
+  }
+
+  ngOnChanges(): void {
+    this.setRecipe()
+  }
+
+  setRecipe(): void {
+    console.log(this.recipeDetails)
     this.finalIngredients = this.recipeDetails.final_ingredients
     this.recipeTitle = this.recipeDetails.original_data.name
     this.recipeYield = this.recipeDetails.filter_data.recipeYield
-    // this.recipeKey = Object.keys(this.userLinks).find(
-    //   (key) => this.userLinks[key] === this.recipeDetails.link
-    // )
-    // this.dataService.getFireObject(this.recipesPath + this.recipeKey).subscribe(
-    //   (res) => {
-    //     console.log(res)
-    //   },
-    //   (err) => {
-    //     console.log(err)
-    //   }
-    // )
     this.calculateSums(this.finalIngredients)
     this.openFigures(this.sums)
-    // this.checkVariables()
   }
 
   checkVariables(): void {
@@ -95,6 +93,18 @@ export class RecipeDetailsComponent implements OnInit {
 
   // // adds (desired) nutrition of each ingredient together, rounds
   calculateSums(recipeIngredients: any) {
+    this.sums = {
+      nf_calories: { total: 0, niceName: 'Calories' },
+      nf_cholesterol: { total: 0, niceName: 'Cholesterol (mg)' },
+      nf_dietary_fiber: { total: 0, niceName: 'Dietary Fiber (g)' },
+      nf_potassium: { total: 0, niceName: 'Potassium (mg)' },
+      nf_protein: { total: 0, niceName: 'Protein (g)' },
+      nf_saturated_fat: { total: 0, niceName: 'Saturated Fat (mg)' },
+      nf_sodium: { total: 0, niceName: 'Sodium (mg)' },
+      nf_sugars: { total: 0, niceName: 'Sugars (g)' },
+      nf_total_carbohydrate: { total: 0, niceName: 'Carbohydrates (g)' },
+      nf_total_fat: { total: 0, niceName: 'Fat (g)' },
+    }
     for (let ingredient of recipeIngredients) {
       for (let property in this.sums) {
         this.sums[property].total += ingredient[property]
@@ -121,6 +131,7 @@ export class RecipeDetailsComponent implements OnInit {
 
   // populates this.figureData to display and pass to figure component
   openFigures(recipeData: any) {
+    this.figureData = []
     for (let property in recipeData) {
       this.figureData.push(this.sums[property])
     }

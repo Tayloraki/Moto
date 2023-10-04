@@ -9,6 +9,7 @@ import {
 import { Observable } from 'rxjs'
 import { AuthService } from './auth.service'
 import { of, Subscription } from 'rxjs'
+import { map, catchError } from 'rxjs/operators'
 
 @Injectable({
   providedIn: 'root',
@@ -41,17 +42,23 @@ export class DataService {
       console.log(this.user)
       return of(this.user)
     } else {
-      this.authService.getUser().subscribe(
-        (res: any) => {
-          console.log(res)
-          this.user = res
-          return of(this.user)
-        },
-        (err: any) => {
+      return this.authService.getUser().pipe(
+        catchError((err) => {
           console.log(err)
-          return of(null)
-        }
+          return err
+        }),
+        map((res) => {
+          console.log(res)
+          if (res) {
+            this.user = {
+              uid: res.uid,
+              email: res.email,
+            }
+          } else this.user = { uid: 'new', email: 'new' }
+          return this.user
+        })
       )
+
       // const authUser = this.authService.getUser()
       // console.log(authUser)
       // this.user = this.getFireObject(this.usersPath + authUser.uid)
@@ -60,8 +67,6 @@ export class DataService {
       // return of(this.user)
       //get it from auth service, etc. and then save to this.user
     }
-    console.log(this.user)
-    return of(null)
   }
 
   getScrapedRecipe(recipeUrl: string) {

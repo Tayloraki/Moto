@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core'
+import { Component, OnInit, Input, OnChanges } from '@angular/core'
 import * as d3 from 'd3'
 import { DataService } from '../core/services/data-service.service'
 import { AuthService } from '../core/services/auth.service'
@@ -11,7 +11,7 @@ import { Subscription } from 'rxjs'
   templateUrl: './figure.component.html',
   styleUrls: ['./figure.component.scss'],
 })
-export class FigureComponent implements OnInit {
+export class FigureComponent implements OnInit, OnChanges {
   recipeData: any = []
   @Input() recipeTitle: string = ''
   @Input() recipeKey: string | undefined
@@ -178,6 +178,7 @@ export class FigureComponent implements OnInit {
   signedIn: boolean = false
 
   userSubscription: Subscription = new Subscription()
+  userPhysicalSubscription: Subscription = new Subscription()
 
   constructor(
     private dataService: DataService,
@@ -185,32 +186,50 @@ export class FigureComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // this.signedIn = true
-    // this.login.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2'
-    // this.signedIn = this.dataService.signedIn
-    // this.login = this.dataService.user
-    if (this.signedIn) {
-      this.dataService.getFireObject(this.usersPath + this.login.uid).subscribe(
-        (res) => {
-          if (res === null) {
-            console.log('no user info')
-          } else {
-            this.user = res
-            if (this.user.physical === !null) {
-            } else {
-              this.userPhysical = this.user.physical
-            }
-          }
-        },
-        (error) => {
-          console.error(error)
+    // this.login.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2' MOCK DATA
+    this.userSubscription = this.dataService.getUser().subscribe(
+      (res) => {
+        this.login = res
+        if (this.login && this.login.uid !== 'new') {
+          this.userPhysicalSubscription = this.dataService
+            .getFireObject(this.usersPath + this.login.uid)
+            .subscribe(
+              (res) => {
+                if (res === null) {
+                  console.log('no user info')
+                } else {
+                  this.user = res
+                  if (this.user.physical === !null) {
+                  } else {
+                    this.userPhysical = this.user.physical
+                  }
+                }
+                this.userPhysicalSubscription.unsubscribe()
+              },
+              (error) => {
+                console.error(error)
+                this.userPhysicalSubscription.unsubscribe()
+              }
+            )
         }
-      )
-    }
+        this.userSubscription.unsubscribe()
+      },
+      (error) => {
+        console.error(error)
+        this.userSubscription.unsubscribe()
+      }
+    )
     this.userSetSize = '' + this.numServes
+    // this.createSvg()
+    // this.makeFigure()
+    console.log(this.figureData)
+    // this.checkVariables()
+  }
+
+  ngOnChanges(): void {
+    console.log(this.figureData)
     this.createSvg()
     this.makeFigure()
-    // this.checkVariables()
   }
 
   checkVariables(): void {
@@ -370,6 +389,9 @@ export class FigureComponent implements OnInit {
 
   // creates foundation html object for visual data figure
   private createSvg(): void {
+    if (this.svg) {
+      this.svg.selectAll('*').remove()
+    }
     this.svg = d3
       .select('figure#bar')
       .append('svg')
@@ -377,13 +399,12 @@ export class FigureComponent implements OnInit {
       .attr('height', this.height + this.margin * 2 + 35)
       .append('g')
       .attr('transform', 'translate(' + this.margin + ',' + this.margin + ')')
+    console.log(this.svg)
   }
 
   // creates visual data figure
   private drawBars(data: any[]): void {
     let t = this.svg.transition().duration(500)
-
-    this.svg.selectAll('*').remove()
 
     // Create the X-axis band scale
     const x = d3

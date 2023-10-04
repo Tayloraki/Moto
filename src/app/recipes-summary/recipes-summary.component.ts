@@ -4,7 +4,7 @@ import { Subscription } from 'rxjs'
 import { parse } from 'papaparse'
 import { flatten, some, uniq } from 'underscore'
 import { RecipeDetailsModalComponent } from 'src/app/recipe-details-modal/recipe-details-modal.component'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal, NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap'
 import clone from 'just-clone'
 
 import { AuthService } from '../core/services/auth.service'
@@ -72,7 +72,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   // mock data
   linksTextInputFAKE: string =
-    'https://www.seriouseats.com/jamaican-pepper-shrimp'
+    'https://www.seriouseats.com/jamaican-pepper-shrimp, https://www.seriouseats.com/negroni-cocktail-recipe-gin-campari-vermouth'
   recipeFake: any = {
     link: 'seriouseats.com/jamaican-pepper-shrimp',
     original_data: {
@@ -2245,6 +2245,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   ingredientsPath: string = '/final_ingredients/'
   linksPath: string = '/links/'
   userLinks: any | undefined
+  userLinksArray: any | undefined
   savedLink: boolean = false
   loadedLink: boolean = false
   recipeKey: string | undefined
@@ -2262,7 +2263,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   recipeScraperSubscription: Subscription = new Subscription()
   nutritionixFoodByIdSubscription: Subscription = new Subscription()
   nutritionixNlpSubscription: Subscription = new Subscription()
-
+  userSubscription: Subscription = new Subscription()
+  userLinksSubscription: Subscription = new Subscription()
   signInSubscription: Subscription = new Subscription()
 
   constructor(
@@ -2272,41 +2274,59 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // this.userLogin.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2'
-    // this.dataService.getUser().subscribe(
-    //   (res) => {
-    //     this.userLogin = res
-    //   },
-    //   (err) => {
-    //     console.log(err)
-    //   }
-    // )
-    if (this.userLogin.uid) {
-      this.dataService
-        .getFireObject(this.usersPath + this.userLogin.uid + this.linksPath)
-        .subscribe(
-          (res) => {
-            console.log(res)
-            this.userLinks = res
-            // TODO: pipe? res --> for loop get saved recipes
-            // for (let link of this.userLinks) {
-            //   this.dataService
-            //     .getFireObject(this.recipesPath + this.recipeKey)
-            //     .subscribe(
-            //       (res) => {
-            //         this.recipes.push(res)
-            //       },
-            //       (err) => {
-            //         console.log(err)
-            //       }
-            //     )
-            // }
-          },
-          (err) => {
-            console.log(err)
-          }
-        )
-    }
+    // this.userLogin.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2'  TODO: MOCK DATA
+    this.userSubscription = this.dataService.getUser().subscribe(
+      (res) => {
+        this.userLogin = res
+        if (this.userLogin && this.userLogin.uid !== 'new') {
+          this.userLinksSubscription = this.dataService
+            .getFireObject(this.usersPath + this.userLogin.uid + this.linksPath)
+            .subscribe(
+              (res) => {
+                if (res) {
+                  this.userLinks = res
+                  this.userLinksArray = Object.keys(res) // TODO: this may be property of more global array conversion
+                  this.recipes = []
+                  // for (let [key, link] of Object.entries(this.userLinks))  TODO: better to loop as object??
+                  for (let key of this.userLinksArray) {
+                    let recipeLinksSubscription: Subscription = this.dataService
+                      .getFireObject(this.recipesPath + key)
+                      .subscribe(
+                        (res) => {
+                          // if ( TODO: logic unnecessary? preventing duplicates
+                          //   this.userLinksArray.some(
+                          //     (e: any) => e.link !== res.link
+                          //   )
+                          // ) {
+                          this.recipes.push(res)
+                          // }
+                          recipeLinksSubscription.unsubscribe()
+                        },
+                        (err) => {
+                          console.log(err)
+                          recipeLinksSubscription.unsubscribe()
+                        }
+                      )
+                  }
+                } else {
+                  this.userLinks = []
+                  console.log('users had no saved recipes')
+                }
+                this.userLinksSubscription.unsubscribe()
+              },
+              (err) => {
+                console.log(err)
+                this.userLinksSubscription.unsubscribe()
+              }
+            )
+        }
+        this.userSubscription.unsubscribe()
+      },
+      (err) => {
+        console.log(err)
+        this.userSubscription.unsubscribe()
+      }
+    )
     // this.links = this.fake_links
     // this.test() // TODO: comment out
   }
@@ -2314,6 +2334,12 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     if (this.recipeScraperSubscription) {
       this.recipeScraperSubscription.unsubscribe()
+    }
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe()
+    }
+    if (this.userLinksSubscription) {
+      this.userLinksSubscription.unsubscribe()
     }
   }
 
@@ -2375,7 +2401,6 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   // each link: checking if they're already in this.recipes AND/OR firebase, and if not then getting the recipe for it
   listRecipes(): void {
-    console.log(this.userLinks)
     for (let link of this.links) {
       let standardLink = this.standardUrl(link)
       if (this.userLinks === null || this.userLinks === undefined) {
@@ -2410,7 +2435,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
             link: standardLink,
           }
           // recipe = this.recipeFake // ** MOCK DATA **
-          this.recipes.push(recipe)
+          console.warn('push 2')
+          this.recipes.push(recipe) // TODO: latest recipe to add ingredients has duplicates in recipes table, recipes array appears to be fine, table fine upon refresh
           this.getRecipe(recipe)
         }
       }
@@ -2449,6 +2475,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
                 this.recipesPath + tempRecipeKey,
                 recipe
               )
+              this.userLinks.push({ tempRecipeKey: recipe.link })
             } else {
               this.dataService.storeRecipeDB(recipe) // TODO: uses session storage, need non-user data handling
               recipe.user = 'guest'
@@ -2531,20 +2558,23 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   }
 
   openRecipeDetails(recipe: any): void {
+    this.detailsLoading = true
     this.selectRecipe = recipe
-    if (this.userLogin.uid) {
+    if (this.userLinks) {
+      // if (this.userLinks && Object.keys(this.userLinks).length > 0) {
       this.recipeKey = Object.keys(this.userLinks).find(
         (key) => this.userLinks[key] === this.selectRecipe.link
       )
       this.savedLink = Object.values(this.userLinks).includes(
         this.selectRecipe.link
       )
+    } else {
+      this.recipeKey
     }
     this.ingredientsNlp = ''
     for (let ingredient of recipe.original_data.recipeIngredients) {
       this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
     }
-    this.detailsLoading = true
     if (this.savedLink && recipe.final_ingredients) {
       this.detailsLoading = false
     } else {
@@ -2585,6 +2615,12 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       // update: components are sharing so using updated selectRecipe
       this.selectRecipe.final_ingredients = modalOutput.finalIngredients
       this.selectRecipe.filter_data.recipeYield = modalOutput.userSetSize
+      // let recIndex = this.recipes.findIndex(
+      //   (rec) => rec.link === this.selectRecipe.link
+      // )
+      // console.log(this.recipes)
+      // this.recipes[recIndex] = this.selectRecipe
+      // console.log(this.recipes)
       // ***
       if (this.userLogin.uid) {
         this.dataService.updateFire(

@@ -16,6 +16,7 @@ import { catchError, map } from 'rxjs/operators'
 })
 export class AuthService {
   userData: any // Save logged in user data
+  // userDataPipe: Observable<any>
   auth: any | undefined
 
   constructor(
@@ -29,12 +30,7 @@ export class AuthService {
     this.afAuth.authState.subscribe((user) => {
       if (user) {
         this.userData = user
-        console.log(this.userData)
-        //   localStorage.setItem('user', JSON.stringify(this.userData))
-        //   JSON.parse(localStorage.getItem('user') || '{}') // added {} but preventing null may be issue
-        // } else {
-        //   localStorage.setItem('user', '{}') // originally user, null but wouldnt allow set null, may be issue
-        //   JSON.parse(localStorage.getItem('user') || '{}') // added {} but preventing null may be issue
+      } else {
       }
     })
   }
@@ -130,13 +126,16 @@ export class AuthService {
   SignOut() {
     return this.afAuth.signOut().then(() => {
       localStorage.removeItem('user')
-      this.userData = null
+      this.userData = []
       this.router.navigate(['sign-in'])
     })
   }
 
-  getUser() {
-    console.log(this.userData)
-    return of(this.userData)
+  getUser(): Observable<any> {
+    if (this.userData) {
+      return of(this.userData)
+    } else {
+      return this.afAuth.authState
+    }
   }
 }
