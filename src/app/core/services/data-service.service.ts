@@ -38,10 +38,11 @@ export class DataService {
   ) {}
 
   getUser() {
-    if (this.user) {
-      console.log(this.user)
-      return of(this.user)
-    } else {
+    {
+      // if (this.user && this.user.uid !== 'new') {    // TODO: prevents getting and loading new user from sign-in/sign-out
+      //   console.log(this.user)
+      //   return of(this.user)
+      // } else {
       return this.authService.getUser().pipe(
         catchError((err) => {
           console.log(err)
