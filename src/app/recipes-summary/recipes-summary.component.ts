@@ -2269,12 +2269,12 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
 
   constructor(
     private dataService: DataService,
-    private modalService: NgbModal,
-    private authService: AuthService
+    private modalService: NgbModal
   ) {}
 
   ngOnInit() {
     // this.userLogin.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2'  TODO: MOCK DATA
+    console.log(this.recipes)
     this.userSubscription = this.dataService.getUser().subscribe(
       (res) => {
         this.userLogin = res
@@ -2309,6 +2309,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
                       )
                   }
                 } else {
+                  console.log(this.recipes)
                   this.userLinks = []
                   console.log('users had no saved recipes')
                 }
@@ -2334,6 +2335,11 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (this.isSessionStorage()) {
+      // happens upon any redirect, needs to only happen when app is closed
+      // this.clearSession()
+      console.log('session needs to be cleared')
+    }
     if (this.recipeScraperSubscription) {
       this.recipeScraperSubscription.unsubscribe()
     }
@@ -2467,7 +2473,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
             recipe.original_data = (res as any).value
             recipe.filter_data = clone((res as any).value)
             recipe.status = 'complete'
-            if (this.userLogin.uid) {
+            if (this.userLogin.uid && this.userLogin.uid !== 'new') {
               recipe.user = this.userLogin.uid
               let tempRecipeKey = this.dataService.addFire(
                 this.usersPath + recipe.user + this.linksPath,
@@ -2480,7 +2486,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
               this.userLinks[tempRecipeKey] = recipe.link
             } else {
               this.dataService.storeRecipeDB(recipe) // TODO: uses session storage, need non-user data handling
-              recipe.user = 'guest'
+              recipe.user = 'new'
             }
             this.loading = false
           } else {
@@ -2620,7 +2626,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       )
       this.recipes[recIndex] = this.selectRecipe
       // ***
-      if (this.userLogin.uid) {
+      if (this.userLogin.uid && this.userLogin.uid !== 'new') {
         this.dataService.updateFire(
           this.recipesPath + this.recipeKey + this.ingredientsPath,
           modalOutput.finalIngredients

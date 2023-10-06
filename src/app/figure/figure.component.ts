@@ -190,6 +190,7 @@ export class FigureComponent implements OnInit, OnChanges {
     // this.login.uid = '1rhLawyeExhyELfFjy8GZ8sGeuy2' MOCK DATA
     this.userSubscription = this.dataService.getUser().subscribe(
       (res) => {
+        console.log(res)
         this.login = res
         if (this.login && this.login.uid !== 'new') {
           this.userPhysicalSubscription = this.dataService
