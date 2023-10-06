@@ -61,7 +61,9 @@
           name="button"
           class="btn btnPrimary"
           (click)="
-            $event.stopPropagation(); signIn(userName.value, userPassword.value)
+            $event.stopPropagation();
+            signIn(userName.value, userPassword.value);
+            getUser()
           "
         >
           sign in
@@ -101,7 +103,7 @@
         type="button"
         name="button"
         class="btn btnPrimary"
-        (click)="$event.stopPropagation(); signOut()"
+        (click)="$event.stopPropagation(); signOut(); getUser()"
       >
         sign out
       </button>

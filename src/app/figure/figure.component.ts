@@ -5,6 +5,7 @@ import { AuthService } from '../core/services/auth.service'
 import configureMeasurements, { allMeasures } from 'convert-units'
 import { AngularFireObject } from '@angular/fire/compat/database'
 import { Subscription } from 'rxjs'
+import * as $ from 'jquery'
 
 @Component({
   selector: 'app-figure',
@@ -390,7 +391,7 @@ export class FigureComponent implements OnInit, OnChanges {
   // creates foundation html object for visual data figure
   private createSvg(): void {
     if (this.svg) {
-      this.svg.selectAll('*').remove()
+      d3.select('#bar svg').remove()
     }
     this.svg = d3
       .select('figure#bar')

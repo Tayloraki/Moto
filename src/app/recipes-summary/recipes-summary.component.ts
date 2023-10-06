@@ -2320,6 +2320,8 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
               }
             )
         }
+        this.recipes = []
+        this.userLinks = []
         this.userSubscription.unsubscribe()
       },
       (err) => {
@@ -2475,7 +2477,7 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
                 this.recipesPath + tempRecipeKey,
                 recipe
               )
-              this.userLinks.push({ tempRecipeKey: recipe.link })
+              this.userLinks[tempRecipeKey] = recipe.link
             } else {
               this.dataService.storeRecipeDB(recipe) // TODO: uses session storage, need non-user data handling
               recipe.user = 'guest'
@@ -2568,14 +2570,12 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       this.savedLink = Object.values(this.userLinks).includes(
         this.selectRecipe.link
       )
-    } else {
-      this.recipeKey
     }
     this.ingredientsNlp = ''
     for (let ingredient of recipe.original_data.recipeIngredients) {
       this.ingredientsNlp = this.ingredientsNlp.concat('\n', ingredient)
     }
-    if (this.savedLink && recipe.final_ingredients) {
+    if (recipe.final_ingredients) {
       this.detailsLoading = false
     } else {
       // ** USE FOR MOCK DATA **
@@ -2615,12 +2615,10 @@ export class RecipesSummaryComponent implements OnInit, OnDestroy {
       // update: components are sharing so using updated selectRecipe
       this.selectRecipe.final_ingredients = modalOutput.finalIngredients
       this.selectRecipe.filter_data.recipeYield = modalOutput.userSetSize
-      // let recIndex = this.recipes.findIndex(
-      //   (rec) => rec.link === this.selectRecipe.link
-      // )
-      // console.log(this.recipes)
-      // this.recipes[recIndex] = this.selectRecipe
-      // console.log(this.recipes)
+      let recIndex = this.recipes.findIndex(
+        (rec) => rec.link === this.selectRecipe.link
+      )
+      this.recipes[recIndex] = this.selectRecipe
       // ***
       if (this.userLogin.uid) {
         this.dataService.updateFire(

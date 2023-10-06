@@ -13,8 +13,10 @@ export class AppComponent implements OnInit, OnDestroy {
   showAccountDropdown: boolean = false
   error: boolean = false
   errorMessage: any = ''
+  userLogin: any
 
   signInSubscription: Subscription = new Subscription()
+  userSubscription: Subscription = new Subscription()
 
   constructor(
     private dataService: DataService,
@@ -62,5 +64,18 @@ export class AppComponent implements OnInit, OnDestroy {
   signOut(): void {
     this.authService.SignOut()
     this.showAccountDropdown = !this.showAccountDropdown
+  }
+
+  getUser() {
+    this.userSubscription = this.dataService.getUser().subscribe(
+      (res) => {
+        this.userLogin = res
+        this.userSubscription.unsubscribe()
+      },
+      (err) => {
+        console.log(err)
+        this.userSubscription.unsubscribe()
+      }
+    )
   }
 }
