@@ -114,16 +114,26 @@ export class DataService {
   }
 
   storeRecipeDB(recipe: any): void {
+    // TODO: update for not just recipes?
     sessionStorage.setItem(recipe.original_data.name, JSON.stringify(recipe))
   }
 
   getRecipeDB(title: string): any {
+    // TODO: update for not just recipes?
     let recipe = sessionStorage.getItem(title)
     return JSON.parse(recipe || '{}')
   }
 
-  storeNutritionDB(ingredient: any): void {
-    sessionStorage.setItem(ingredient, JSON.stringify(ingredient))
+  removeRecipeDB(recipe: any): void {
+    sessionStorage.removeItem(recipe.original_data.name)
+  }
+
+  updateSessionObject(recipe: any, value: any) {
+    let prevData = this.getRecipeDB(recipe.original_data.name)
+    Object.keys(value).forEach(function (val, key) {
+      prevData[val] = value[val]
+    })
+    sessionStorage.setItem(recipe.original_data.name, JSON.stringify(prevData))
   }
 
   getNutritionDB(name: string): void {

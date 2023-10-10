@@ -69,7 +69,10 @@ export class AppComponent implements OnInit, OnDestroy {
   getUser() {
     this.userSubscription = this.dataService.getUser().subscribe(
       (res) => {
-        this.userLogin = res
+        if (this.userLogin.uid === 'new' || this.userLogin.uid === undefined) {
+        } else {
+          this.userLogin = res
+        }
         this.userSubscription.unsubscribe()
       },
       (err) => {

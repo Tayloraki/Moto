@@ -2,9 +2,11 @@
 
 #input-container {
   display: flex;
+  flex-flow: row wrap;
   justify-content: center;
 
   #text-links {
+    display: block;
     width: 60vw;
     height: 8vh;
     // padding: 1vh 1vw;
@@ -14,6 +16,7 @@
   }
 
   #convert-button {
+    display: inline-block;
     height: 8vh;
     border-radius: 5px;
   }
@@ -42,9 +45,6 @@
     padding: 1vw;
   }
 
-  // .error-container {
-  //   background-color: $orange;
-  // }
 }
 
 #links-container {
@@ -97,4 +97,15 @@
       }
     }
   }
+}
+
+#recipeDropdownMenu {
+  background-color: #ff3403;
+  color: #ffffff;
+  font-size: 1.25rem;
+  padding: 0.5vh 2.75vw;
+  margin-top: 5vh;
+  cursor: pointer;
+  border: #ffffff 1px solid;
+  border-radius: 10px;
 }

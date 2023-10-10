@@ -40,17 +40,18 @@ header {
 }
 
 .error-container {
-  display: flex;
+  display: block;
   justify-content: center;
 
   div {
-    background-color: $error-red;
-    border: 2.5px #ffffff solid;
+    background-color: $orange;
+    border: 2px #ffffff solid;
     margin-top: 3rem;
-    padding: 1rem;
+    padding: 0.25rem;
     border-radius: 5px;
-    width: 70vw;
-    font-size: 1.5rem;
+    width: 55vw;
+    font-size: 1.25rem;
+    text-align: center;
   }
 }
 

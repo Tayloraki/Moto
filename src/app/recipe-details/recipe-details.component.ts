@@ -55,13 +55,6 @@ export class RecipeDetailsComponent implements OnInit, OnChanges {
   loading: boolean = false
   show: boolean = false // currently not called
 
-  // mock data for testing
-  fakeNlpRecipe: any = {}
-  fakeFoodId: string = '513fc9e73fe3ffd40300109f'
-  fakeIngredientsNlp: string =
-    'for breakfast i ate 2 eggs, bacon, a tomato, a grapefruit and half a cup of fish sauce'
-  fakeIngredient: any = {}
-
   recipesPath: string = '/recipes/'
   @Input() recipeKey: string | undefined
   recipeYield: any
@@ -78,7 +71,6 @@ export class RecipeDetailsComponent implements OnInit, OnChanges {
   }
 
   setRecipe(): void {
-    console.log(this.recipeDetails)
     this.finalIngredients = this.recipeDetails.final_ingredients
     this.recipeTitle = this.recipeDetails.original_data.name
     this.recipeYield = this.recipeDetails.filter_data.recipeYield
