@@ -49,10 +49,17 @@ export class FigureComponent implements OnInit, OnChanges {
 
   servingData: any[] = []
   percentData: any[] = []
+
+  // D3 figure
   private svg: any
   private margin = 50
   private width = 750 - this.margin * 2
   private height = 400 - this.margin * 2
+  private x: any
+  private y: any
+  private xAxis: any
+  private yAxis: any
+  private bars: any
 
   user: any = {}
 
@@ -107,6 +114,7 @@ export class FigureComponent implements OnInit, OnChanges {
       (res) => {
         this.login = res
         if (this.login && this.login.uid !== 'new') {
+          this.signedIn = true
           this.userPhysicalSubscription = this.dataService
             .getFireObject(this.usersPath + this.login.uid) // maybe + physical
             .subscribe(
@@ -154,7 +162,10 @@ export class FigureComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(): void {
-    this.createSvg()
+    if (this.svg) {
+    } else {
+      this.createSvg()
+    }
     this.makeFigure()
   }
 
@@ -215,10 +226,13 @@ export class FigureComponent implements OnInit, OnChanges {
   // takes user info form to create dailyValuesCustom, update data figure
   onSubmit() {
     if (this.signedIn) {
+      console.log('this.login.uid')
       this.dataService.createFire(
         this.usersPath + this.login.uid + '/physical',
         this.userPhysical
       )
+    } else {
+      console.log('not signed')
     }
     this.convertUnits()
     this.userNutrition()
@@ -325,82 +339,162 @@ export class FigureComponent implements OnInit, OnChanges {
       .attr('height', this.height + this.margin * 2 + 35)
       .append('g')
       .attr('transform', 'translate(' + this.margin + ',' + this.margin + ')')
+
+    // maybe prevent redundant 'g's
+    this.x = d3.scaleBand().range([0, this.width]).padding(0.1)
+
+    this.xAxis = this.svg
+      .append('g')
+      .attr('transform', 'translate(0,' + this.height + ')')
+
+    this.y = d3.scaleLinear().domain([0, 100]).range([this.height, 0])
+
+    this.yAxis = this.svg.append('g').call(d3.axisLeft(this.y).ticks(5))
   }
 
   // creates visual data figure
   private drawBars(data: any[]): void {
-    let t = this.svg.transition().duration(500)
+    let t = this.svg.transition().duration(100)
 
     // Create the X-axis band scale
-    const x = d3
-      .scaleBand()
-      .range([0, this.width])
-      // .domain(data.map((d) => d.niceName))
-      .domain(data.map((d) => d.niceName))
-      .padding(0.1)
+    // this.x = d3
+    //   .scaleBand()
+    //   .range([0, this.width])
+    this.x.domain(data.map((d) => d.niceName))
+    //   .padding(0.1)
 
     // Draw the X-axis on the DOM
-    this.svg
-      .append('g')
-      .attr('transform', 'translate(0,' + this.height + ')')
-      .call(d3.axisBottom(x))
+    // this.svg
+    //   .append('g')
+    //   .attr('transform', 'translate(0,' + this.height + ')')
+    this.xAxis
+      .call(d3.axisBottom(this.x))
       .selectAll('text')
       .attr('transform', 'translate(-10,0)rotate(-45)')
       .style('text-anchor', 'end')
 
     // Create the Y-axis band scale
-    const y = d3.scaleLinear().domain([0, 100]).range([this.height, 0])
+    // const y = d3.scaleLinear().domain([0, 100]).range([this.height, 0])
 
     // Draw the Y-axis on the DOM
-    this.svg.append('g').call(d3.axisLeft(y).ticks(5))
+    // this.svg.append('g').call(d3.axisLeft(y).ticks(5))
 
     // Create and fill the bars
-    this.svg
-      .selectAll('bars')
+    // let bars = this.svg.selectAll('bars').data(data, (d: any) => d)
+    this.bars = this.svg.selectAll('rect').data(data, (d: any) => d)
+
+    // bars.join(
+    this.bars.join(
+      (enter: any) =>
+        enter
+          .append('rect')
+          .merge(this.bars)
+          .attr('x', (d: any) => this.x(d.niceName))
+          .attr('y', (d: any) => {
+            if (this.y(d.total) < 0) {
+              return 0
+            } else {
+              return this.y(d.total)
+            }
+          })
+          .attr('width', this.x.bandwidth())
+          // .attr('height', (d: any) => this.height - this.y(d.total))
+          .attr('height', (d: any) => {
+            if (this.y(d.total) < 0) {
+              return this.height
+            } else {
+              return this.height - this.y(d.total)
+            }
+          })
+          // .attr('fill', '#d04a35'),
+          .attr('fill', (d: any) => {
+            if (d.total < 100) {
+              return '#d04a35'
+            } else {
+              return '#333333'
+            }
+          }),
+      (update: any) =>
+        update.call((update: any) =>
+          update
+            .transition(t)
+            .attr('x', (d: any) => this.x(d.niceName))
+            .attr('y', (d: any) => {
+              if (this.y(d.total) < 0) {
+                return 0
+              } else {
+                return this.y(d.total)
+              }
+            })
+            // .attr('y', (d: any) => this.y(d.total))
+            .attr('height', (d: any) => {
+              if (this.y(d.total) < 0) {
+                return this.height
+              } else {
+                return this.height - this.y(d.total)
+              }
+            })
+            .attr('fill', (d: any) => {
+              if (d.total < 100) {
+                return '#d04a35'
+              } else {
+                return '#333333'
+              }
+            })
+        ),
+      (exit: any) =>
+        exit.call((exit: any) =>
+          exit
+            .transition(t)
+            // .attr('x', 0)
+            // .attr('y', 0)
+            // .attr('height', 0)
+            .remove()
+        )
+    )
+
+    let labels = this.svg
+      .selectAll('.text')
       .data(data)
       .join(
         (enter: any) =>
           enter
-            .append('rect')
-            .attr('x', (d: any) => x(d.niceName))
-            .attr('y', (d: any) => y(d.total))
-            .attr('width', x.bandwidth())
-            .attr('height', (d: any) => this.height - y(d.total))
-            .attr('fill', '#d04a35'),
+            .append('text')
+            .attr('class', 'label text')
+            .attr('x', (d: any) => {
+              return (this.x(d.niceName) || 0) + 20
+            })
+            .attr('y', (d: any) => {
+              if (this.y(d.total) - 15 < 0) {
+                return -30
+              } else {
+                return this.y(d.total) - 15
+              }
+            })
+            .attr('dy', '.75em')
+            .text((d: any) => {
+              return Math.ceil(d.total) + '%'
+            }),
         (update: any) =>
           update.call((update: any) =>
             update
               .transition(t)
-              .attr('x', (d: any) => x(d.niceName))
-              .attr('y', (d: any) => y(d.total))
-              .attr('height', (d: any) => this.height - y(d.total))
+              .attr('x', (d: any) => {
+                return (this.x(d.niceName) || 0) + 20
+              })
+              .attr('y', (d: any) => {
+                if (this.y(d.total) - 15 < 0) {
+                  return -30
+                } else {
+                  return this.y(d.total) - 15
+                }
+              })
+              .attr('dy', '.75em')
+              .text((d: any) => {
+                return Math.ceil(d.total) + '%'
+              })
           ),
-        (exit: any) =>
-          exit.call((exit: any) =>
-            exit
-              .transition(t)
-              .attr('x', 0)
-              .attr('y', 0)
-              .attr('height', 0)
-              .remove()
-          )
+        (exit: any) => exit.call((exit: any) => exit.transition(t).remove())
       )
-
-    this.svg
-      .selectAll('.text')
-      .data(data)
-      .enter()
-      .append('text')
-      .attr('class', 'label')
-      .attr('x', (d: any) => {
-        return (x(d.niceName) || 0) + 20
-      })
-      .attr('y', (d: any) => {
-        return y(d.total) - 15
-      })
-      .attr('dy', '.75em')
-      .text((d: any) => {
-        return Math.ceil(d.total) + '%'
-      })
   }
 }
